@@ -1,23 +1,59 @@
-
+/* Reset margins and paddings for body and html */
 body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-  }
-  
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
 
+/* Custom styles for the background image */
+.bg-image {
+  background-image: url('../assets/home 1.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh; /* Full height of viewport */
+  width: 100%; /* Ensure image covers entire width */
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.top-center {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.text-responsive {
+  font-size: 3rem; 
+}
+
+.text-responsive2 {
+  display: flex;
+  margin-top: -25px; 
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
   .bg-image {
-    background-image: url('../assets/home\ 1.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    height: 100vh; 
-    width: 100%; 
+    background-position: top;
   }
-  
-  
-  @media (max-width: 768px) {
-    .bg-image {
-      background-position: top; 
-    }
+
+  .bg-image p {
+    align-self: center;
+    margin-left: 0;
   }
-  
+
+  .text-responsive {
+    font-size: 2rem; 
+  }
+
+  .text-responsive2 { 
+    font-size: 13px;
+  }
+}
+
