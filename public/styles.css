@@ -1,91 +1,97 @@
-
-body,
-html {
+body, html {
   margin: 0;
   padding: 0;
   height: 100%;
-}
-
-.bg-image {
-  background-image: url("../assets/home 1.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  height: 100vh; 
   width: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: linear-gradient(163deg, #EA454C 50%, white 50%);
   display: flex;
-  flex-direction: column;
   justify-content: center;
-  align-items: flex-start; 
-  padding-left: 20px; 
+  align-items: center;
+}
+
+.container {
   position: relative;
+  height: 100%;
+  width: 100%;
 }
 
-.top-center {
+.text-container {
   position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
+  top: 35%;
+  left: 10%;
+  transform: translate(-50%, -50%);
 }
 
-.text-responsive {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; 
-  padding-left: 200px;
-  position: relative; 
+.logxp-text {
+  color: white;
+  font-size: 5rem;
+  font-weight: bold;
+  text-align: center;
 }
 
-.text-responsive1 {
-  font-size: 3rem;
-}
-
-.text-responsive2 {
-  margin-top: -25px;
+.tag-text {
+  color: white;
   font-size: 20px;
-  opacity: 50%;
+  font-weight: bold;
+  text-align: center;
 }
 
-.login-button {
+.button-container {
+  position: absolute;
+  bottom: 150px;
+  right: 150px;
+  display: flex;
+  flex-direction: row;
+  gap: 25px;
+}
+
+.button {
   background-color: black;
   color: white;
   border: none;
-  padding: 10px 50px;
+  padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
-  margin-top: 20px; 
-  text-align: center;
   border-radius: 5px;
   box-shadow: black 2px 2px 2px 2px;
-  transition: transform 0.3s ease, background-color 0.3s ease; 
 }
 
-.login-button:hover {
-  background-color: rgb(25, 25, 25); 
-  transform: scale(1.1); 
+.button:hover {
+  background-color: #333;
+}
+
+.logo {
+  position: absolute;
+  bottom: 10px;
+  right: 150px;
+  max-width: 250px;
+  height: auto;
 }
 
 @media (max-width: 768px) {
-  .bg-image {
-    background-position: top;
-    background-image: url("../assets/home\ 1\ mob.jpg");
+  .text-container {
+    position: relative;
+    top: 35%;
+    left: 30%;
+    transform: translate(-50%, -50%);
   }
 
-  .text-responsive {
-    padding-left: 0px;
+  .logxp-text {
+    font-size: 3rem;
   }
 
-  .text-responsive1 {
-    font-size: 2rem;
+  .button {
+    padding: 8px 16px;
+    font-size: 14px;
   }
 
-  .text-responsive2 {
-    font-size: 13px;
-  }
-
-  .login-button {
-    font-size: 14px; 
-    padding: 8px 30px;
+  .logo {
+    max-width: 200px;
+    bottom: 50px;
   }
 }
+
