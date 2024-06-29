@@ -24,10 +24,10 @@ body {
     width: 250px;
     height: 100%;
     position: fixed;
-    left: -250px; /* Initially hide sidebar off-screen */
     top: 40px; /* Adjust for header height */
+    left: 0;
     padding-top: 60px; /* Adjust for header height and padding */
-    transition: left 0.3s ease; /* Smooth transition for sidebar animation */
+    transition: left 0.3s ease;
 }
 
 .sidebar ul {
@@ -59,6 +59,7 @@ body {
 }
 
 .burger-menu {
+    display: none;
     background: none;
     border: none;
     color: #000;
@@ -70,6 +71,20 @@ body {
     z-index: 1100;
 }
 
-.sidebar.open {
-    left: 0;
+@media (max-width: 768px) {
+    .burger-menu {
+        display: block;
+    }
+
+    .sidebar {
+        left: -250px; /* Initially hide sidebar off-screen */
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .content {
+        margin-left: 0;
+    }
 }
