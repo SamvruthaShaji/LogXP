@@ -11,15 +11,28 @@ body {
 }
 
 .text-container {
-  margin-right: 1000px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-80%);
+  left: 10%;
 }
 
 .logxp-text {
   color: white;
+  font-weight: bold;
+  font-size: 90px;
 }
 
 .tag-text {
   color: white;
+  font-size: 25px;
+}
+
+.button-container {
+  position: relative;
+  top: 50%;
+  transform: translateY(-20%);
+  right: 20%;
 }
 
 .button {
@@ -41,8 +54,45 @@ body {
   height: auto;
 }
 
+.gap {
+  margin-top: 100px;
+}
+
 @media (max-width: 768px) {
   .logo {
+    max-width: 150px;
     right: 0;
+  }
+
+  .text-container {
+    top: -50%;
+    transform: translateY(0%);
+    left: 0%;
+  }
+
+  .logxp-text {
+    color: white;
+    font-weight: bold;
+    font-size: 50px;
+  }
+  
+  .tag-text {
+    color: white;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .button{
+    white-space: nowrap;
+  }
+
+  .button-container {
+    top: 50%;
+    transform: translateY(0%);
+    right: 0%;
+  }
+
+  .gap{
+    margin-top: 0px ;
   }
 }
