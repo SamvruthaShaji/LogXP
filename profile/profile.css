@@ -1,0 +1,11 @@
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+.bg-danger {
+    background-color: #dc3545; /* Bootstrap's danger color */
+}
+
+.card {
+    border: none;
+}
