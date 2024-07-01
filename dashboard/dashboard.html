@@ -1,28 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogXP - Attendance Tracker</title>
-    <link rel="stylesheet" href="dashboard.css">
-</head>
-<body>
-    <div class="header">
-        <h1>LogXP</h1>
-        <button class="burger-menu" aria-label="Toggle Sidebar Menu">&#9776;</button>
-    </div>
-    <div class="sidebar">
-        <ul>
-            <li><a href="#" data-page="daily-attendance">Daily Attendance</a></li>
-            <li><a href="#" data-page="leave-days">Leave Days</a></li>
-            <li><a href="#" data-page="lop">LOP</a></li>
-            <li><a href="#" data-page="ranking">Ranking</a></li>
-        </ul>
-    </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LogXP</title>
+
+    <link rel="stylesheet" href="dashboard.css" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="hdr">
+        <div class="profile">
+          <img src="../assets/Photo.png" alt="Profile Picture" />
+          <span>Hi Abby</span>
+        </div>
+        <div class="header-center">
+          <h6 class="navbar-brand">LogXP</h6>
+        </div>
+        <div class="header-right">
+          <button class="btn btn-outline-light" type="button">Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <nav class="sidebar">
+      <div class="contents">
+        <a class="nav-link active" aria-current="page" href="#"
+          >Daily Attendance</a
+        >
+        <a class="nav-link" href="#">Leave Days</a>
+        <a class="nav-link" href="#">LOP</a>
+        <a class="nav-link" href="#">Ranking</a>
+      </div>
+    </nav>
+
     <div class="content">
-        <!-- Content will be dynamically loaded here -->
+      <button class="navbar-toggler" type="button" onclick="toggleSidebar()">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <h1>Welcome to LogXP</h1>
+      <p>Your content goes here...</p>
     </div>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="dashboard.js"></script>
-</body>
+  </body>
 </html>

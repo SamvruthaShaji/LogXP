@@ -1,90 +1,95 @@
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-}
-
-.header, .sidebar {
-    background-color: #FCF3EA;
-    color: #000;
-}
-
-.header {
-    text-align: center;
-    padding: 10px 0;
-    position: fixed;
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  header {
     width: 100%;
-    top: 0;
-    z-index: 1000;
-}
-
-.sidebar {
-    width: 250px;
-    height: 100%;
-    position: fixed;
-    top: 40px; /* Adjust for header height */
-    left: 0;
-    padding-top: 60px; /* Adjust for header height and padding */
-    transition: left 0.3s ease;
-}
-
-.sidebar ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.sidebar ul li {
-    margin-bottom: 10px;
-}
-
-.sidebar ul li a {
-    display: block;
-    color: #000;
-    text-decoration: none;
+    background-color: #EA454C;
+    color: white;
     padding: 10px 20px;
-    transition: background-color 0.3s;
-}
+    z-index: 1001;
+  }
+  
+  .hdr {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  .profile img {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+  }
+  
+  .profile span {
+    margin-right: 20px;
+  }
 
-.sidebar ul li a:hover {
-    background-color: #FCF3EA;
-}
-
-.content {
-    margin-left: 250px;
-    margin-top: 40px; /* Adjust for header height */
-    padding: 20px;
-    flex: 1;
-}
-
-.burger-menu {
-    display: none;
-    background: none;
+  .navbar-brand {
+    color: #ddd;
+  }
+  
+  .header-right button {
+    background-color: transparent;
     border: none;
-    color: #000;
-    font-size: 24px;
+    color: white;
+    font-size: 1rem; /* Adjust font size as needed */
     cursor: pointer;
+  }
+  
+  .sidebar {
+    height: 100vh;
+    width: 250px;
+    position: fixed;
+    left: 0;
+    background-color: #EA454C;
+    padding-top: 20px;
+    z-index: 1000;
+    transition: width 0.3s;
+  }
+
+  .contents {
+    padding-top: 120px;
+  }
+  
+  .sidebar a {
+    padding: 15px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #fff;
+    display: block;
+  }
+  
+  .sidebar a:hover {
+    background-color: #ddd;
+    color: #000;
+  }
+  
+  .content {
+    margin-left: 250px; /* Adjusted to be beside the sidebar */
+    margin-top: 60px; /* Adjusted to be below the header */
+    padding: 20px;
+  }
+  
+  .navbar-toggler {
     position: absolute;
     top: 10px;
     left: 10px;
-    z-index: 1100;
-}
-
-@media (max-width: 768px) {
-    .burger-menu {
-        display: block;
-    }
-
+  }
+  
+  @media (max-width: 768px) {
     .sidebar {
-        left: -250px; /* Initially hide sidebar off-screen */
+      width: 0;
+      top: 0;
     }
-
-    .sidebar.open {
-        left: 0;
-    }
-
     .content {
-        margin-left: 0;
+      margin-left: 0;
     }
-}
+  }
+  
