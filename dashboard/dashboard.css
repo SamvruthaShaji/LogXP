@@ -1,137 +1,138 @@
 body {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  font-family: Arial, sans-serif;
-}
-
-header {
-  width: 100%;
-  background-color: #ea454c;
-  color: white;
-  padding: 10px 20px;
-  z-index: 1001;
-}
-
-.hdr {
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.profile {
-  display: flex;
-  flex-direction: row;
-}
-
-.profile img {
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  margin-right: 10px;
-}
-
-.profile span {
-  margin-right: 20px;
-}
-
-.navbar-brand {
-  color: #ddd;
-}
-
-.header-right button {
-  background-color: transparent;
-  border: none;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.sidebar {
-  height: 100vh;
-  width: 250px;
-  position: fixed;
-  left: 0;
-  background-color: #ea454c;
-  padding-top: 20px;
-  z-index: 1000;
-}
-
-.contents {
-  padding-top: 60px;
-}
-
-.sidebar a {
-  padding: 15px;
-  text-decoration: none;
-  font-size: 18px;
-  color: #fff;
-  display: block;
-}
-
-.sidebar a:hover {
-  background-color: #ddd;
-  color: #000;
-}
-
-.content {
-  margin-left: 250px;
-  margin-top: 60px;
-  padding: 20px;
-}
-
-.toggle-btn {
-  background-color: transparent;
-  border: none;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  display: none;
-}
-
-.sidebar.show {
-  display: block;
-}
-
-@media (max-width: 768px) {
-  .toggle-btn {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  header {
+    width: 100%;
+    background-color: #ea454c;
+    color: white;
+    padding: 10px 20px;
+    z-index: 1001;
+  }
+  
+  .hdr {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  .profile {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .profile img {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+  }
+  
+  .profile span {
+    margin-right: 20px;
+  }
+  
+  .navbar-brand {
+    color: #ddd;
+  }
+  
+  .header-right button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  .sidebar {
+    height: 100vh;
+    width: 250px;
+    position: fixed;
+    left: 0;
+    background-color: #ea454c;
+    padding-top: 20px;
+    z-index: 1000;
+  }
+  
+  .contents {
+    padding-top: 60px;
+  }
+  
+  .sidebar a {
+    padding: 15px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #fff;
     display: block;
   }
-  .sidebar {
+  
+  .sidebar a:hover {
+    background-color: #ddd;
+    color: #000;
+  }
+  
+  .content {
+    margin-left: 250px;
+    margin-top: 60px;
+    padding: 20px;
+  }
+  
+  .toggle-btn {
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
     display: none;
   }
+  
   .sidebar.show {
     display: block;
   }
-  .sidebar a {
-    padding: 10px;
-    font-size: 10px;
+  
+  @media (max-width: 768px) {
+    .toggle-btn {
+      display: block;
+    }
+    .sidebar {
+      display: none;
+    }
+    .sidebar.show {
+      display: block;
+    }
+    .sidebar a {
+      padding: 10px;
+      font-size: 10px;
+    }
+    .content {
+      margin-left: 0;
+    }
+    .hdr {
+      align-items: flex-start;
+    }
+    .profile,
+    .header-center,
+    .header-right {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 10px;
+    }
+    .header-center {
+      text-align: center;
+    }
+    .profile img {
+      width: 30px;
+      height: 30px;
+    }
+    .sidebar a {
+      font-size: 16px;
+    }
+    .header-right button {
+      font-size: 12px;
+    }
   }
-  .content {
-    margin-left: 0;
-  }
-  .hdr {
-    align-items: flex-start;
-  }
-  .profile,
-  .header-center,
-  .header-right {
-    width: 100%;
-    text-align: left;
-    margin-bottom: 10px;
-  }
-  .header-center {
-    text-align: center;
-  }
-  .profile img {
-    width: 30px;
-    height: 30px;
-  }
-  .sidebar a {
-    font-size: 16px;
-  }
-  .header-right button {
-    font-size: 12px;
-  }
-}
+  
