@@ -1,53 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LogXP</title>
-
     <link rel="stylesheet" href="dashboard.css" />
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
-  </head>
-  <body>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+</head>
+<body>
     <header>
-      <div class="hdr">
-        <div class="profile">
-          <img src="../assets/Photo.png" alt="Profile Picture" />
-          <span>Hi Abby</span>
+        <div class="hdr">
+            <button class="toggle-btn" id="toggle-btn">
+                <span class="fas fa-bars"></span>
+            </button>
+            <div class="profile">
+                <img src="../assets/Photo.png" alt="Profile Picture" />
+                <span style="white-space: nowrap;">Hi Abby</span>
+            </div>
+            <div class="header-center">
+                <h6 class="navbar-brand">LogXP</h6>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-outline-light" type="button">Logout</button>
+            </div>
         </div>
-        <div class="header-center">
-          <h6 class="navbar-brand">LogXP</h6>
-        </div>
-        <div class="header-right">
-          <button class="btn btn-outline-light" type="button">Logout</button>
-        </div>
-      </div>
     </header>
 
     <nav class="sidebar">
-      <div class="contents">
-        <a class="nav-link active" aria-current="page" href="#"
-          >Daily Attendance</a
-        >
-        <a class="nav-link" href="#">Leave Days</a>
-        <a class="nav-link" href="#">LOP</a>
-        <a class="nav-link" href="#">Ranking</a>
-      </div>
+        <div class="contents">
+            <a class="nav-link active" aria-current="page" href="#">Daily Attendance</a>
+            <a class="nav-link" href="#">Leave Days</a>
+            <a class="nav-link" href="#">LOP</a>
+            <a class="nav-link" href="#">Ranking</a>
+        </div>
     </nav>
 
     <div class="content">
-      <button class="navbar-toggler" type="button" onclick="toggleSidebar()">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <h1>Welcome to LogXP</h1>
-      <p>Your content goes here...</p>
+        <h1>Welcome to LogXP</h1>
+        <p>Your content goes here...</p>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="dashboard.js"></script>
-  </body>
+    <script>
+        const toggleBtn = document.getElementById('toggle-btn');
+        const sidebar = document.querySelector('.sidebar');
+
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('show');
+        });
+    </script>
+</body>
 </html>
