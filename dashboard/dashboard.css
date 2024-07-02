@@ -103,10 +103,12 @@ body {
     }
     .sidebar.show {
       display: block;
+      background-color: transparent;
     }
     .sidebar a {
       padding: 10px;
       font-size: 10px;
+      color: #000;
     }
     .content {
       margin-left: 0;
