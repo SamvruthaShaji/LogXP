@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card mt-5">
+            <div class="card-header bg-primary text-white">
+                <h3 id="traineeName">Trainee Name</h3>
+            </div>
+            <div class="card-body">
+                <img id="profileImage" src="" alt="Profile Image" class="img-fluid mb-3">
+                <p id="monthPercentage">Month: %</p>
+                <p id="totalPercentage">Total: %</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Extract trainee details from URL parameters
+        const params = new URLSearchParams(window.location.search);
+        const name = params.get('name');
+        const imgSrc = params.get('imgSrc');
+        const month = params.get('month');
+        const total = params.get('total');
+
+        // Set profile details on the page
+        document.getElementById('traineeName').innerText = name;
+        document.getElementById('profileImage').src = imgSrc;
+        document.getElementById('monthPercentage').innerText = `Month: ${month}%`;
+        document.getElementById('totalPercentage').innerText = `Total: ${total}%`;
+    </script>
+</body>
+</html>

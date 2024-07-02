@@ -1,0 +1,117 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card {
+    margin-bottom: 10px;
+    flex: 1;
+}
+
+.profile-card {
+    width: 150px;
+    height: auto; /* Automatically adjust height based on content */
+    border: 1px solid #ddd;
+    padding: 5px;
+    margin-right: 10px;
+    text-align: center;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.profile-card h4 {
+    font-weight: bolder; /* Adjust the font size as needed */
+    font-size: 1.1rem;
+}
+
+.profile-card p {
+    font-size: 0.8rem;
+}
+
+.profile-card img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 5px; /* Reduce margin below the image */
+}
+
+.profile-card h4, 
+.profile-card p {
+    margin: 3px 0; /* Reduce margin for h4 and p elements */
+}
+
+.profile-container-wrapper {
+    position: relative;
+    width: 640px; /* Adjusted to fit four profile cards plus margin */
+    overflow: hidden;
+}
+
+.profile-container {
+    display: flex;
+    width: max-content;
+    transition: transform 1s ease-in-out;
+}
+
+.scroll-btn {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.scroll-btn:focus {
+    outline: none;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    height: 150px; /* Adjust height to fit within the viewport */
+}
+
+.table-responsive table {
+    width: 100%;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+    .profile-container-wrapper {
+        width: 320px; /* Adjusted to fit two profile cards plus margin */
+    }
+    .card1 {
+        height: 400px;
+       margin-top: -400px;
+    }
+
+    .table-responsive {
+        height: auto;
+        max-height: 240px; /* Adjust the maximum height for mobile view */
+        overflow-y: auto; /* Enable vertical scrolling */
+    }
+
+ 
+    .table-responsive tbody tr:nth-child(-n+4) {
+        display: table-row; /* Show only the first 2 rows */
+    }
+    .card-body{
+        height: 300px;
+    }
+   
+}
+@media (max-width: 521px) {
+    .card-body{
+        height: 300px;
+    }
+}
