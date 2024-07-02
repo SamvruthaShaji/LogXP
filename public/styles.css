@@ -1,0 +1,98 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: linear-gradient(163deg, #EA454C 50%, white 50%);
+}
+
+.text-container {
+  position: relative;
+  top: 50%;
+  transform: translateY(-80%);
+  left: 10%;
+}
+
+.logxp-text {
+  color: white;
+  font-weight: bold;
+  font-size: 90px;
+}
+
+.tag-text {
+  color: white;
+  font-size: 25px;
+}
+
+.button-container {
+  position: relative;
+  top: 50%;
+  transform: translateY(-20%);
+  right: 20%;
+}
+
+.button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  box-shadow: black 2px 2px 2px 2px;
+}
+
+.button:hover {
+  background-color: #333;
+}
+
+.logo {
+  bottom: 10px;
+  right: 150px;
+  max-width: 250px;
+  height: auto;
+}
+
+.gap {
+  margin-top: 100px;
+}
+
+@media (max-width: 768px) {
+  .logo {
+    max-width: 150px;
+    right: 0;
+  }
+
+  .text-container {
+    top: -50%;
+    transform: translateY(0%);
+    left: 0%;
+  }
+
+  .logxp-text {
+    color: white;
+    font-weight: bold;
+    font-size: 50px;
+  }
+  
+  .tag-text {
+    color: white;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .button{
+    white-space: nowrap;
+  }
+
+  .button-container {
+    top: 50%;
+    transform: translateY(0%);
+    right: 0%;
+  }
+
+  .gap{
+    margin-top: 0px ;
+  }
+}

@@ -1,0 +1,113 @@
+body {
+    font-family: sans-serif;
+    background-color: #F8F8F8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.container {
+    padding:0px;
+    /* border-radius: 0px; */
+    /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
+
+}
+
+h1 {
+    padding-top: 50px;
+    color: #333;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+form{
+    padding-top: 50px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-control {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #EA454C;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #5e0a0f
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* .btn-google {
+    background-color: #4285f4;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-google:hover {
+    background-color: #357ae8;
+}
+
+.btn-google i {
+    margin-right: 10px;
+} */
+
+.text-muted {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.text-muted a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.text-muted a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .btn {
+        font-size: 0.9rem;
+    }
+}
+#red-design{
+    float:right;
+}
+
