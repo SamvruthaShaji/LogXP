@@ -110,10 +110,15 @@ form{
 #red-design{
     float:right;
 }
-#back-button{
+/* #back-button{
     border: 1px solid #D9D9D9;
     border-radius: 10px;
     padding:5px;
-    width:100px;
+    width:150px;
+} */
+.btn-custom{
+    border: 1px solid #D9d9d9;
+    border-radius: 10px;
+    padding:5px;
+    width:50px;
 }
-
