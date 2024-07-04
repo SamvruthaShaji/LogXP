@@ -9,3 +9,28 @@ body {
 .card {
     border: none;
 }
+
+.card-body img {
+    width: 100px; /* Adjust the width */
+    height: 100px; /* Adjust the height */
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+.card-title {
+    font-size: 1.25rem; /* Adjust the font size */
+}
+
+.card-text {
+    font-size: 0.9rem; /* Adjust the font size */
+}
+
+.card-shadow-sm {
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075) !important;
+}
+
+.btn-block {
+    width: 100%;
+}
