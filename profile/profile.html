@@ -13,10 +13,10 @@
             <div class="col-12 bg-danger text-white p-2">
                 <div class="row">
                     <div class="col-8">
-                        <h4 class="mb-0">Hi Abby</h4>
+                        <h4 class="mb-0" id="greeting"></h4>
                     </div>
                     <div class="col-4 text-right">
-                        <button class="btn btn-sm btn-light">Log Out</button>
+                        <button class="btn btn-sm btn-light" id="logout">Log Out</button>
                     </div>
                 </div>
             </div>
@@ -25,11 +25,11 @@
             <div class="col-md-3">
                 <div class="card shadow-sm">
                     <div class="card-body text-center">
-                        <img src="https://via.placeholder.com/100x100" class="rounded-circle mb-3" alt="Profile Picture">
-                        <h5 class="card-title">Hanna Joy</h5>
-                        <p class="card-text">Trainee ID: EX546</p>
-                        <p class="card-text">Trainee Rank: 10</p>
-                        <p class="card-text">Total Attendance: 65 days</p>
+                        <img src="https://via.placeholder.com/100x100" class="rounded-circle mb-3" id="profile-pic" alt="Profile Picture">
+                        <h5 class="card-title" id="emp-name">Hanna Joy</h5>
+                        <p class="card-text" id="emp-id">Trainee ID: EX546</p>
+                        <p class="card-text" id="emp-rank">Trainee Rank: 10</p>
+                        <p class="card-text" id="total-attendance">Total Attendance: 65 days</p>
                     </div>
                 </div>
             </div>
@@ -44,7 +44,7 @@
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <canvas id="attendanceChart" height="300"></canvas>
-                                <p class="text-center mt-3">Over all percentage <span id="overallPercentage">82.6%</span></p>
+                                <p class="text-center mt-3">Overall percentage <span id="overallPercentage">82.6%</span></p>
                             </div>
                         </div>
                     </div>
@@ -65,6 +65,9 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
     <script src="profile.js"></script>
 </body>
 </html>

@@ -11,19 +11,18 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-// Login form submission
 document.getElementById('loginForm').addEventListener('submit', function(event) {
     event.preventDefault();
     var email = document.getElementById('email').value;
     var password = document.getElementById('password').value;
 
-    firebase.auth().signInWithEmailAndPassword(email, password)
+    auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-            // Signed in
+            // Signed in 
             var user = userCredential.user;
-            // Redirect to dashboard
-            window.location.href = "../dashboard/dashboard.html";
+            window.location.href = '../dashboard/dashboard.html'; // Redirect to dashboard
         })
         .catch((error) => {
             var errorCode = error.code;

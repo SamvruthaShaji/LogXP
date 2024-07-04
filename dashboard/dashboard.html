@@ -25,16 +25,16 @@
           <span class="fas fa-bars"></span>
         </button>
         <div class="profile">
-          <a href="../Admin/index.html"
-            ><img src="../assets/Photo.png" alt="Profile Picture"
-          /></a>
-          <span>Hi Abby</span>
+          <a href="../profile/profile.html">
+            <img src="" alt="Profile Picture" id="profile-pic"/>
+          </a>
+          <span id="profile-name">Hi</span>
         </div>
         <div class="header-center">
           <h6 class="navbar-brand">LogXP</h6>
         </div>
         <div class="header-right">
-          <button class="btn btn-outline-light" type="button">Logout</button>
+          <a href="../login/traineelogin.html" class="btn btn-outline-light" type="button">Logout</a>
         </div>
       </div>
     </header>
@@ -365,6 +365,10 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script src="dashboard.js"></script>
     <script>
       const toggleBtn = document.getElementById("toggle-btn");
       const sidebar = document.querySelector(".sidebar");
