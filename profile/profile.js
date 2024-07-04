@@ -55,7 +55,7 @@ firebase.auth().onAuthStateChanged(function(user) {
                                               document.getElementById('profile-pic').src = employee.profile_pic;
                                               document.getElementById('emp-name').innerText = employee.emp_name;
                                               document.getElementById('emp-id').innerText = `Trainee ID: ${employee.emp_id}`;
-                                              document.getElementById('emp-rank').innerText = `Trainee Rank: ${ranking.total_points}`;
+                                              document.getElementById('emp-points').innerText = `Trainee points: ${ranking.total_points}`;
                                               document.getElementById('total-attendance').innerText = `Total Attendance: ${presentDays + absentDays} days`;
                                               document.getElementById('totalDays').innerText = totalDays;
                                               document.getElementById('presentDays').innerText = presentDays;
