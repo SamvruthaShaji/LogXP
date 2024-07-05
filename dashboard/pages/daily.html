@@ -1,139 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <style>
-        .container {
-            display: flex;
-            width: 100%;
-            height: 100%;
+      .container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+      }
+
+      .main-content {
+        flex: 1;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin: 20px;
+      }
+
+      .attendance {
+        margin-top: 20px;
+      }
+
+      .time-slots {
+        display: flex;
+        gap: 10px;
+        margin: 10px 0;
+      }
+
+      .slot {
+        padding: 10px;
+        border-radius: 5px;
+        color: white;
+        text-align: center;
+        flex: 1;
+      }
+
+      .green {
+        background-color: #a5d6a7;
+      }
+
+      .red {
+        background-color: #ef9a9a;
+      }
+
+      .date-selection {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin: 20px 0;
+      }
+
+      .date-selection select,
+      .date-selection button {
+        padding: 5px;
+      }
+
+      /* Responsive styles for tablets */
+      @media (max-width: 992px) {
+        h2 {
+          font-size: 1.2rem;
         }
-        
-        .main-content {
-            flex: 1;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin: 20px;
-        }
-        
-        .attendance {
-            margin-top: 20px;
-        }
-        
+
         .time-slots {
-            display: flex;
-            gap: 10px;
-            margin: 10px 0;
+          flex-wrap: wrap;
         }
-        
+
         .slot {
-            padding: 10px;
-            border-radius: 5px;
-            color: white;
-            text-align: center;
-            flex: 1;
+          min-width: calc(50% - 10px); /* Two slots per row on tablets */
         }
-        
-        .green {
-            background-color: #a5d6a7;
-        }
-        
-        .red {
-            background-color: #ef9a9a;
-        }
-        
+
         .date-selection {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin: 20px 0;
+          flex-direction: column;
+          align-items: stretch;
         }
-        
+
         .date-selection select,
         .date-selection button {
-            padding: 5px;
+          flex: 1 1 100%; /* Full width on smaller screens */
+          margin-bottom: 10px;
         }
-        
-        /* Responsive styles for tablets */
-        @media (max-width: 992px) {
-            h2 {
-                font-size: 1.2rem;
-            }
-            
-            .time-slots {
-                flex-wrap: wrap;
-            }
-        
-            .slot {
-                min-width: calc(50% - 10px); /* Two slots per row on tablets */
-            }
-        
-            .date-selection {
-                flex-direction: column;
-                align-items: stretch;
-            }
-        
-            .date-selection select,
-            .date-selection button {
-                flex: 1 1 100%; /* Full width on smaller screens */
-                margin-bottom: 10px;
-            }
+      }
+
+      /* Responsive styles for mobile */
+      @media (max-width: 576px) {
+        .slot {
+          min-width: 100%; /* One slot per row on mobile */
         }
-        
-        /* Responsive styles for mobile */
-        @media (max-width: 576px) {
-            .slot {
-                min-width: 100%; /* One slot per row on mobile */
-            }
-        
-            .date-selection select,
-            .date-selection button {
-                margin-bottom: 10px; /* Ensure space between elements */
-            }
+
+        .date-selection select,
+        .date-selection button {
+          margin-bottom: 10px; /* Ensure space between elements */
         }
+      }
     </style>
-</head>
-<body>
-    <div class="DA">
-        <div class="container">
-          <div class="main-content">
-            <section class="attendance">
-              <h2>Today's Attendance - 26th June 2024</h2>
-              <div class="time-slots">
-                <div class="slot green">2 pm - 5 pm</div>
-                <div class="slot red">12 pm - 2 pm</div>
-                <div class="slot green">8 am - 10 am</div>
-                <div class="slot red">8 am - 10 am</div>
-              </div>
-              <div class="date-selection">
-                <label for="day">Day</label>
-                <select id="day">
-                  <option>Select day</option>
-                </select>
-                <label for="month">Month</label>
-                <select id="month">
-                  <option>Select day</option>
-                </select>
-                <label for="year">Year</label>
-                <select id="year">
-                  <option>Select day</option>
-                </select>
-                <button>Submit</button>
-              </div>
-              <h2>Attendance - 14th May 2024</h2>
-              <div class="time-slots">
-                <div class="slot green">8 am - 10 am</div>
-                <div class="slot red">12 pm - 2 pm</div>
-                <div class="slot green">2 pm - 5 pm</div>
-              </div>
-              <p>Total working hours : 7 hrs 30 mins</p>
-            </section>
-          </div>
+    <link rel="stylesheet" href="../dashboard.css" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script src="../dashboard.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <div class="hdr">
+        <button class="toggle-btn" id="toggle-btn">
+          <span class="fas fa-bars"></span>
+        </button>
+        <div class="profile">
+          <a href="../../profile/profile.html">
+            <img src="" alt="DP" id="profile-pic" />
+          </a>
+          <span id="profile-name">Hi</span>
+        </div>
+        <div class="header-center">
+          <h6 class="navbar-brand">LogXP</h6>
+        </div>
+        <div class="header-right">
+          <a
+            href="../../login/traineelogin.html"
+            class="btn btn-outline-light"
+            type="button"
+            >Logout</a
+          >
         </div>
       </div>
-</body>
+    </header>
+
+    <nav class="sidebar">
+      <div class="contents">
+        <a aria-current="page" href="./daily.html">Daily Attendance</a>
+        <a href="./leavedays.html">Leave Days</a>
+        <a href="./lop.html">LOP</a>
+        <a href="./ranking.html">Ranking</a>
+      </div>
+    </nav>
+    <div class="DA">
+      <div class="container">
+        <div class="main-content">
+          <section class="attendance">
+            <h2>Today's Attendance - 26th June 2024</h2>
+            <div class="time-slots">
+              <div class="slot green">2 pm - 5 pm</div>
+              <div class="slot red">12 pm - 2 pm</div>
+              <div class="slot green">8 am - 10 am</div>
+              <div class="slot red">8 am - 10 am</div>
+            </div>
+            <div class="date-selection">
+              <label for="day">Day</label>
+              <select id="day">
+                <option>Select day</option>
+              </select>
+              <label for="month">Month</label>
+              <select id="month">
+                <option>Select day</option>
+              </select>
+              <label for="year">Year</label>
+              <select id="year">
+                <option>Select day</option>
+              </select>
+              <button>Submit</button>
+            </div>
+            <h2>Attendance - 14th May 2024</h2>
+            <div class="time-slots">
+              <div class="slot green">8 am - 10 am</div>
+              <div class="slot red">12 pm - 2 pm</div>
+              <div class="slot green">2 pm - 5 pm</div>
+            </div>
+            <p>Total working hours : 7 hrs 30 mins</p>
+          </section>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>

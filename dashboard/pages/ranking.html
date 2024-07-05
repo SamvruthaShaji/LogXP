@@ -92,12 +92,62 @@
         }
     </style>
     <link rel="stylesheet" href="ranking.css">
-    <!-- Firebase SDK -->
+</style>
+<link rel="stylesheet" href="../dashboard.css" />
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+<script src="../dashboard.js" defer></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.13.0/firebase-firestore.js"></script>
     <script type="module" src="ranking.js" defer></script>
 </head>
 <body>
+    <header>
+        <div class="hdr">
+          <button class="toggle-btn" id="toggle-btn">
+            <span class="fas fa-bars"></span>
+          </button>
+          <div class="profile">
+            <a href="../../profile/profile.html">
+                <img src="" alt="DP" id="profile-pic" />
+              </a>
+            <span id="profile-name">Hi</span>
+          </div>
+          <div class="header-center">
+            <h6 class="navbar-brand">LogXP</h6>
+          </div>
+          <div class="header-right">
+            <a
+              href="../../login/traineelogin.html"
+              class="btn btn-outline-light"
+              type="button"
+              >Logout</a
+            >
+          </div>
+        </div>
+      </header>
+  
+      <nav class="sidebar">
+        <div class="contents">
+            <div class="contents">
+                <a aria-current="page" href="./daily.html">Daily Attendance</a>
+                <a href="./leavedays.html">Leave Days</a>
+                <a href="./lop.html">LOP</a>
+                <a href="./ranking.html">Ranking</a>
+              </div>
+        </div>
+      </nav>
     <div class="container">
         <h1>Monthly Ranking</h1>
         <div class="filters">
