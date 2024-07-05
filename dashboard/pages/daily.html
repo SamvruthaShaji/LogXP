@@ -5,95 +5,120 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
       .container {
-        display: flex;
-        width: 100%;
-        height: 100%;
-      }
-
-      .main-content {
-        flex: 1;
-        background-color: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
         padding: 20px;
-        margin: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        width: 100%;
       }
 
-      .attendance {
-        margin-top: 20px;
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
       }
 
-      .time-slots {
+      #today-date-container,
+      .date-picker-container {
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .attendance-bar {
         display: flex;
-        gap: 10px;
-        margin: 10px 0;
+        height: 30px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        position: relative;
       }
 
       .slot {
-        padding: 10px;
-        border-radius: 5px;
-        color: white;
-        text-align: center;
-        flex: 1;
-      }
-
-      .green {
-        background-color: #a5d6a7;
-      }
-
-      .red {
-        background-color: #ef9a9a;
-      }
-
-      .date-selection {
         display: flex;
-        gap: 10px;
+        justify-content: center;
         align-items: center;
-        margin: 20px 0;
+        height: 100%;
+        font-size: 14px;
+        font-weight: bold;
+        color: #fff;
+        position: relative;
+        opacity: 0;
+        transform: translateX(-100%);
+        transition: transform 1s, opacity 2s;
       }
 
-      .date-selection select,
-      .date-selection button {
+      .slot.loaded {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .slot.green {
+        background-color: #c8e6c9;
+        color: #388e3c;
+      }
+
+      .slot.red {
+        background-color: #ffcdd2;
+        color: #d32f2f;
+      }
+
+      .slot:hover::after {
+        content: attr(data-time);
+        position: absolute;
+        bottom: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.75);
+        color: #fff;
         padding: 5px;
+        border-radius: 3px;
+        font-size: 12px;
+        white-space: nowrap;
+        z-index: 10;
+        pointer-events: none;
       }
 
-      /* Responsive styles for tablets */
-      @media (max-width: 992px) {
-        h2 {
-          font-size: 1.2rem;
-        }
-
-        .time-slots {
-          flex-wrap: wrap;
-        }
-
-        .slot {
-          min-width: calc(50% - 10px); /* Two slots per row on tablets */
-        }
-
-        .date-selection {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        .date-selection select,
-        .date-selection button {
-          flex: 1 1 100%; /* Full width on smaller screens */
-          margin-bottom: 10px;
-        }
+      .date-picker-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
 
-      /* Responsive styles for mobile */
-      @media (max-width: 576px) {
-        .slot {
-          min-width: 100%; /* One slot per row on mobile */
-        }
+      .date-picker-container label,
+      .date-picker-container input,
+      .date-picker-container button {
+        margin: 0 10px;
+      }
 
-        .date-selection select,
-        .date-selection button {
-          margin-bottom: 10px; /* Ensure space between elements */
-        }
+      .date-picker-container button {
+        background-color: #000;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .date-picker-container button:hover {
+        background-color: #333;
+      }
+
+      #total-hours {
+        text-align: center;
+        font-weight: bold;
       }
     </style>
     <link rel="stylesheet" href="../dashboard.css" />
@@ -111,6 +136,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
     <script src="../dashboard.js" defer></script>
+    <script src="daily.js" type="module" defer></script>
   </head>
   <body>
     <header>
@@ -148,38 +174,22 @@
     </nav>
     <div class="DA">
       <div class="container">
-        <div class="main-content">
-          <section class="attendance">
-            <h2>Today's Attendance - 26th June 2024</h2>
-            <div class="time-slots">
-              <div class="slot green">2 pm - 5 pm</div>
-              <div class="slot red">12 pm - 2 pm</div>
-              <div class="slot green">8 am - 10 am</div>
-              <div class="slot red">8 am - 10 am</div>
-            </div>
-            <div class="date-selection">
-              <label for="day">Day</label>
-              <select id="day">
-                <option>Select day</option>
-              </select>
-              <label for="month">Month</label>
-              <select id="month">
-                <option>Select day</option>
-              </select>
-              <label for="year">Year</label>
-              <select id="year">
-                <option>Select day</option>
-              </select>
-              <button>Submit</button>
-            </div>
-            <h2>Attendance - 14th May 2024</h2>
-            <div class="time-slots">
-              <div class="slot green">8 am - 10 am</div>
-              <div class="slot red">12 pm - 2 pm</div>
-              <div class="slot green">2 pm - 5 pm</div>
-            </div>
-            <p>Total working hours : 7 hrs 30 mins</p>
-          </section>
+        <h1>Daily Attendance Tracker</h1>
+        <div id="today-date-container">
+          <p>Today's Date: <span id="today-date"></span></p>
+          <div class="attendance-bar" id="attendance-today"></div>
+        </div>
+        <div class="date-picker-container">
+          <label for="date-picker">Select Date:</label>
+          <input type="date" id="date-picker" />
+          <button id="submit-button">Submit</button>
+        </div>
+        <div id="attendance-specific-date" style="display: none">
+          <h2>Attendance - <span id="selected-date"></span></h2>
+          <div class="attendance-bar" id="attendance-details"></div>
+          <p id="total-hours"></p>
+          <p id="first-login-time"></p>
+          <p id="last-logout-time"></p>
         </div>
       </div>
     </div>
