@@ -4,110 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monthly Ranking</title>
-    <style>
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(243, 3, 3, 0.1);
-        }
-        
-        h1 {
-            text-align: center;
-        }
-        
-        .filters {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        
-        .filters select {
-            margin: 0 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        
-        .filters select option:hover {
-            background-color: #EA454C;
-            color: #fff;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        table, th, td {
-            border: 1px solid #000; /* Black borders for the table */
-        }
-        
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        
-        th {
-            background-color: #ba0c0c;
-            color: white;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                width: 95%;
-                padding: 10px;
-            }
-        
-            .filters {
-                flex-direction: column;
-                align-items: center;
-            }
-        
-            .filters select {
-                margin: 10px 0;
-            }
-        
-            table, th, td {
-                font-size: 14px;
-                padding: 8px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 24px;
-            }
-        
-            table, th, td {
-                font-size: 12px;
-                padding: 6px;
-            }
-        }
-    </style>
     <link rel="stylesheet" href="ranking.css">
-</style>
-<link rel="stylesheet" href="../dashboard.css" />
-<link
-  rel="stylesheet"
-  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-/>
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-/>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
-<script src="../dashboard.js" defer></script>
+    <link rel="stylesheet" href="../../dashboard.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script src="../../dashboard.js" defer></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.13.0/firebase-firestore.js"></script>
     <script type="module" src="ranking.js" defer></script>
@@ -119,7 +25,7 @@
             <span class="fas fa-bars"></span>
           </button>
           <div class="profile">
-            <a href="../../profile/profile.html">
+            <a href="../../../profile/profile.html">
                 <img src="" alt="DP" id="profile-pic" />
               </a>
             <span id="profile-name">Hi</span>
@@ -129,7 +35,7 @@
           </div>
           <div class="header-right">
             <a
-              href="../../login/traineelogin.html"
+              href="../../../login/traineelogin.html"
               class="btn btn-outline-light"
               type="button"
               >Logout</a
@@ -141,9 +47,9 @@
       <nav class="sidebar">
         <div class="contents">
             <div class="contents">
-                <a aria-current="page" href="./daily.html">Daily Attendance</a>
-                <a href="./leavedays.html">Leave Days</a>
-                <a href="./lop.html">LOP</a>
+                <a aria-current="page" href="../dailyattendance/daily.html">Daily Attendance</a>
+                <a href="../leavedays/leavedays.html">Leave Days</a>
+                <a href="../lop/lop.html">LOP</a>
                 <a href="./ranking.html">Ranking</a>
               </div>
         </div>
