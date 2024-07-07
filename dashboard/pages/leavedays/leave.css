@@ -1,26 +1,19 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f5f5f5;
-}
-
 .container {
   display: flex;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   overflow: hidden;
+  width: 100%;
+  height: 100%;
 }
 
 .sid {
   padding: 20px;
   background-color: #f9f9f9;
   border-right: 1px solid #ddd;
+  width: 30%;
+  box-sizing: border-box;
 }
 
 .sid h2 {
@@ -55,6 +48,8 @@ body {
 
 .calendar {
   padding: 20px;
+  width: 70%;
+  box-sizing: border-box;
 }
 
 .calendar h2 {
@@ -68,7 +63,8 @@ body {
   border-collapse: collapse;
 }
 
-.calendar th, .calendar td {
+.calendar th,
+.calendar td {
   width: 14.28%;
   padding: 10px;
   text-align: center;
@@ -76,7 +72,6 @@ body {
   font-size: 14px;
   background-color: #f9f9f9;
 }
-
 
 .calendar .working-day {
   background-color: #e0f7e0;
@@ -92,7 +87,7 @@ body {
 
 .legend-container {
   display: flex;
-  gap: 20px; /* Space between legend items */
+  gap: 20px;
   background-color: white;
   padding: 10px;
   border-radius: 5px;
@@ -112,21 +107,17 @@ body {
   height: 20px;
   margin-right: 5px;
   border: 1px solid #ddd;
-  border-radius: 3px; /* Slight rounding for better aesthetics */
+  border-radius: 3px;
 }
 
 .legend-box.working-day {
-  background-color: #e0f7e0; /* Light green */
+  background-color: #e0f7e0;
 }
 
 .legend-box.partial-leave {
-  background-color: #ffffe0; /* Light yellow */
+  background-color: #ffffe0;
 }
 
 .legend-box.full-leave {
-  background-color: #ffe0e0; /* Light red */
-}
-
-.calendar .sunday {
-  background-color: #ffffff;
+  background-color: #ffe0e0;
 }
