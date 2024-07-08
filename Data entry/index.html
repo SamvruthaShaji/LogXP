@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LogXP Data Generator</title>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script>
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDbS26iUhURdNCJQWvZSfLQW5XX6qVfj1w",
+        authDomain: "logxp-f9b12.firebaseapp.com",
+        projectId: "logxp-f9b12",
+        storageBucket: "logxp-f9b12.appspot.com",
+        messagingSenderId: "458817835971",
+        appId: "1:458817835971:web:7ed4a7577d655796cf2376",
+        measurementId: "G-J87HRDQ3F3",
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+
+      function calculateTotalPoints() {
+        const currentYear = new Date().getFullYear();
+
+        db.collection("employee_details")
+          .get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              const empId = doc.data().emp_id;
+
+              db.collection("attendance_register")
+                .where("emp_id", "==", empId)
+                .where("year", "==", currentYear)
+                .get()
+                .then((attendanceSnapshot) => {
+                  const monthlyPoints = {};
+
+                  attendanceSnapshot.forEach((attendanceDoc) => {
+                    const attendanceMonth = attendanceDoc.data().month;
+                    const attendanceStatus =
+                      attendanceDoc.data().attendance_status;
+
+                    if (!monthlyPoints[attendanceMonth]) {
+                      monthlyPoints[attendanceMonth] = 0;
+                    }
+
+                    if (attendanceStatus === "p") {
+                      monthlyPoints[attendanceMonth] += 1;
+                    } else if (attendanceStatus === "h") {
+                      monthlyPoints[attendanceMonth] += 0.5;
+                    }
+                  });
+
+                  const updatePromises = Object.keys(monthlyPoints).map(
+                    (month) => {
+                      const totalPoints = monthlyPoints[month];
+
+                      return db
+                        .collection("attendance_ranking")
+                        .where("emp_id", "==", empId)
+                        .where("month", "==", month)
+                        .where("year", "==", currentYear)
+                        .get()
+                        .then((rankingSnapshot) => {
+                          if (rankingSnapshot.empty) {
+                            return db.collection("attendance_ranking").add({
+                              emp_id: empId,
+                              emp_name: doc.data().emp_name,
+                              month: month,
+                              total_points: totalPoints,
+                              year: currentYear,
+                            });
+                          } else {
+                            const updatePromises = rankingSnapshot.docs.map(
+                              (rankingDoc) => {
+                                return db
+                                  .collection("attendance_ranking")
+                                  .doc(rankingDoc.id)
+                                  .update({
+                                    total_points: totalPoints,
+                                  });
+                              }
+                            );
+                            return Promise.all(updatePromises);
+                          }
+                        });
+                    }
+                  );
+
+                  return Promise.all(updatePromises);
+                })
+                .catch((error) => {
+                  console.error("Error fetching attendance data: ", error);
+                });
+            });
+
+            alert("Total Points calculated and updated for all months!");
+          })
+          .catch((error) => {
+            console.error("Error calculating total points: ", error);
+          });
+      }
+
+      function generateRandomEmployee() {
+        const empNames = [
+          "John Doe",
+          "Jane Smith",
+          "Sanjay Nair",
+          "Rithika Joffi",
+          "Sam Wilson",
+          "Emily Davis",
+          "Michael Brown",
+          "Sarah Connor",
+          "Robert Lang",
+          "Jessica Lee",
+        ];
+        const empName = empNames[Math.floor(Math.random() * empNames.length)];
+        const empId = `emp${Math.floor(Math.random() * 900 + 100)}`;
+        const profilePic =
+          "https://th.bing.com/th/id/OIP.tLotgCDtzgTdwJcTiXWRCwHaEK?rs=1&pid=ImgDetMain";
+        const joiningDate = new Date();
+
+        db.collection("employee_details").add({
+          Batch: "ILPBatch 4",
+          email: `${empName.replace(" ", "").toLowerCase()}@example.com`,
+          emp_id: empId,
+          emp_name: empName,
+          joining_date: firebase.firestore.Timestamp.fromDate(joiningDate),
+          profile_pic: profilePic,
+        });
+      }
+
+      function generateMultipleEmployees() {
+        for (let i = 0; i < 10; i++) {
+          generateRandomEmployee();
+        }
+        alert("10 Random Employees generated successfully!");
+      }
+
+      function clearAllData() {
+        const collections = [
+          "attendance_ranking",
+          "attendance_register",
+          "employee_details",
+          "in_out_details",
+          "leave_details",
+        ];
+        const batch = db.batch();
+
+        collections.forEach((collection) => {
+          db.collection(collection)
+            .get()
+            .then((querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                batch.delete(doc.ref);
+              });
+            })
+            .catch((error) => {
+              console.error(
+                `Error deleting documents from collection ${collection}: `,
+                error
+              );
+            });
+        });
+
+        // Commit the batch
+        batch
+          .commit()
+          .then(() => {
+            alert("All data cleared successfully!");
+          })
+          .catch((error) => {
+            console.error("Error committing batch delete: ", error);
+          });
+      }
+
+      function addMonthFieldToAttendanceRegister() {
+        db.collection("attendance_register")
+          .get()
+          .then((querySnapshot) => {
+            const updatePromises = [];
+            querySnapshot.forEach((doc) => {
+              const attendanceDate = doc.data().date.toDate();
+              const month = attendanceDate.toLocaleString("en-US", {
+                month: "long",
+              });
+
+              updatePromises.push(
+                db.collection("attendance_register").doc(doc.id).update({
+                  month: month,
+                })
+              );
+            });
+
+            return Promise.all(updatePromises);
+          })
+          .then(() => {
+            alert("Month field added to all attendance records!");
+          })
+          .catch((error) => {
+            console.error("Error adding month field: ", error);
+          });
+      }
+    </script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      input,
+      button {
+        margin: 10px;
+        padding: 10px;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>LogXP Data Generator</h1>
+    <button onclick="generateMultipleEmployees()">
+      Generate 10 Random Employees
+    </button>
+    <button onclick="clearAllData()">Clear All Data</button>
+    <button onclick="calculateTotalPoints()">
+      Calculate Total Points for Current Month
+    </button>
+    <button onclick="addMonthFieldToAttendanceRegister()">
+      Add Month Field to Attendance Register
+    </button>
+  </body>
+</html>
