@@ -1,8 +1,9 @@
 body {
-  display: flex;
-  flex-direction: column;
   margin: 0;
   font-family: Arial, sans-serif;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
 }
 
 header {
@@ -13,18 +14,18 @@ header {
   z-index: 1001;
   position: fixed;
   top: 0;
+  left: 0;
 }
 
 .hdr {
   display: flex;
   align-items: center;
-  flex-direction: row;
   justify-content: space-between;
 }
 
 .profile {
   display: flex;
-  flex-direction: row;
+  align-items: center;
 }
 
 .profile img {
@@ -32,10 +33,6 @@ header {
   width: 40px;
   height: 40px;
   margin-right: 10px;
-}
-
-.profile span {
-  margin-right: 20px;
 }
 
 .navbar-brand {
@@ -55,13 +52,11 @@ header {
   width: 250px;
   position: fixed;
   left: 0;
+  top: 0;
   background-color: #ea454c;
-  padding-top: 20px;
-  z-index: 1000;
-}
-
-.contents {
   padding-top: 60px;
+  z-index: 1000;
+  overflow-y: auto;
 }
 
 .sidebar a {
@@ -78,12 +73,6 @@ header {
   text-decoration: none;
 }
 
-.content {
-  margin-left: 250px;
-  margin-top: 60px;
-  padding: 20px;
-}
-
 .toggle-btn {
   background-color: transparent;
   border: none;
@@ -91,10 +80,6 @@ header {
   font-size: 1rem;
   cursor: pointer;
   display: none;
-}
-
-.sidebar.show {
-  display: block;
 }
 
 @media (max-width: 768px) {
@@ -106,7 +91,8 @@ header {
   }
   .sidebar.show {
     display: block;
-    background-color: transparent;
+    /* background-color: transparent; */
+    height:250px;
   }
   .sidebar a {
     padding: 10px;
@@ -139,4 +125,26 @@ header {
   .header-right button {
     font-size: 12px;
   }
+  .LD{
+    margin-left: 0px !important;
+    width:100% !important;
+  }
+}
+@media (max-width: 500px){
+  .LD{
+    margin-top:80px !important;
+    margin-left: 0px !important;
+    width:100% !important;
+  }
+}
+
+.LD {
+  margin-top: 60px;
+  margin-left: 250px;
+  padding: 9px 0px 1px 1px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  background-color: #f5f5f5;
+  box-sizing: border-box;
+  width: calc(100% - 250px);
 }
