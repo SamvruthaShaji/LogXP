@@ -1,12 +1,13 @@
 // dashboard.js
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDbS26iUhURdNCJQWvZSfLQW5XX6qVfj1w",
-  authDomain: "logxp-f9b12.firebaseapp.com",
-  projectId: "logxp-f9b12",
-  storageBucket: "logxp-f9b12.appspot.com",
-  messagingSenderId: "458817835971",
-  appId: "1:458817835971:web:7ed4a7577d655796cf2376",
-  measurementId: "G-J87HRDQ3F3",
+  apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
+  authDomain: "logxp-31c62.firebaseapp.com",
+  projectId: "logxp-31c62",
+  storageBucket: "logxp-31c62.appspot.com",
+  messagingSenderId: "17276012238",
+  appId: "1:17276012238:web:464030eb3b2062bb55729f",
+  measurementId: "G-FVZH4VFV6T",
 };
 
 firebase.initializeApp(firebaseConfig);
