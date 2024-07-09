@@ -1,13 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  query,
-  where,
-  getDocs,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
   authDomain: "logxp-31c62.firebaseapp.com",
@@ -18,189 +9,165 @@ const firebaseConfig = {
   measurementId: "G-FVZH4VFV6T",
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// Firestore reference
+const db = firebase.firestore();
 
-document.addEventListener("DOMContentLoaded", function () {
-  const monthSelect = document.getElementById("month");
-  const yearSelect = document.getElementById("year");
-  const calendarTitle = document.getElementById("calendar-title");
-  const calendarBody = document.querySelector(".calendar tbody");
+// DOM elements
+const monthSelect = document.getElementById("month");
+const yearSelect = document.getElementById("year");
+const calendarTitle = document.getElementById("calendar-title");
+const totalWorkingDays = document.getElementById("total-working-days");
+const totalPresentDays = document.getElementById("total-present-days");
+const totalFullLeaves = document.getElementById("total-full-leaves");
+const totalHalfLeaves = document.getElementById("total-half-leaves");
+const calendarBody = document.querySelector(".calendar tbody");
 
-  const totalWorkingDaysElement = document.getElementById("total-working-days");
-  const totalFullLeavesElement = document.getElementById("total-full-leaves");
-  const totalHalfLeavesElement = document.getElementById("total-half-leaves");
-
+// Populate options for month and year dropdowns
+function populateDropdowns() {
   const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December"
   ];
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth() + 1; // Current month (1-12)
-  const currentYear = currentDate.getFullYear();
+  const currentYear = new Date().getFullYear();
 
-  // Populate month dropdown options up to the current month
+  // Populate months
   months.forEach((month, index) => {
-    if (index + 1 <= currentMonth) {
-      const option = document.createElement("option");
-      option.text = month;
-      option.value = index + 1; // Store month as a number (1-12)
-      monthSelect.add(option);
-    }
+    const option = document.createElement("option");
+    option.value = index + 1;
+    option.textContent = month;
+    monthSelect.appendChild(option);
   });
 
-  // Populate year dropdown options up to the current year
-  for (let year = currentYear - 4; year <= currentYear; year++) {
+  // Populate years from 2000 to current year
+  for (let year = 2000; year <= currentYear; year++) {
     const option = document.createElement("option");
-    option.text = year;
     option.value = year;
-    yearSelect.add(option);
+    option.textContent = year;
+    yearSelect.appendChild(option);
   }
 
-  // Event listeners for month and year dropdowns
-  monthSelect.addEventListener("change", updateCalendar);
-  yearSelect.addEventListener("change", updateCalendar);
+  // Set current month and year as selected
+  monthSelect.value = new Date().getMonth() + 1;
+  yearSelect.value = new Date().getFullYear();
+}
 
-  // Function to update calendar display when month or year changes
-  async function updateCalendar() {
-    const month = monthSelect.value;
-    const year = yearSelect.value;
-    if (month && year) {
-      calendarTitle.textContent = `${months[month - 1]} ${year}`;
-      const leaveData = await fetchLeaveDetails(month, year);
-      updateCalendarDisplay(leaveData, month, year);
+// Calculate total working days excluding weekends
+function calculateTotalWorkingDays(month, year) {
+  const daysInMonth = new Date(year, month, 0).getDate();
+  let workingDays = 0;
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(year, month - 1, day);
+    const dayOfWeek = date.getDay();
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+      workingDays++;
     }
   }
 
-  // Function to fetch leave details for the selected month and year from Firestore
-  async function fetchLeaveDetails(month, year) {
-    const leaveDetailsRef = collection(db, "leave_details");
-    const startDate = new Date(year, month - 1, 1);
-    const endDate = new Date(year, month, 0);
+  return workingDays;
+}
 
-    // Query to fetch leave details within the specified month and year
-    const q = query(
-      leaveDetailsRef,
-      where("leave_date", ">=", startDate),
-      where("leave_date", "<=", endDate),
-      where("emp_id", "==", "emp106") // Replace with your employee ID variable or input
-    );
+// Generate calendar for a given month and year
+function generateCalendar(month, year) {
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const firstDay = new Date(year, month - 1, 1).getDay(); // 0 (Sunday) to 6 (Saturday)
+  
+  calendarTitle.textContent = `${monthSelect.options[month - 1].textContent} ${year}`;
+  calendarBody.innerHTML = "";
 
-    const querySnapshot = await getDocs(q);
+  let date = 1;
+  for (let i = 0; i < 6; i++) {
+    const row = document.createElement("tr");
 
-    const leaveData = [];
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      let remark = data.remark;
-
-      // Map "leave" and "LOP" to "full-leave", "half-leave" and "Half_LOP" to "partial-leave"
-      if (remark === "leave" || remark === "LOP") {
-        remark = "full-leave";
-      } else if (remark === "half-leave" || remark === "Half_LOP") {
-        remark = "partial-leave";
-      }
-
-      leaveData.push({
-        leave_date: data.leave_date,
-        remark: remark,
-      });
-    });
-
-    return leaveData;
-  }
-
-  function updateCalendarDisplay(leaveData, month, year) {
-    calendarBody.innerHTML = "";
-
-    // Adjust first day to start from Monday
-    let firstDay = new Date(year, month - 1, 1).getDay();
-    firstDay = (firstDay + 6) % 7; // Make Monday the first day of the week
-
-    const daysInMonth = new Date(year, month, 0).getDate();
-    let date = 1;
-
-    // Create initial row with empty cells for days before the first of the month
-    let row = document.createElement("tr");
-    for (let i = 0; i < firstDay; i++) {
-      const cell = document.createElement("td");
-      cell.classList.add("empty");
-      row.appendChild(cell);
-    }
-
-    // Add remaining days of the month
-    while (date <= daysInMonth) {
-      let dayOfWeek = (firstDay + date - 1) % 7;
-      if (dayOfWeek === 0) {
-        row = document.createElement("tr"); // Start a new row for each new week
-      }
-
-      const cell = document.createElement("td");
-      cell.textContent = date;
-
-      // Determine class based on leave information
-      const leaveInfo = leaveData.find((leave) => {
-        const leaveDate = new Date(leave.leave_date.toDate());
-        return leaveDate.getDate() === date;
-      });
-
-      if (dayOfWeek === 6) {
-        // Sunday
-        cell.classList.add("sunday");
-      } else if (leaveInfo) {
-        if (leaveInfo.remark === "partial-leave") {
-          cell.classList.add("partial-leave");
-        } else {
-          // Assuming both partial-leave and absent are treated the same way
-          cell.classList.add("full-leave");
-        }
-      } else if (
-        year == currentYear &&
-        month == currentMonth &&
-        date > currentDate.getDate()
-      ) {
-        cell.classList.add("sunday"); // Future dates in the current month
+    for (let j = 0; j < 7; j++) {
+      if (i === 0 && j < firstDay) {
+        const cell = document.createElement("td");
+        row.appendChild(cell);
+      } else if (date > daysInMonth) {
+        break;
       } else {
-        cell.classList.add("working-day");
-      }
-
-      row.appendChild(cell);
-
-      // Move to the next day
-      date++;
-
-      // Append the row when we reach the end of the week or month
-      if (dayOfWeek === 6 || date > daysInMonth) {
-        calendarBody.appendChild(row);
+        const cell = document.createElement("td");
+        cell.textContent = date;
+        row.appendChild(cell);
+        date++;
       }
     }
 
-    // Update summary section
-    const totalWorkingDays = daysInMonth - leaveData.length;
-    const totalFullLeaves = leaveData.filter(
-      (leave) => leave.remark === "full-leave"
-    ).length;
-    const totalHalfLeaves = leaveData.filter(
-      (leave) => leave.remark === "partial-leave"
-    ).length;
-
-    totalWorkingDaysElement.textContent = totalWorkingDays;
-    totalFullLeavesElement.textContent = totalFullLeaves;
-    totalHalfLeavesElement.textContent = totalHalfLeaves;
+    calendarBody.appendChild(row);
   }
+}
 
-  // Initial calendar update with current month and year
-  monthSelect.value = currentMonth;
-  yearSelect.value = currentYear;
-  updateCalendar();
+// Fetch attendance data and update calendar and summary
+function fetchAttendanceData(month, year) {
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 0, 23, 59, 59);
+
+  // Clear previous data
+  totalWorkingDays.textContent = calculateTotalWorkingDays(month, year);
+  totalPresentDays.textContent = "0";
+  totalFullLeaves.textContent = "0";
+  totalHalfLeaves.textContent = "0";
+
+  // Fetch data from Firestore
+  db.collection("attendance_register")
+    .where("date", ">=", startDate)
+    .where("date", "<=", endDate)
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const day = data.date.toDate().getDate();
+        const status = data.attendance_status;
+
+        // Update calendar day color based on status
+        const cells = calendarBody.querySelectorAll("td");
+        cells.forEach((cell) => {
+          if (parseInt(cell.textContent) === day) {
+            if (status === 'p') {
+              cell.classList.add("working-day");
+            } else if (status === 'h') {
+              cell.classList.add("partial-leave");
+            } else if (status === 'a') {
+              cell.classList.add("full-leave");
+            }
+          }
+        });
+
+        // Update summary counts
+        if (status === 'p') {
+          totalPresentDays.textContent = String(parseInt(totalPresentDays.textContent) + 1);
+        } else if (status === 'h') {
+          totalHalfLeaves.textContent = String(parseInt(totalHalfLeaves.textContent) + 1);
+        } else if (status === 'a') {
+          totalFullLeaves.textContent = String(parseInt(totalFullLeaves.textContent) + 1);
+        }
+      });
+    })
+    .catch((error) => {
+      console.error("Error fetching attendance data: ", error);
+    });
+}
+
+// Event listeners
+monthSelect.addEventListener("change", () => {
+  const selectedMonth = parseInt(monthSelect.value);
+  const selectedYear = parseInt(yearSelect.value);
+  generateCalendar(selectedMonth, selectedYear);
+  fetchAttendanceData(selectedMonth, selectedYear);
+});
+
+yearSelect.addEventListener("change", () => {
+  const selectedMonth = parseInt(monthSelect.value);
+  const selectedYear = parseInt(yearSelect.value);
+  generateCalendar(selectedMonth, selectedYear);
+  fetchAttendanceData(selectedMonth, selectedYear);
+});
+
+// Initialize dropdowns and calendar on page load
+document.addEventListener("DOMContentLoaded", () => {
+  populateDropdowns();
+  const currentMonth = new Date().getMonth() + 1;
+  const currentYear = new Date().getFullYear();
+  generateCalendar(currentMonth, currentYear);
+  fetchAttendanceData(currentMonth, currentYear);
 });

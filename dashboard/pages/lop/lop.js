@@ -1,13 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  query,
-  where,
-  getDocs,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
   authDomain: "logxp-31c62.firebaseapp.com",
@@ -15,140 +6,131 @@ const firebaseConfig = {
   storageBucket: "logxp-31c62.appspot.com",
   messagingSenderId: "17276012238",
   appId: "1:17276012238:web:464030eb3b2062bb55729f",
-  measurementId: "G-FVZH4VFV6T"
+  measurementId: "G-FVZH4VFV6T",
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// Check if Firebase has already been initialized
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+} else {
+  firebase.app(); // if already initialized, use that one
+}
 
-document.addEventListener("DOMContentLoaded", () => {
-  const monthSelect = document.getElementById("lop-month");
-  const yearSelect = document.getElementById("lop-year");
-  const calendarTitle = document.getElementById("lop-calendar-title");
-  const calendarBody = document.querySelector("#lop-calendar tbody");
-  const totalPaidDaysElem = document.querySelector(
-    ".lop-summary p:nth-child(1)"
-  );
-  const fullLopDaysElem = document.querySelector(".lop-summary p:nth-child(2)");
-  const halfLopDaysElem = document.querySelector(".lop-summary p:nth-child(3)");
+const db = firebase.firestore();
 
-  monthSelect.addEventListener("change", updateCalendar);
-  yearSelect.addEventListener("change", updateCalendar);
+document.addEventListener('DOMContentLoaded', () => {
+  const monthDropdown = document.getElementById('lop-month');
+  const yearDropdown = document.getElementById('lop-year');
+  const currentYear = new Date().getFullYear();
 
-  async function updateCalendar() {
-    const month = parseInt(monthSelect.value);
-    const year = parseInt(yearSelect.value);
-
-    calendarTitle.textContent = `${monthSelect.options[month].text} ${year}`;
-    await generateCalendar(month, year);
-    updateSummary();
+  // Add month options
+  for (let i = 0; i < 12; i++) {
+    const option = document.createElement('option');
+    option.value = i;
+    option.textContent = new Date(0, i).toLocaleString('default', { month: 'long' });
+    monthDropdown.appendChild(option);
   }
 
-  async function generateCalendar(month, year) {
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const startDay = new Date(year, month, 1).getDay();
-
-    let day = 1;
-    let html = "";
-
-    // Fetch leave details from Firebase
-    const leaves = await getLeaveDetails(year, month);
-    console.log("Leaves fetched from Firestore:", leaves);
-
-    for (let i = 0; i < 6; i++) {
-      let row = "<tr>";
-
-      for (let j = 0; j < 7; j++) {
-        if (i === 0 && j < (startDay === 0 ? 6 : startDay - 1)) {
-          row += "<td></td>";
-        } else if (day > daysInMonth) {
-          break;
-        } else {
-          const classes = [];
-          if (j === 6) classes.push("lop-sunday");
-
-          const leaveDetail = leaves.find((leave) => leave.day === day);
-          if (leaveDetail) {
-            console.log(`Processing day ${day}:`, leaveDetail);
-            if (leaveDetail.remark === "Half_LOP") {
-              console.log(`Adding 'lop-half-lop' class to day ${day}`);
-              classes.push("lop-half-lop");
-            }
-            if (leaveDetail.remark === "LOP") {
-              console.log(`Adding 'lop-full-lop' class to day ${day}`);
-              classes.push("lop-full-lop");
-            }
-          }
-
-          row += `<td class="${classes.join(" ")}">${day}</td>`;
-          day++;
-        }
-      }
-
-      row += "</tr>";
-      html += row;
-
-      if (day > daysInMonth) break;
-    }
-
-    calendarBody.innerHTML = html;
-    updateSummary();
+  // Add year options
+  for (let i = 2000; i <= currentYear; i++) {
+    const option = document.createElement('option');
+    option.value = i;
+    option.textContent = i;
+    yearDropdown.appendChild(option);
   }
 
-  function updateSummary() {
-    const cells = document.querySelectorAll("#lop-calendar tbody td");
-    let totalDays = 0;
-    let fullLopDays = 0;
-    let halfLopDays = 0;
+  // Set default values
+  monthDropdown.value = new Date().getMonth();
+  yearDropdown.value = new Date().getFullYear();
 
-    cells.forEach((cell) => {
-      if (cell.textContent !== "") {
-        totalDays++;
-      }
-      if (cell.classList.contains("lop-full-lop")) {
-        fullLopDays++;
-      }
-      if (cell.classList.contains("lop-half-lop")) {
-        halfLopDays++;
-      }
-    });
+  updateLopData();
 
-    totalPaidDaysElem.textContent = `Total Paid Days: ${totalDays}`;
-    fullLopDaysElem.textContent = `Full LOP Days: ${fullLopDays}`;
-    halfLopDaysElem.textContent = `Half LOP Days: ${halfLopDays}`;
-  }
-
-  async function getLeaveDetails(year, month) {
-    const leaveDetails = [];
-    const start = new Date(year, month, 1);
-    const end = new Date(year, month + 1, 0);
-
-    const q = query(
-      collection(db, "leave_details"),
-      where("leave_date", ">=", start),
-      where("leave_date", "<=", end),
-      where("emp_id", "==", "emp105") // Filter by emp_id
-    );
-
-    const querySnapshot = await getDocs(q);
-
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      const date = data.leave_date.toDate();
-      console.log("Fetched document:", data);
-      leaveDetails.push({
-        day: date.getDate(),
-        remark: data.remark,
-      });
-    });
-
-    return leaveDetails;
-  }
-
-  // Initialize the calendar with the current month and year
-  const now = new Date();
-  monthSelect.value = now.getMonth();
-  yearSelect.value = now.getFullYear();
-  updateCalendar();
+  monthDropdown.addEventListener('change', updateLopData);
+  yearDropdown.addEventListener('change', updateLopData);
 });
+
+function generateCalendar(year, month) {
+  const calendarBody = document.querySelector('#lop-calendar tbody');
+  calendarBody.innerHTML = '';
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const rows = Math.ceil((daysInMonth + firstDay) / 7);
+
+  let day = 1;
+
+  for (let i = 0; i < rows; i++) {
+    const row = document.createElement('tr');
+    for (let j = 0; j < 7; j++) {
+      const cell = document.createElement('td');
+      if ((i === 0 && j < firstDay) || day > daysInMonth) {
+        row.appendChild(cell);
+      } else {
+        cell.textContent = day;
+        cell.classList.add('day-cell');
+        cell.dataset.date = `${year}-${month + 1}-${day}`;
+        row.appendChild(cell);
+        day++;
+      }
+    }
+    calendarBody.appendChild(row);
+  }
+}
+
+function updateLopData() {
+  const monthDropdown = document.getElementById('lop-month');
+  const yearDropdown = document.getElementById('lop-year');
+  const year = yearDropdown.value;
+  const month = monthDropdown.value;
+
+  document.getElementById('lop-calendar-title').textContent = `${monthDropdown.options[month].text} ${year}`;
+
+  generateCalendar(Number(year), Number(month));
+
+  const firstDayOfMonth = new Date(year, month, 1);
+  const lastDayOfMonth = new Date(year, month + 1, 0);
+
+  let totalPaidDays = 0;
+  let fullLopDays = 0;
+  let halfLopDays = 0;
+
+  // Calculate total paid days excluding weekends
+  for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
+    const currentDate = new Date(year, month, day);
+    const dayOfWeek = currentDate.getDay();
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+      totalPaidDays++;
+    }
+  }
+
+  db.collection('leave_details')
+    .where('leave_date', '>=', firstDayOfMonth)
+    .where('leave_date', '<=', lastDayOfMonth)
+    .get()
+    .then(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        const leaveDate = data.leave_date.toDate();
+        const dateCell = document.querySelector(`.day-cell[data-date="${leaveDate.getFullYear()}-${leaveDate.getMonth() + 1}-${leaveDate.getDate()}"]`);
+
+        if (dateCell) {
+          if (data.remark === 'LOP') {
+            dateCell.classList.add('lop-full-lop');
+            fullLopDays++;
+            totalPaidDays--; // Decrement for LOP
+          } else if (data.remark === 'Half_LOP') {
+            dateCell.classList.add('lop-half-lop');
+            halfLopDays++;
+            totalPaidDays -= 0.5; // Decrement for Half LOP
+          }
+        }
+      });
+
+      document.getElementById('total-paid-days').textContent = `Total Paid Days: ${totalPaidDays}`;
+      document.getElementById('full-lop-days').textContent = `Full LOP Days: ${fullLopDays}`;
+      document.getElementById('half-lop-days').textContent = `Half LOP Days: ${halfLopDays}`;
+    })
+    .catch(error => {
+      console.error('Error fetching LOP data:', error);
+    });
+}

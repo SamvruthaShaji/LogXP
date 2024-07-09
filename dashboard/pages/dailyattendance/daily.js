@@ -15,17 +15,17 @@ function formatDate(date) {
 const today = new Date();
 document.getElementById("today-date").innerText = formatDate(today);
 
-// Fetch and display attendance for today
+// Fetch and display attendance for a specific date
 function fetchAttendance(date) {
   const formattedDate = formatDate(date);
-  const attendanceBar = document.getElementById("attendance-today");
-  const attendanceDetails = document.getElementById("attendance-details");
+  const attendanceBarToday = document.getElementById("attendance-today");
+  const attendanceBarSpecific = document.getElementById("attendance-details");
   const totalHours = document.getElementById("total-hours");
   const firstLoginTime = document.getElementById("first-login-time");
   const lastLogoutTime = document.getElementById("last-logout-time");
 
-  attendanceBar.innerHTML = ""; // Clear previous data
-  attendanceDetails.innerHTML = ""; // Clear previous data
+  attendanceBarToday.innerHTML = ""; // Clear previous data
+  attendanceBarSpecific.innerHTML = ""; // Clear previous data
   totalHours.innerText = "";
   firstLoginTime.innerText = "";
   lastLogoutTime.innerText = "";
@@ -38,32 +38,39 @@ function fetchAttendance(date) {
     .then((querySnapshot) => {
       let firstLogin = null;
       let lastLogout = null;
+      let lastStatus = null;
+      let lastTimestamp = null;
+      
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         const status = data.status === 1 ? "green" : "red";
         const timestamp = data.timestamp.toDate();
         
-        // Update today's attendance bar
-        const barItem = document.createElement("div");
-        barItem.className = `attendance-bar-item ${status}`;
-        barItem.innerText = timestamp.toLocaleTimeString();
-        attendanceBar.appendChild(barItem);
-
-        // Update specific date attendance bar if viewing past data
-        if (attendanceDetails) {
-          const detailItem = document.createElement("div");
-          detailItem.className = `attendance-bar-item ${status}`;
-          detailItem.innerText = timestamp.toLocaleTimeString();
-          attendanceDetails.appendChild(detailItem);
-        }
-
-        // Track first login and last logout times
+        // Track first login and last logout times for the day
         if (data.status === 1 && !firstLogin) {
           firstLogin = timestamp;
         }
         if (data.status === 2) {
           lastLogout = timestamp;
         }
+
+        // Calculate duration between status changes and create bar segments
+        if (lastStatus !== null && lastTimestamp !== null) {
+          const duration = (timestamp - lastTimestamp) / 1000 / 60 / 60; // Duration in hours
+          const barItem = document.createElement("div");
+          barItem.className = `attendance-bar-item ${lastStatus}`;
+          barItem.style.flexGrow = duration;
+          barItem.innerText = duration.toFixed(2) + "h";
+          barItem.dataset.time = lastTimestamp.toLocaleTimeString();
+
+          // Append bar item to both today's and specific date's attendance bars
+          attendanceBarToday.appendChild(barItem.cloneNode(true));
+          attendanceBarSpecific.appendChild(barItem.cloneNode(true));
+        }
+
+        // Update the last status and timestamp
+        lastStatus = status;
+        lastTimestamp = timestamp;
       });
 
       // Calculate total hours if both login and logout times are available

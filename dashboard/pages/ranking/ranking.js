@@ -1,13 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  query,
-  where,
-  getDocs,
-} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-firestore.js";
-
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
   authDomain: "logxp-31c62.firebaseapp.com",
@@ -15,73 +6,91 @@ const firebaseConfig = {
   storageBucket: "logxp-31c62.appspot.com",
   messagingSenderId: "17276012238",
   appId: "1:17276012238:web:464030eb3b2062bb55729f",
-  measurementId: "G-FVZH4VFV6T"
+  measurementId: "G-FVZH4VFV6T",
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("month").addEventListener("change", showTable);
-  document.getElementById("year").addEventListener("change", showTable);
-});
-
-async function fetchRankingData(month, year) {
-  const rankingBody = document.getElementById("rankingBody");
-  rankingBody.innerHTML = ""; // Clear the table body
-
-  try {
-    // Create a query to filter by month and year
-    const q = query(
-      collection(db, "attendance_ranking"),
-      where("month", "==", month),
-      where("year", "==", year)
-    );
-    const snapshot = await getDocs(q);
-    const data = snapshot.docs.map((doc) => doc.data());
-    if (snapshot.empty) {
-      rankingBody.innerHTML = '<tr><td colspan="4">No Records Found</td></tr>';
-      return;
-    }
-    // Sort by total_points
-    data.sort((a, b) => b.total_points - a.total_points);
-
-    data.forEach((doc, index) => {
-      const row = document.createElement("tr");
-
-      // Add class based on total_points
-      if (doc.total_points > 20) {
-        row.classList.add("high-score");
-      } else if (doc.total_points >= 11 && doc.total_points <= 20) {
-        row.classList.add("medium-score");
-      } else {
-        row.classList.add("low-score");
-      }
-
-      row.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${doc.emp_id}</td>
-                <td>${doc.emp_name}</td>
-                <td>${doc.total_points}</td>
-            `;
-      rankingBody.appendChild(row);
-    });
-  } catch (error) {
-    console.error("Error fetching ranking data: ", error);
-  }
+// Check if Firebase has already been initialized
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+} else {
+  firebase.app(); // if already initialized, use that one
 }
 
-function showTable() {
-  const month = document.getElementById("month").value;
-  const year = document.getElementById("year").value;
-  const tableDiv = document.getElementById("rankingTable");
+const db = firebase.firestore();
 
-  if (month && year) {
-    tableDiv.classList.remove("hidden");
-    fetchRankingData(month, year);
+document.addEventListener('DOMContentLoaded', () => {
+  const monthDropdown = document.getElementById('month');
+  const yearDropdown = document.getElementById('year');
+
+  // Populate month dropdown
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  months.forEach((month, index) => {
+    const option = document.createElement('option');
+    option.value = month;
+    option.textContent = month;
+    monthDropdown.appendChild(option);
+  });
+
+  // Populate year dropdown
+  const currentYear = new Date().getFullYear();
+  for (let year = 2000; year <= currentYear + 5; year++) {
+    const option = document.createElement('option');
+    option.value = year;
+    option.textContent = year;
+    yearDropdown.appendChild(option);
   }
-  // else {
-  //     tableDiv.classList.add('hidden');
-  // }
+
+  // Add event listeners to dropdowns
+  monthDropdown.addEventListener('change', fetchRankingData);
+  yearDropdown.addEventListener('change', fetchRankingData);
+});
+
+function fetchRankingData() {
+  const month = document.getElementById('month').value;
+  const year = document.getElementById('year').value;
+
+  if (!month || !year) return;
+
+  db.collection('attendance_ranking')
+    .where('month', '==', month)
+    .where('year', '==', parseInt(year))
+    .orderBy('total_points', 'desc')
+    .get()
+    .then(querySnapshot => {
+      const rankingBody = document.getElementById('rankingBody');
+      rankingBody.innerHTML = '';
+
+      let rank = 1;
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        const row = document.createElement('tr');
+
+        const rankCell = document.createElement('td');
+        rankCell.textContent = rank;
+        row.appendChild(rankCell);
+
+        const empIdCell = document.createElement('td');
+        empIdCell.textContent = data.emp_id;
+        row.appendChild(empIdCell);
+
+        const nameCell = document.createElement('td');
+        nameCell.textContent = data.emp_name;
+        row.appendChild(nameCell);
+
+        const totalCell = document.createElement('td');
+        totalCell.textContent = data.total_points;
+        row.appendChild(totalCell);
+
+        rankingBody.appendChild(row);
+        rank++;
+      });
+
+      document.getElementById('rankingTable').classList.remove('hidden');
+    })
+    .catch(error => {
+      console.error('Error fetching ranking data:', error);
+    });
 }
