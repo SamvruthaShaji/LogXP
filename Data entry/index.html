@@ -242,6 +242,25 @@
         console.error("Error adding password fields: ", error);
       }
     }
+
+    async function createAdminCollection() {
+      const adminId = prompt("Enter Admin ID");
+      const adminName = prompt("Enter Admin Name");
+      const adminEmail = prompt("Enter Admin Email");
+      const adminPassword = generateRandomPassword();
+
+      try {
+        await db.collection("admin").add({
+          admin_id: adminId,
+          admin_name: adminName,
+          admin_email: adminEmail,
+          admin_password: adminPassword,
+        });
+        alert(`Admin created successfully!\nPassword: ${adminPassword}`);
+      } catch (error) {
+        console.error("Error creating admin: ", error);
+      }
+    }
   </script>
   <style>
     body {
@@ -269,5 +288,6 @@
   <button onclick="deleteDuplicates()">Delete Duplicates</button>
   <button onclick="addInOutDetails()">Add In/Out Details</button>
   <button onclick="addPasswordFields()">Add Password Fields</button>
+  <button onclick="createAdminCollection()">Create Admin Collection</button>
 </body>
 </html>
