@@ -21,6 +21,85 @@
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    async function wipeAllDataExceptEmp404() {
+      try {
+        const collections = ["attendance_ranking", "attendance_register", "employee_details", "in_out_details", "leave_details"];
+        const empIdToExclude = "emp404";
+
+        for (const collection of collections) {
+          const snapshot = await db.collection(collection).get();
+          const deletePromises = [];
+          snapshot.forEach((doc) => {
+            if (doc.data().emp_id !== empIdToExclude) {
+              deletePromises.push(db.collection(collection).doc(doc.id).delete());
+            }
+          });
+          await Promise.all(deletePromises);
+        }
+
+        alert("All data wiped successfully, except data with emp_id - emp404!");
+      } catch (error) {
+        console.error("Error wiping data: ", error);
+      }
+    }
+
+    async function createRandomEmployeeData() {
+      const empId = document.getElementById("empId").value;
+      if (!empId) {
+        alert("Please enter an Employee ID");
+        return;
+      }
+
+      const empNames = ["John Doe", "Jane Smith", "Sanjay Nair", "Rithika Joffi"];
+      const empName = empNames[getRandomInt(0, empNames.length - 1)];
+      const profilePic = "https://th.bing.com/th/id/OIP.tLotgCDtzgTdwJcTiXWRCwHaEK?rs=1&pid=ImgDetMain";
+      const attendanceStatus = ["p", "a", "h"];
+      const startDate = new Date(2024, 0, 1); // Start from January 1, 2024
+      const leaveRemarks = {
+        "a": "LOP",
+        "h": "Half_LOP"
+      };
+
+      // Employee Details
+      await db.collection("employee_details").add({
+        Batch: "ILPBatch 4",
+        email: `${empName.replace(" ", "").toLowerCase()}@example.com`,
+        emp_id: empId,
+        emp_name: empName,
+        joining_date: firebase.firestore.Timestamp.fromDate(new Date()),
+        profile_pic: profilePic,
+      });
+
+      // Attendance Register & Leave Details
+      for (let i = 0; i < 10; i++) {
+        const randomDate = new Date(startDate);
+        randomDate.setDate(startDate.getDate() + getRandomInt(1, 150)); // Random date within next 5 months
+        const status = attendanceStatus[getRandomInt(0, attendanceStatus.length - 1)];
+        const attendanceData = {
+          attendance_status: status,
+          date: firebase.firestore.Timestamp.fromDate(randomDate),
+          emp_id: empId,
+          month: randomDate.toLocaleString('default', { month: 'long' })
+        };
+
+        await db.collection("attendance_register").add(attendanceData);
+
+        if (status === "a" || status === "h") {
+          await db.collection("leave_details").add({
+            emp_id: empId,
+            leave_date: attendanceData.date,
+            remark: leaveRemarks[status]
+          });
+        }
+      }
+
+      alert("Random employee data created successfully!");
+    }
   </script>
   <style>
     body {
@@ -43,28 +122,6 @@
   <h1>LogXP Data Generator</h1>
   <input type="text" id="empId" placeholder="Enter Employee ID" />
   <button onclick="wipeAllDataExceptEmp404()">Wipe All Data Except emp404</button>
-  <script>
-    async function wipeAllDataExceptEmp404() {
-      try {
-        const collections = ["attendance_ranking", "attendance_register", "employee_details", "in_out_details", "leave_details"];
-        const empIdToExclude = "emp404";
-
-        for (const collection of collections) {
-          const snapshot = await db.collection(collection).get();
-          const deletePromises = [];
-          snapshot.forEach((doc) => {
-            if (doc.data().emp_id !== empIdToExclude) {
-              deletePromises.push(db.collection(collection).doc(doc.id).delete());
-            }
-          });
-          await Promise.all(deletePromises);
-        }
-
-        alert("All data wiped successfully, except data with emp_id - emp404!");
-      } catch (error) {
-        console.error("Error wiping data: ", error);
-      }
-    }
-  </script>
+  <button onclick="createRandomEmployeeData()">Create Random Employee Data</button>
 </body>
 </html>
