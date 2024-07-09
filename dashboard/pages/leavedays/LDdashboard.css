@@ -1,124 +1,150 @@
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    display: flex;
-    height: 100vh;
-    overflow: hidden;
-  }
-  
-  header {
-    width: 100%;
-    background-color: #ea454c;
-    color: white;
-    padding: 10px 20px;
-    z-index: 1001;
-    position: fixed;
-    top: 0;
-    left: 0;
-  }
-  
-  .hdr {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .profile {
-    display: flex;
-    align-items: center;
-  }
-  
-  .profile img {
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
-  }
-  
-  .navbar-brand {
-    color: #ddd;
-  }
-  
-  .header-right button {
-    background-color: transparent;
-    border: none;
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-  
-  .sidebar {
-    height: 100vh;
-    width: 250px;
-    position: fixed;
-    left: 0;
-    top: 0;
-    background-color: #ea454c;
-    padding-top: 60px;
-    z-index: 1000;
-    overflow-y: auto;
-  }
-  
-  .sidebar a {
-    padding: 15px;
-    text-decoration: none;
-    font-size: 18px;
-    color: #fff;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+header {
+  width: 100%;
+  background-color: #ea454c;
+  color: white;
+  padding: 10px 20px;
+  z-index: 1001;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+}
+
+.profile img {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.navbar-brand {
+  color: #ddd;
+}
+
+.header-right button {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.sidebar {
+  height: 100vh;
+  width: 250px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color: #ea454c;
+  padding-top: 60px;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.sidebar a {
+  padding: 15px;
+  text-decoration: none;
+  font-size: 18px;
+  color: #fff;
+  display: block;
+}
+
+.sidebar a:hover {
+  background-color: #ddd;
+  color: #000;
+  text-decoration: none;
+}
+
+.toggle-btn {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .toggle-btn {
     display: block;
   }
-  
-  .sidebar a:hover {
-    background-color: #ddd;
-    color: #000;
-    text-decoration: none;
-  }
-  
-  .toggle-btn {
-    background-color: transparent;
-    border: none;
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
+  .sidebar {
     display: none;
   }
-  
-  @media (max-width: 768px) {
-    .toggle-btn {
-      display: block;
-    }
-    .sidebar {
-      display: none;
-    }
-    .sidebar.show {
-      display: block;
-      background-color: transparent;
-    }
-    .sidebar a {
-      padding: 10px;
-      font-size: 16px;
-      color: #000;
-    }
-    .hdr {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    .profile img {
-      width: 30px;
-      height: 30px;
-    }
-    .header-right button {
-      font-size: 12px;
-    }
+  .sidebar.show {
+    display: block;
+    /* background-color: transparent; */
+    height:250px;
   }
-  
-  .LD {
-    margin-top: 60px; 
-    margin-left: 250px;
-    padding: 20px;
-    height: calc(100vh - 60px);
-    overflow-y: auto;
-    background-color: #f5f5f5;
-    box-sizing: border-box;
-    width: calc(100% - 250px); 
+  .sidebar a {
+    padding: 10px;
+    font-size: 10px;
+    color: #000;
   }
-  
+  .content {
+    margin-left: 0;
+  }
+  .hdr {
+    align-items: flex-start;
+  }
+  .profile,
+  .header-center,
+  .header-right {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 10px;
+  }
+  .header-center {
+    text-align: center;
+  }
+  .profile img {
+    width: 30px;
+    height: 30px;
+  }
+  .sidebar a {
+    font-size: 16px;
+  }
+  .header-right button {
+    font-size: 12px;
+  }
+  .LD{
+    margin-left: 0px !important;
+    width:100% !important;
+  }
+}
+@media (max-width: 500px){
+  .LD{
+    margin-top:80px !important;
+    margin-left: 0px !important;
+    width:100% !important;
+  }
+}
+
+.LD {
+  margin-top: 60px;
+  margin-left: 250px;
+  padding: 9px 0px 1px 1px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  background-color: #f5f5f5;
+  box-sizing: border-box;
+  width: calc(100% - 250px);
+}

@@ -1,33 +1,37 @@
 .container {
   display: flex;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  overflow: hidden;
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #fff;
+  box-shadow: none;
+  border-radius: 0;
 }
-
+ 
 .sid {
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-right: 1px solid #ddd;
+  padding: 30px;
+  margin-left: -16px;
+  margin-top: -5px;
+  margin-bottom: -5px;
   width: 30%;
   box-sizing: border-box;
+  background-color: #F8F8F8;
 }
-
+ 
 .sid h2 {
-  font-size: 20px;
-  margin-bottom: 20px;
+  font-size: 25px;
+  margin-bottom: 30px;
+  margin-top: 10px;
 }
-
+ 
 .sid label {
   display: block;
-  margin-top: 20px;
-  font-size: 14px;
+  margin-top: 40px;
+  font-size: 17px;
   color: #333;
 }
-
+ 
 .sid select {
   width: 100%;
   padding: 5px;
@@ -35,72 +39,85 @@
   border: 1px solid #ddd;
   border-radius: 5px;
 }
-
+ 
 .summary {
-  margin-top: 20px;
+  margin-top: 40px;
   line-height: 1.9;
 }
-
+ 
 .summary p {
-  font-size: 14px;
-  margin: 5px 0;
+  font-size: 18px;
+  margin: 0px 0px 10px 10px;
 }
-
+ 
 .calendar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 20px;
   width: 70%;
   box-sizing: border-box;
+  background-color: #fff;
 }
-
+ 
 .calendar h2 {
   font-size: 24px;
   margin-bottom: 20px;
   text-align: center;
 }
-
+ 
 .calendar table {
   width: 100%;
+  max-width: 600px;
   border-collapse: collapse;
 }
-
-.calendar th,
-.calendar td {
-  width: 14.28%;
-  padding: 10px;
+ 
+.calendar th, .calendar td {
+  width: calc(100% / 7);
+  padding: 15px;
   text-align: center;
+  height: 30px;
   border: 1px solid #ddd;
   font-size: 14px;
-  background-color: #f9f9f9;
 }
-
+ 
+.calendar th {
+  background-color: #F8F8F8;
+}
+ 
+.calendar td {
+  background-color: #FFF;
+}
+ 
 .calendar .working-day {
   background-color: #e0f7e0;
 }
-
+ 
 .calendar .partial-leave {
   background-color: #ffffe0;
 }
-
+ 
 .calendar .full-leave {
   background-color: #ffe0e0;
 }
-
+ 
 .legend-container {
   display: flex;
   gap: 20px;
-  background-color: white;
   padding: 10px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  margin-top: 20px;
 }
-
+ 
 .legend-item {
   display: flex;
   align-items: center;
   font-size: 14px;
   color: #333;
 }
-
+ 
 .legend-box {
   display: inline-block;
   width: 20px;
@@ -109,15 +126,148 @@
   border: 1px solid #ddd;
   border-radius: 3px;
 }
-
+ 
 .legend-box.working-day {
   background-color: #e0f7e0;
 }
-
+ 
 .legend-box.partial-leave {
   background-color: #ffffe0;
 }
-
+ 
 .legend-box.full-leave {
   background-color: #ffe0e0;
+}
+ 
+ 
+/* Media queries for responsiveness */
+@media (max-width: 1024px) {
+  .container {
+    flex-direction: column; /* Stack items vertically */
+  }
+ 
+  .sid, .calendar {
+    width: 100%;
+  }
+ 
+  .sid {
+    margin-left: 0;
+    padding: 20px;
+  }
+ 
+  .summary {
+    margin-top: 40px;
+    line-height: 1.9;
+    display: flex;
+    align-items: center;
+  }
+ 
+  .summary p {
+    font-size: 18px;
+    margin: 0 80px 0 0; /* Adjust margins to create space between items */
+    white-space: nowrap; /* Prevent line wrapping */
+  }
+ 
+ 
+  .calendar {
+    padding: 20px 10px;
+  }
+ 
+  .calendar table {
+    width: 100%;
+  }
+ 
+  .calendar th, .calendar td {
+    padding: 12px;
+    font-size: 12px;
+    height: 22px; /* Reduced height */
+  }
+ 
+  .legend-container {
+    flex-direction: row;
+    align-items: center;
+  }
+ 
+  .legend-item {
+    margin-bottom: 10px;
+  }
+}
+ 
+ 
+ 
+ 
+@media (max-width: 768px) {
+ 
+.container{
+  /* margin-top:60px; */
+ 
+}
+ 
+  .sid, .calendar {
+    width: 100%;
+  }
+ 
+  .sid {
+    margin-left: 0;
+    padding: 15px; /* Adjusted padding for smaller screens */
+    order: 1; /* Ensure sidebar is first in order */
+  }
+ 
+  .sid h2 {
+    font-size: 22px; /* Adjusted font size */
+    margin-bottom: 20px;
+  }
+ 
+  .sid label {
+    margin-top: 25px; /* Adjusted margin */
+    font-size: 15px;
+  }
+ 
+  .sid select {
+    padding: 4px;
+    margin-top: 4px;
+    font-size: 14px;
+  }
+ 
+  .summary {
+    margin-top: 30px;
+    display: flex;
+    flex-wrap: wrap; /* Allow items to wrap */
+    align-items: center;
+  }
+ 
+  .summary p {
+    font-size: 16px;
+    margin: 0px 10px 8px 0; /* Adjusted margins */
+    white-space: nowrap; /* Prevent line wrapping */
+  }
+ 
+  .calendar {
+    padding: 15px 8px;
+    order: 2; /* Ensure calendar is second in order */
+  }
+ 
+  .calendar h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+ 
+  .calendar table {
+    width: 100%;
+  }
+ 
+  .calendar th, .calendar td {
+    padding: 10px;
+    font-size: 10px;
+    height: 20px; /* Further reduced height */
+  }
+ 
+  .legend-container {
+    flex-direction: row;
+    align-items: center;
+  }
+ 
+  .legend-item {
+    margin-bottom: 10px;
+  }
 }
