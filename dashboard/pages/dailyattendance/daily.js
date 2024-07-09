@@ -16,19 +16,34 @@ const today = new Date();
 document.getElementById("today-date").innerText = formatDate(today);
 
 // Fetch and display attendance for a specific date
-function fetchAttendance(date) {
+function fetchAttendance(date, isToday = false) {
   const formattedDate = formatDate(date);
-  const attendanceBarToday = document.getElementById("attendance-today");
-  const attendanceBarSpecific = document.getElementById("attendance-details");
-  const totalHours = document.getElementById("total-hours");
-  const firstLoginTime = document.getElementById("first-login-time");
-  const lastLogoutTime = document.getElementById("last-logout-time");
+  const attendanceTable = isToday ? document.getElementById("attendance-today") : document.getElementById("attendance-details");
+  const totalHoursElem = isToday ? document.getElementById("total-hours-today") : document.getElementById("total-hours");
+  const firstLoginTimeElem = isToday ? document.getElementById("first-login-time-today") : document.getElementById("first-login-time");
+  const lastLogoutTimeElem = isToday ? document.getElementById("last-logout-time-today") : document.getElementById("last-logout-time");
 
-  attendanceBarToday.innerHTML = ""; // Clear previous data
-  attendanceBarSpecific.innerHTML = ""; // Clear previous data
-  totalHours.innerText = "";
-  firstLoginTime.innerText = "";
-  lastLogoutTime.innerText = "";
+  attendanceTable.innerHTML = ""; // Clear previous data
+  totalHoursElem.innerText = "";
+  firstLoginTimeElem.innerText = "";
+  lastLogoutTimeElem.innerText = "";
+
+  const table = document.createElement("table");
+  table.className = "attendance-table";
+  const thead = document.createElement("thead");
+  const tbody = document.createElement("tbody");
+
+  const headerRow = document.createElement("tr");
+  const inTimeHeader = document.createElement("th");
+  inTimeHeader.innerText = "In Time";
+  const outTimeHeader = document.createElement("th");
+  outTimeHeader.innerText = "Out Time";
+  headerRow.appendChild(inTimeHeader);
+  headerRow.appendChild(outTimeHeader);
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+  table.appendChild(tbody);
+  attendanceTable.appendChild(table);
 
   db.collection("in_out_details")
     .where("timestamp", ">=", new Date(`${formattedDate}T00:00:00`))
@@ -40,13 +55,11 @@ function fetchAttendance(date) {
       let lastLogout = null;
       let lastStatus = null;
       let lastTimestamp = null;
-      
+
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        const status = data.status === 1 ? "green" : "red";
         const timestamp = data.timestamp.toDate();
         
-        // Track first login and last logout times for the day
         if (data.status === 1 && !firstLogin) {
           firstLogin = timestamp;
         }
@@ -54,31 +67,26 @@ function fetchAttendance(date) {
           lastLogout = timestamp;
         }
 
-        // Calculate duration between status changes and create bar segments
-        if (lastStatus !== null && lastTimestamp !== null) {
-          const duration = (timestamp - lastTimestamp) / 1000 / 60 / 60; // Duration in hours
-          const barItem = document.createElement("div");
-          barItem.className = `attendance-bar-item ${lastStatus}`;
-          barItem.style.flexGrow = duration;
-          barItem.innerText = duration.toFixed(2) + "h";
-          barItem.dataset.time = lastTimestamp.toLocaleTimeString();
-
-          // Append bar item to both today's and specific date's attendance bars
-          attendanceBarToday.appendChild(barItem.cloneNode(true));
-          attendanceBarSpecific.appendChild(barItem.cloneNode(true));
+        if (lastStatus === 1 && data.status === 2) {
+          const row = document.createElement("tr");
+          const inTimeCell = document.createElement("td");
+          const outTimeCell = document.createElement("td");
+          inTimeCell.innerText = lastTimestamp.toLocaleTimeString();
+          outTimeCell.innerText = timestamp.toLocaleTimeString();
+          row.appendChild(inTimeCell);
+          row.appendChild(outTimeCell);
+          tbody.appendChild(row);
         }
 
-        // Update the last status and timestamp
-        lastStatus = status;
+        lastStatus = data.status;
         lastTimestamp = timestamp;
       });
 
-      // Calculate total hours if both login and logout times are available
       if (firstLogin && lastLogout) {
-        const totalTime = (lastLogout - firstLogin) / 1000 / 60 / 60; // Total hours
-        totalHours.innerText = `Total Hours: ${totalTime.toFixed(2)}`;
-        firstLoginTime.innerText = `First Login: ${firstLogin.toLocaleTimeString()}`;
-        lastLogoutTime.innerText = `Last Logout: ${lastLogout.toLocaleTimeString()}`;
+        const totalTime = (lastLogout - firstLogin) / 1000 / 60 / 60;
+        totalHoursElem.innerText = `Total Hours: ${totalTime.toFixed(2)}`;
+        firstLoginTimeElem.innerText = `First Login: ${firstLogin.toLocaleTimeString()}`;
+        lastLogoutTimeElem.innerText = `Last Logout: ${lastLogout.toLocaleTimeString()}`;
       }
     })
     .catch((error) => {
@@ -87,7 +95,7 @@ function fetchAttendance(date) {
 }
 
 // Initialize today's attendance
-fetchAttendance(today);
+fetchAttendance(today, true);
 
 // Date picker functionality
 document.getElementById("submit-button").addEventListener("click", () => {
