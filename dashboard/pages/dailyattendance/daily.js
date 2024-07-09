@@ -16,7 +16,7 @@ const today = new Date();
 document.getElementById("today-date").innerText = formatDate(today);
 
 // Fetch and display attendance for a specific date
-function fetchAttendance(date, isToday = false) {
+function fetchAttendance(date, empId, isToday = false) {
   const formattedDate = formatDate(date);
   const attendanceTable = isToday ? document.getElementById("attendance-today") : document.getElementById("attendance-details");
   const totalHoursElem = isToday ? document.getElementById("total-hours-today") : document.getElementById("total-hours");
@@ -46,6 +46,7 @@ function fetchAttendance(date, isToday = false) {
   attendanceTable.appendChild(table);
 
   db.collection("in_out_details")
+    .where("emp_id", "==", empId)
     .where("timestamp", ">=", new Date(`${formattedDate}T00:00:00`))
     .where("timestamp", "<=", new Date(`${formattedDate}T23:59:59`))
     .orderBy("timestamp")
@@ -94,13 +95,55 @@ function fetchAttendance(date, isToday = false) {
     });
 }
 
-// Initialize today's attendance
-fetchAttendance(today, true);
-
 // Date picker functionality
 document.getElementById("submit-button").addEventListener("click", () => {
   const selectedDate = new Date(document.getElementById("date-picker").value);
-  document.getElementById("selected-date").innerText = formatDate(selectedDate);
-  document.getElementById("attendance-specific-date").style.display = "block";
-  fetchAttendance(selectedDate);
+  const user = firebase.auth().currentUser;
+
+  if (user) {
+    const email = user.email;
+    db.collection("employee_details")
+      .where("email", "==", email)
+      .get()
+      .then((querySnapshot) => {
+        if (!querySnapshot.empty) {
+          querySnapshot.forEach((doc) => {
+            const employee = doc.data();
+            document.getElementById("selected-date").innerText = formatDate(selectedDate);
+            document.getElementById("attendance-specific-date").style.display = "block";
+            fetchAttendance(selectedDate, employee.emp_id);
+          });
+        } else {
+          console.log("No matching documents.");
+        }
+      })
+      .catch((error) => {
+        console.log("Error getting documents: ", error);
+      });
+  }
+});
+
+// Initialize today's attendance
+document.addEventListener("DOMContentLoaded", (event) => {
+  firebase.auth().onAuthStateChanged(function (user) {
+    if (user) {
+      const email = user.email;
+      db.collection("employee_details")
+        .where("email", "==", email)
+        .get()
+        .then((querySnapshot) => {
+          if (!querySnapshot.empty) {
+            querySnapshot.forEach((doc) => {
+              const employee = doc.data();
+              fetchAttendance(today, employee.emp_id, true);
+            });
+          } else {
+            console.log("No matching documents.");
+          }
+        })
+        .catch((error) => {
+          console.log("Error getting documents: ", error);
+        });
+    }
+  });
 });
