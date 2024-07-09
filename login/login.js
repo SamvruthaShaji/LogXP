@@ -1,4 +1,4 @@
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
   authDomain: "logxp-31c62.firebaseapp.com",
@@ -6,38 +6,27 @@ const firebaseConfig = {
   storageBucket: "logxp-31c62.appspot.com",
   messagingSenderId: "17276012238",
   appId: "1:17276012238:web:464030eb3b2062bb55729f",
-  measurementId: "G-FVZH4VFV6T"
+  measurementId: "G-FVZH4VFV6T",
 };
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+const auth = firebase.auth();
 
-document
-  .getElementById("loginForm")
-  .addEventListener("submit", function (event) {
-    event.preventDefault();
-    var email = document.getElementById("email").value;
-    var password = document.getElementById("password").value;
+document.getElementById('loginForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+  var email = document.getElementById('email').value;
+  var password = document.getElementById('password').value;
 
-    db.collection("employee_details")
-      .where("email", "==", email)
-      .get()
-      .then((querySnapshot) => {
-        if (querySnapshot.empty) {
-          alert("No user found with this email.");
-          return;
-        }
-        querySnapshot.forEach((doc) => {
-          const userData = doc.data();
-          if (userData.password === password) {
-            window.location.href = "../dashboard/pages/dailyattendance/daily.html"; // Redirect to dashboard
-          } else {
-            alert("Incorrect password.");
-          }
-        });
+  auth.signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+          // Signed in 
+          var user = userCredential.user;
+          window.location.href = '../dashboard/pages/dailyattendance/daily.html'; // Redirect to dashboard
       })
       .catch((error) => {
-        console.error("Error during login: ", error);
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          alert(errorMessage);
       });
-  });
+});
