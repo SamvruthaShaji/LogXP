@@ -41,31 +41,104 @@
       <a href="../ranking/ranking.html">Ranking</a>
     </div>
   </nav>
+  
   <div class="DA">
     <div class="container">
       <h1>Daily Attendance Tracker</h1>
       <div id="today-date-container">
         <p>Today's Date: <span id="today-date"></span></p>
-        <div id="attendance-today"></div>
-        <p id="total-hours-today"></p>
-        <p id="first-login-time-today"></p>
-        <p id="last-logout-time-today"></p>
+        <div class="attendance-bar" id="attendance-today"></div>
       </div>
       <div class="date-picker-container">
         <label for="date-picker">Select Date:</label>
-        <input type="date" id="date-picker" />
+        <input type="date" id="date-picker">
         <button id="submit-button">Submit</button>
       </div>
-      <div id="attendance-specific-date" style="display: none">
+      <div id="attendance-specific-date" style="display:none;">
         <h2>Attendance - <span id="selected-date"></span></h2>
-        <div id="attendance-details"></div>
+        <div class="attendance-bar" id="attendance-details"></div>
         <p id="total-hours"></p>
         <p id="first-login-time"></p>
         <p id="last-logout-time"></p>
+        <button id="view-details-button">View Details</button>
+      </div>
+      <div id="attendance-legend" class="legend">
+        <div>
+          Inside Office  :
+          <span class="legend-box inside"></span>
+         
+        </div>
+        <div>
+          Outside Office  :
+          <span class="legend-box outside"></span>
+          
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- Modal for Detailed Attendance View -->
+  <div class="modal fade" id="attendanceModal" tabindex="-1" aria-labelledby="attendanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="attendanceModalLabel">Date: <span id="modal-selected-date"></span></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Sl. No</th>
+                <th scope="col">In Time</th>
+                <th scope="col">Out Time</th>
+              </tr>
+            </thead>
+            <tbody id="attendance-details-table">
+              <!-- Dynamic Content -->
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="details-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Details for <span id="modal-date"></span></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Sl. No</th>
+                <th scope="col">In Time</th>
+                <th scope="col">Out Time</th>
+              </tr>
+            </thead>
+            <tbody id="modal-table-body">
+              <!-- Table content will be inserted dynamically -->
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
       </div>
     </div>
   </div>
   <script src="../../dashboard.js"></script>
-  <script src="daily.js"></script>
+  <script src="daily.js" type="module" defer></script>
 </body>
 </html>
+
