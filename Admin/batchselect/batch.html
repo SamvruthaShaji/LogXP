@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Attendance Tracker</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="batch.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">HR Attendance Tracker</h1>
+        <div class="row">
+            <!-- Batch 1 Card -->
+            
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card batch-card text-black" onclick="viewBatchDetails('ILPBatch 1')" style="background-color:#e0f7e0;">
+                    <div class="card-body text-center">
+                    
+                        <h5 class="card-title">ILPBatch 1</h5>
+                        <p class="card-text">Joined Date: 01/01/2023</p>
+                        <p class="card-text">End of Training: 06/01/2023</p>
+                        <p class="card-text">No. of Employees: 10</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Batch 2 Card -->
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card batch-card text-black" onclick="viewBatchDetails('ILPBatch 2')" style="background-color:#ffe0e0;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">ILPBatch 2</h5>
+                        <p class="card-text">Joined Date: 02/01/2023</p>
+                        <p class="card-text">End of Training: 07/01/2023</p>
+                        <p class="card-text">No. of Employees: 8</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Batch 3 Card -->
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card batch-card text-black" onclick="viewBatchDetails('ILPBatch 3')" style="background-color:#f8f8f87b;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">ILPBatch 3</h5>
+                        <p class="card-text">Joined Date: 03/01/2023</p>
+                        <p class="card-text">End of Training: 08/01/2023</p>
+                        <p class="card-text">No. of Employees: 12</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Batch 4 Card -->
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card batch-card  text-black" onclick="viewBatchDetails('ILPBatch 4')" style="background-color:#ffffe0;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">ILPBatch 4</h5>
+                        <p class="card-text">Joined Date: 04/01/2023</p>
+                        <p class="card-text">End of Training: 09/01/2023</p>
+                        <p class="card-text">No. of Employees: 15</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function viewBatchDetails(batchId) {
+            window.location.href = '/Admin/traineeDetails/index.html?batchId=' + encodeURIComponent(batchId);
+       // Navigate to sahir/index.html
+        }
+    </script>
+</body>
+</html>

@@ -31,7 +31,7 @@ const firebaseConfig = {
         querySnapshot.forEach((doc) => {
           const adminData = doc.data();
           if (adminData.admin_password === password) {
-            window.location.href = "../Admin/index.html"; 
+            window.location.href = "../Admin/batchselect/batch.html"; 
           } else {
             alert("Incorrect password.");
           }

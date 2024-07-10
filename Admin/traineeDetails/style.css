@@ -1,0 +1,176 @@
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container1 {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card {
+            margin-bottom: 10px;
+            flex: 1;
+        }
+
+        .profile-card {
+            width: 155px;
+            height: 188px;
+            margin-right: 5px;
+            text-align: center;
+            display: inline-block;
+            perspective: 1000px;
+            border-radius: 5px;
+            border: 1px solid black;
+        }
+
+        .profile-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            line-height: 5px;
+            transition: transform 1s;
+            transform-style: preserve-3d;
+        }
+
+        .profile-card:hover .profile-card-inner {
+            transform: rotateY(180deg);
+            background-color: #0e1012;
+            border-radius: 5px;
+        }
+
+        .profile-card-front, .profile-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .profile-card-front {
+            background-color: #d6e7f9;
+        }
+
+        .profile-card-back {
+            color: #EA454C;
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #prof-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-bottom: 5px;
+        }
+
+        .profile-card-front h4, .profile-card-back h4{
+            font-weight: bolder;
+            font-size: 1.1rem;
+        }
+
+        .profile-card-front h5{
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .profile-card-front p, .profile-card-back p {
+            font-size: 0.8rem;
+        }
+
+        .profile-container-wrapper {
+            
+            position: relative;
+            width: 640px;
+            overflow: hidden;
+        }
+
+        .profile-container {
+            display: flex;
+            width: max-content;
+            transition: transform 1s ease-in-out;
+        }
+
+        .scroll-btn {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .scroll-btn:focus {
+            outline: none;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            height: 150px;
+        }
+
+        /* Media queries for responsiveness */
+        @media (max-width: 768px) {
+            .profile-container-wrapper {
+                width: 320px;
+            }
+            .card1 {
+                height: 400px;
+                margin-top: -400px;
+            }
+
+            .table-responsive {
+                height: auto;
+                max-height: 240px;
+                overflow-y: auto;
+            }
+
+            .table-responsive tbody tr:nth-child(-n+4) {
+                display: table-row;
+            }
+
+            .card-body {
+                height: 300px;
+            }
+        }
+        @media (max-width: 521px) {
+            .card-body {
+                height: 300px;
+            }
+        }
+
+        .card1 {
+            margin: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #EA454C;
+            transition: background-color 0.5s ease-in-out;
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .modal-body button {
+            margin-bottom: 10px;
+        }
+
+
