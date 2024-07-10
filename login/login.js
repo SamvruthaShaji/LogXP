@@ -22,7 +22,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
       .then((userCredential) => {
           // Signed in 
           var user = userCredential.user;
-          window.location.href = '../dashboard/pages/dailyattendance/daily.html'; // Redirect to dashboard
+          window.location.href = '../dashboard/pages/dailyattendance/daily.html'; 
       })
       .catch((error) => {
           var errorCode = error.code;
