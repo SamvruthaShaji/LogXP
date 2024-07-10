@@ -1,3 +1,7 @@
+// Import necessary Firebase modules
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
+import { getFirestore, collection, query, where, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-firestore.js";
+
 // Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
@@ -9,88 +13,80 @@ const firebaseConfig = {
   measurementId: "G-FVZH4VFV6T",
 };
 
-// Check if Firebase has already been initialized
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-} else {
-  firebase.app(); // if already initialized, use that one
-}
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-const db = firebase.firestore();
-
+// Populate the year and month dropdowns
 document.addEventListener('DOMContentLoaded', () => {
-  const monthDropdown = document.getElementById('month');
-  const yearDropdown = document.getElementById('year');
+  const yearSelect = document.getElementById('year');
+  const monthSelect = document.getElementById('month');
 
-  // Populate month dropdown
-  const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
-  months.forEach((month, index) => {
-    const option = document.createElement('option');
-    option.value = month;
-    option.textContent = month;
-    monthDropdown.appendChild(option);
-  });
-
-  // Populate year dropdown
   const currentYear = new Date().getFullYear();
-  for (let year = 2000; year <= currentYear + 5; year++) {
+  for (let year = 2010; year <= currentYear; year++) {
     const option = document.createElement('option');
     option.value = year;
     option.textContent = year;
-    yearDropdown.appendChild(option);
+    yearSelect.appendChild(option);
   }
 
-  // Add event listeners to dropdowns
-  monthDropdown.addEventListener('change', fetchRankingData);
-  yearDropdown.addEventListener('change', fetchRankingData);
+  const months = [
+    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+  ];
+  months.forEach((month, index) => {
+    const option = document.createElement('option');
+    option.value = month; // Use month names directly
+    option.textContent = month;
+    monthSelect.appendChild(option);
+  });
+
+  yearSelect.addEventListener('change', fetchRankingData);
+  monthSelect.addEventListener('change', fetchRankingData);
 });
 
-function fetchRankingData() {
-  const month = document.getElementById('month').value;
+// Fetch and display the ranking data
+async function fetchRankingData() {
   const year = document.getElementById('year').value;
+  const month = document.getElementById('month').value;
 
-  if (!month || !year) return;
+  if (year && month) {
+    const rankingTable = document.getElementById('rankingTable');
+    const rankingBody = document.getElementById('rankingBody');
 
-  db.collection('attendance_ranking')
-    .where('month', '==', month)
-    .where('year', '==', parseInt(year))
-    .orderBy('total_points', 'desc')
-    .get()
-    .then(querySnapshot => {
-      const rankingBody = document.getElementById('rankingBody');
-      rankingBody.innerHTML = '';
+    const q = query(
+      collection(db, "attendance_ranking"),
+      where("year", "==", Number(year)), // Ensure year is treated as a number
+      where("month", "==", month),
+      orderBy("total_points", "desc") // Order by total_points
+    );
 
-      let rank = 1;
-      querySnapshot.forEach(doc => {
-        const data = doc.data();
-        const row = document.createElement('tr');
+    const querySnapshot = await getDocs(q);
+    rankingBody.innerHTML = ''; // Clear previous results
 
-        const rankCell = document.createElement('td');
-        rankCell.textContent = rank;
-        row.appendChild(rankCell);
+    let rank = 1;
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const row = document.createElement('tr');
 
-        const empIdCell = document.createElement('td');
-        empIdCell.textContent = data.emp_id;
-        row.appendChild(empIdCell);
+      const rankCell = document.createElement('td');
+      rankCell.textContent = rank++;
+      row.appendChild(rankCell);
 
-        const nameCell = document.createElement('td');
-        nameCell.textContent = data.emp_name;
-        row.appendChild(nameCell);
+      const empIdCell = document.createElement('td');
+      empIdCell.textContent = data.emp_id;
+      row.appendChild(empIdCell);
 
-        const totalCell = document.createElement('td');
-        totalCell.textContent = data.total_points;
-        row.appendChild(totalCell);
+      const nameCell = document.createElement('td');
+      nameCell.textContent = data.emp_name;
+      row.appendChild(nameCell);
 
-        rankingBody.appendChild(row);
-        rank++;
-      });
+      const totalCell = document.createElement('td');
+      totalCell.textContent = data.total_points;
+      row.appendChild(totalCell);
 
-      document.getElementById('rankingTable').classList.remove('hidden');
-    })
-    .catch(error => {
-      console.error('Error fetching ranking data:', error);
+      rankingBody.appendChild(row);
     });
+
+    rankingTable.classList.remove('hidden');
+  }
 }
