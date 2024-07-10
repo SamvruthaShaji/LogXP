@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leave Details</title>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
+      authDomain: "logxp-31c62.firebaseapp.com",
+      projectId: "logxp-31c62",
+      storageBucket: "logxp-31c62.appspot.com",
+      messagingSenderId: "17276012238",
+      appId: "1:17276012238:web:464030eb3b2062bb55729f",
+      measurementId: "G-FVZH4VFV6T",
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function updateLeaveDetails() {
+      try {
+        const attendanceSnapshot = await db.collection("attendance_register").get();
+        const leaveDetailsBatch = db.batch();
+
+        const empLeaveCount = {};
+
+        for (const doc of attendanceSnapshot.docs) {
+          const data = doc.data();
+          const { emp_id, attendance_status, date } = data;
+          const leaveDateString = date.toDate().toISOString().split('T')[0];
+
+          // Check if a leave entry already exists for the given date and employee ID
+          const leaveDetailsSnapshot = await db.collection("leave_details")
+            .where("emp_id", "==", emp_id)
+            .where("leave_date", "==", date)
+            .get();
+
+          if (!leaveDetailsSnapshot.empty) {
+            continue; // Skip if there's already an entry for this date and employee ID
+          }
+
+          if (!empLeaveCount[emp_id]) {
+            empLeaveCount[emp_id] = { a: 0, h: 0 };
+          }
+
+          let remark = "";
+          if (attendance_status === "a") {
+            if (empLeaveCount[emp_id].a === 0) {
+              remark = "Sick Leave";
+            } else {
+              remark = "LOP";
+            }
+            empLeaveCount[emp_id].a++;
+          } else if (attendance_status === "h") {
+            empLeaveCount[emp_id].h++;
+            if (empLeaveCount[emp_id].h % 2 === 0) {
+              empLeaveCount[emp_id].a++;
+              remark = "LOP";
+            } else {
+              remark = "Half_LOP";
+            }
+          }
+
+          if (remark) {
+            const leaveDocRef = db.collection("leave_details").doc();
+            leaveDetailsBatch.set(leaveDocRef, {
+              emp_id: emp_id,
+              leave_date: date,
+              remark: remark,
+            });
+          }
+        }
+
+        await leaveDetailsBatch.commit();
+        alert("Leave details updated successfully!");
+      } catch (error) {
+        console.error("Error updating leave details: ", error);
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    input,
+    button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Update Leave Details</h1>
+  <button onclick="updateLeaveDetails()">Update Leave Details</button>
+</body>
+</html>

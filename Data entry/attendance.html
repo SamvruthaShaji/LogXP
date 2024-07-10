@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Attendance</title>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
+      authDomain: "logxp-31c62.firebaseapp.com",
+      projectId: "logxp-31c62",
+      storageBucket: "logxp-31c62.appspot.com",
+      messagingSenderId: "17276012238",
+      appId: "1:17276012238:web:464030eb3b2062bb55729f",
+      measurementId: "G-FVZH4VFV6T",
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function checkEmpId(empId) {
+      const empQuerySnapshot = await db.collection("employee_details").where("emp_id", "==", empId).get();
+      return !empQuerySnapshot.empty;
+    }
+
+    function getTotalHours(entries) {
+      let totalHours = 0;
+      let lastIn = null;
+
+      entries.forEach(entry => {
+        if (entry.status === 1) {
+          lastIn = entry.timestamp.toDate();
+        } else if (entry.status === 2 && lastIn) {
+          totalHours += (entry.timestamp.toDate() - lastIn) / (1000 * 60 * 60); // Convert milliseconds to hours
+          lastIn = null;
+        }
+      });
+
+      return totalHours;
+    }
+
+    async function updateAttendanceStatus() {
+      const empId = document.getElementById("empId").value;
+
+      if (!empId) {
+        alert("Please enter an Employee ID");
+        return;
+      }
+
+      const empExists = await checkEmpId(empId);
+      if (!empExists) {
+        alert("Employee ID does not exist");
+        return;
+      }
+
+      const today = new Date();
+      const todayStart = new Date(today.setHours(0, 0, 0, 0));
+      const todayEnd = new Date(today.setHours(23, 59, 59, 999));
+
+      const snapshot = await db.collection("in_out_details")
+        .where("emp_id", "==", empId)
+        .where("timestamp", ">=", firebase.firestore.Timestamp.fromDate(todayStart))
+        .where("timestamp", "<=", firebase.firestore.Timestamp.fromDate(todayEnd))
+        .get();
+
+      const entries = snapshot.docs.map(doc => doc.data());
+      const totalHours = getTotalHours(entries);
+
+      let attendanceStatus;
+      if (totalHours >= 8) {
+        attendanceStatus = "p";
+      } else if (totalHours > 3 && totalHours < 8) {
+        attendanceStatus = "h";
+      } else {
+        attendanceStatus = "a";
+      }
+
+      await db.collection("attendance_register").add({
+        emp_id: empId,
+        attendance_status: attendanceStatus,
+        date: firebase.firestore.Timestamp.fromDate(new Date()),
+        month: new Date().toLocaleString('default', { month: 'long' })
+      });
+
+      alert(`Attendance status updated: ${attendanceStatus}`);
+    }
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    input,
+    button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Daily Attendance</h1>
+  <input type="text" id="empId" placeholder="Enter Employee ID" />
+  <button onclick="updateAttendanceStatus()">Update Attendance Status</button>
+</body>
+</html>
