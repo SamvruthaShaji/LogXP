@@ -9,8 +9,52 @@ const firebaseConfig = {
   measurementId: "G-FVZH4VFV6T",
 };
 
-// Firestore reference
+// Check if Firebase has already been initialized
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+} else {
+  firebase.app(); // if already initialized, use that one
+}
+
 const db = firebase.firestore();
+
+let currentUserEmpId = null;
+
+document.addEventListener("DOMContentLoaded", (event) => {
+  firebase.auth().onAuthStateChanged(function (user) {
+    if (user) {
+      const email = user.email;
+      db.collection("employee_details")
+        .where("email", "==", email)
+        .get()
+        .then((querySnapshot) => {
+          if (!querySnapshot.empty) {
+            querySnapshot.forEach((doc) => {
+              const employee = doc.data();
+              currentUserEmpId = employee.emp_id;
+              document.getElementById("profile-pic").src = employee.profile_pic;
+              document.getElementById("profile-name").innerText = `Hi ${employee.emp_name}`;
+              // Fetch attendance data once emp_id is set
+              const currentMonth = new Date().getMonth() + 1;
+              const currentYear = new Date().getFullYear();
+              generateCalendar(currentMonth, currentYear);
+              fetchAttendanceData(currentMonth, currentYear);
+            });
+          } else {
+            console.log("No matching documents.");
+          }
+        })
+        .catch((error) => {
+          console.log("Error getting documents: ", error);
+        });
+    } else {
+      window.location.href = "../login/traineelogin.html";
+    }
+  });
+
+  // Populate dropdowns
+  populateDropdowns();
+});
 
 // DOM elements
 const monthSelect = document.getElementById("month");
@@ -99,6 +143,11 @@ function generateCalendar(month, year) {
 
 // Fetch attendance data and update calendar and summary
 function fetchAttendanceData(month, year) {
+  if (!currentUserEmpId) {
+    console.log("Current user ID is not set.");
+    return;
+  }
+
   const startDate = new Date(year, month - 1, 1);
   const endDate = new Date(year, month, 0, 23, 59, 59);
 
@@ -110,6 +159,7 @@ function fetchAttendanceData(month, year) {
 
   // Fetch data from Firestore
   db.collection("attendance_register")
+    .where("emp_id", "==", currentUserEmpId)
     .where("date", ">=", startDate)
     .where("date", "<=", endDate)
     .get()
@@ -161,13 +211,4 @@ yearSelect.addEventListener("change", () => {
   const selectedYear = parseInt(yearSelect.value);
   generateCalendar(selectedMonth, selectedYear);
   fetchAttendanceData(selectedMonth, selectedYear);
-});
-
-// Initialize dropdowns and calendar on page load
-document.addEventListener("DOMContentLoaded", () => {
-  populateDropdowns();
-  const currentMonth = new Date().getMonth() + 1;
-  const currentYear = new Date().getFullYear();
-  generateCalendar(currentMonth, currentYear);
-  fetchAttendanceData(currentMonth, currentYear);
 });
