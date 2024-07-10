@@ -116,7 +116,7 @@ function generateCalendar(month, year) {
   const daysInMonth = new Date(year, month, 0).getDate();
   const firstDay = new Date(year, month - 1, 1).getDay(); // 0 (Sunday) to 6 (Saturday)
   
-  calendarTitle.textContent = `${monthSelect.options[month - 1].textContent} ${year}`;
+  calendarTitle.textContent = `${monthSelect.options[month].textContent} ${year}`;
   calendarBody.innerHTML = "";
 
   let date = 1;
