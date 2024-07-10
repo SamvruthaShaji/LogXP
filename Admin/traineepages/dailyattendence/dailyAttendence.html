@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Attendance</title>
+  <link rel="stylesheet" href="./dashboard.css" />
+  <link rel="stylesheet" href="./dailyAttendence.css" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+</head>
+<body>
+  <header>
+    <div class="hdr">
+      <button class="toggle-btn" id="toggle-btn">
+        <span class="fas fa-bars"></span>
+      </button>
+      <div class="profile">
+        <img src="https://via.placeholder.com/100x100" id="profile-pic" class="rounded-circle mb-3" alt="Profile Picture" />
+        <span id="profile-name">Hi</span>
+      </div>
+      <div class="header-center">
+        <h6 class="navbar-brand">LogXP</h6>
+      </div>
+      <div class="header-right">
+        <a href="../../../login/traineelogin.html" class="btn btn-outline-light" type="button">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <nav class="sidebar">
+    <div class="contents">
+      <a aria-current="page" href="./daily.html">Daily Attendance</a>
+      <a href="../leavedays/leavedays.html">Leave Days</a>
+      <a href="../lop/lop.html">LOP</a>
+      <a href="../ranking/ranking.html">Ranking</a>
+    </div>
+  </nav>
+  <div class="DA">
+    <div class="container">
+      <h1>Daily Attendance Tracker</h1>
+      <div id="today-date-container">
+        <p>Today's Date: <span id="today-date"></span></p>
+        <div id="attendance-today"></div>
+        <p id="total-hours-today"></p>
+        <p id="first-login-time-today"></p>
+        <p id="last-logout-time-today"></p>
+      </div>
+      <div class="date-picker-container">
+        <label for="date-picker">Select Date:</label>
+        <input type="date" id="date-picker" />
+        <button id="submit-button">Submit</button>
+      </div>
+      <div id="attendance-specific-date" style="display: none">
+        <h2>Attendance - <span id="selected-date"></span></h2>
+        <div id="attendance-details"></div>
+        <p id="total-hours"></p>
+        <p id="first-login-time"></p>
+        <p id="last-logout-time"></p>
+      </div>
+    </div>
+  </div>
+  <div id="sahir"></div>
+  <script src="./dailyAttendence.js"></script>
+</body>
+</html>
