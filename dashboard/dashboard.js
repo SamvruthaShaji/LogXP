@@ -1,5 +1,3 @@
-// dashboard.js
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
   authDomain: "logxp-31c62.firebaseapp.com",
@@ -13,6 +11,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+let currentUserEmpId = null;
+
 document.addEventListener("DOMContentLoaded", (event) => {
   firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
@@ -24,10 +24,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
           if (!querySnapshot.empty) {
             querySnapshot.forEach((doc) => {
               const employee = doc.data();
+              currentUserEmpId = employee.emp_id;
               document.getElementById("profile-pic").src = employee.profile_pic;
-              document.getElementById(
-                "profile-name"
-              ).innerText = `Hi ${employee.emp_name}`;
+              document.getElementById("profile-name").innerText = `Hi ${employee.emp_name}`;
             });
           } else {
             console.log("No matching documents.");

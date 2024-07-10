@@ -103,34 +103,60 @@ function updateLopData() {
     }
   }
 
-  db.collection('leave_details')
-    .where('leave_date', '>=', firstDayOfMonth)
-    .where('leave_date', '<=', lastDayOfMonth)
-    .get()
-    .then(querySnapshot => {
-      querySnapshot.forEach(doc => {
-        const data = doc.data();
-        const leaveDate = data.leave_date.toDate();
-        const dateCell = document.querySelector(`.day-cell[data-date="${leaveDate.getFullYear()}-${leaveDate.getMonth() + 1}-${leaveDate.getDate()}"]`);
+  firebase.auth().onAuthStateChanged(function (user) {
+    if (user) {
+      const email = user.email;
+      db.collection("employee_details")
+        .where("email", "==", email)
+        .get()
+        .then((querySnapshot) => {
+          if (!querySnapshot.empty) {
+            querySnapshot.forEach((doc) => {
+              const employee = doc.data();
+              const empId = employee.emp_id; // Assuming the employee document has emp_id field
 
-        if (dateCell) {
-          if (data.remark === 'LOP') {
-            dateCell.classList.add('lop-full-lop');
-            fullLopDays++;
-            totalPaidDays--; // Decrement for LOP
-          } else if (data.remark === 'Half_LOP') {
-            dateCell.classList.add('lop-half-lop');
-            halfLopDays++;
-            totalPaidDays -= 0.5; // Decrement for Half LOP
+              db.collection('leave_details')
+                .where('leave_date', '>=', firstDayOfMonth)
+                .where('leave_date', '<=', lastDayOfMonth)
+                .where('emp_id', '==', empId)
+                .get()
+                .then(querySnapshot => {
+                  querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const leaveDate = data.leave_date.toDate();
+                    const dateCell = document.querySelector(`.day-cell[data-date="${leaveDate.getFullYear()}-${leaveDate.getMonth() + 1}-${leaveDate.getDate()}"]`);
+
+                    if (dateCell) {
+                      if (data.remark === 'LOP') {
+                        dateCell.classList.add('lop-full-lop');
+                        fullLopDays++;
+                        totalPaidDays--; // Decrement for LOP
+                      } else if (data.remark === 'Half_LOP') {
+                        dateCell.classList.add('lop-half-lop');
+                        halfLopDays++;
+                        totalPaidDays -= 0.5; // Decrement for Half LOP
+                      }
+                    }
+                  });
+
+                  document.getElementById('total-paid-days').textContent = `Total Paid Days: ${totalPaidDays}`;
+                  document.getElementById('full-lop-days').textContent = `Full LOP Days: ${fullLopDays}`;
+                  document.getElementById('half-lop-days').textContent = `Half LOP Days: ${halfLopDays}`;
+                })
+                .catch(error => {
+                  console.error('Error fetching LOP data:', error);
+                });
+
+            });
+          } else {
+            console.log("No matching documents.");
           }
-        }
-      });
-
-      document.getElementById('total-paid-days').textContent = `Total Paid Days: ${totalPaidDays}`;
-      document.getElementById('full-lop-days').textContent = `Full LOP Days: ${fullLopDays}`;
-      document.getElementById('half-lop-days').textContent = `Half LOP Days: ${halfLopDays}`;
-    })
-    .catch(error => {
-      console.error('Error fetching LOP data:', error);
-    });
+        })
+        .catch((error) => {
+          console.log("Error getting documents: ", error);
+        });
+    } else {
+      window.location.href = "../login/traineelogin.html";
+    }
+  });
 }
