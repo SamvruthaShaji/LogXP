@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>In_Out Details</title>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
+      authDomain: "logxp-31c62.firebaseapp.com",
+      projectId: "logxp-31c62",
+      storageBucket: "logxp-31c62.appspot.com",
+      messagingSenderId: "17276012238",
+      appId: "1:17276012238:web:464030eb3b2062bb55729f",
+      measurementId: "G-FVZH4VFV6T",
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function checkEmpId(empId) {
+      const empQuerySnapshot = await db.collection("employee_details").where("emp_id", "==", empId).get();
+      return !empQuerySnapshot.empty;
+    }
+
+    async function handleCheckIn() {
+      const empId = document.getElementById("empId").value;
+
+      if (!empId) {
+        alert("Please enter an Employee ID");
+        return;
+      }
+
+      const empExists = await checkEmpId(empId);
+      if (!empExists) {
+        alert("Employee ID does not exist");
+        return;
+      }
+
+      const today = new Date().setHours(0, 0, 0, 0);
+      const snapshot = await db.collection("in_out_details")
+        .where("emp_id", "==", empId)
+        .where("timestamp", ">=", firebase.firestore.Timestamp.fromDate(new Date(today)))
+        .get();
+
+      const entries = snapshot.docs.map(doc => doc.data());
+      const lastEntry = entries[entries.length - 1];
+
+      if (lastEntry && lastEntry.status === 1) {
+        alert("You need to check out before checking in again");
+        return;
+      }
+
+      await db.collection("in_out_details").add({
+        emp_id: empId,
+        status: 1,
+        timestamp: firebase.firestore.Timestamp.fromDate(new Date()),
+      });
+
+      alert("Checked in successfully!");
+    }
+
+    async function handleCheckOut() {
+      const empId = document.getElementById("empId").value;
+
+      if (!empId) {
+        alert("Please enter an Employee ID");
+        return;
+      }
+
+      const empExists = await checkEmpId(empId);
+      if (!empExists) {
+        alert("Employee ID does not exist");
+        return;
+      }
+
+      const today = new Date().setHours(0, 0, 0, 0);
+      const snapshot = await db.collection("in_out_details")
+        .where("emp_id", "==", empId)
+        .where("timestamp", ">=", firebase.firestore.Timestamp.fromDate(new Date(today)))
+        .get();
+
+      const entries = snapshot.docs.map(doc => doc.data());
+      const lastEntry = entries[entries.length - 1];
+
+      if (!lastEntry || lastEntry.status !== 1) {
+        alert("You need to check in first before checking out");
+        return;
+      }
+
+      await db.collection("in_out_details").add({
+        emp_id: empId,
+        status: 2,
+        timestamp: firebase.firestore.Timestamp.fromDate(new Date()),
+      });
+
+      alert("Checked out successfully!");
+    }
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    input,
+    button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>In-Out Data entry</h1>
+  <input type="text" id="empId" placeholder="Enter Employee ID" />
+  <button onclick="handleCheckIn()">Check In</button>
+  <button onclick="handleCheckOut()">Check Out</button>
+</body>
+</html>
