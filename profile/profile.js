@@ -12,7 +12,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-document.addEventListener("DOMContentLoaded", (event) => {
+document.addEventListener("DOMContentLoaded", () => {
   firebase.auth().onAuthStateChanged(async (user) => {
     if (user) {
       const email = user.email;
@@ -28,8 +28,10 @@ document.addEventListener("DOMContentLoaded", (event) => {
           const empId = employee.emp_id;
 
           document.getElementById("profile-pic-large").src = employee.profile_pic;
-          document.getElementById("emp-name").innerText = employee.emp_name;
+          document.getElementById("emp_name").innerText = employee.emp_name;
           document.getElementById("emp-id").innerText = empId;
+          document.getElementById("Batch").innerText = employee.Batch;
+          document.getElementById("email").innerText = email;
 
           const attendanceSnapshot = await db
             .collection("attendance_register")
@@ -37,18 +39,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
             .get();
 
           const totalAttendance = attendanceSnapshot.size;
-          document.getElementById("total-attendance").innerText = totalAttendance;
-
-          const rankingSnapshot = await db
-            .collection("attendance_ranking")
-            .where("emp_id", "==", empId)
-            .get();
-
-          const totalPoints = rankingSnapshot.docs.reduce(
-            (sum, doc) => sum + doc.data().total_points,
-            0
-          );
-          document.getElementById("total-points").innerText = totalPoints;
 
           const attendanceData = attendanceSnapshot.docs.map(doc => doc.data().attendance_status);
 
@@ -64,7 +54,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
               labels: ['Present', 'Absent', 'Half Day'],
               datasets: [{
                 data: [presentDays, absentDays, halfDays],
-                backgroundColor: ['#28a745', '#dc3545', '#ffc107']
+                backgroundColor: ['#DEF9DC', '#FFE0E0', '#FFFDD1']
               }]
             },
             options: {
@@ -82,7 +72,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
           ];
 
           const monthlyAbsences = months.map(month => {
-            return attendanceSnapshot.docs.filter(doc => 
+            return attendanceSnapshot.docs.filter(doc =>
               doc.data().attendance_status === 'a' && doc.data().month === month).length;
           });
 
@@ -94,7 +84,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
               datasets: [{
                 label: 'Absences',
                 data: monthlyAbsences,
-                backgroundColor: '#dc3545'
+                backgroundColor: ''
               }]
             },
             options: {
