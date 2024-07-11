@@ -51,7 +51,7 @@
       </div>
       <div class="date-picker-container">
         <label for="date-picker">Select Date:</label>
-        <input type="date" id="date-picker">
+        <input type="date" id="date-picker" max="">
         <button id="submit-button">Submit</button>
       </div>
       <div id="attendance-specific-date" style="display:none;">
@@ -62,19 +62,17 @@
         <p id="last-logout-time"></p>
         <button id="view-details-button">View Details</button>
       </div>
+      <div id="no-details-message" style="display:none; color: red; text-align: center;">There are no details available for this date.</div>
       <div id="attendance-legend" class="legend">
         <div>
           Inside Office  :
           <span class="legend-box inside"></span>
-         
         </div>
         <div>
           Outside Office  :
           <span class="legend-box outside"></span>
-          
         </div>
       </div>
-      
     </div>
   </div>
 
@@ -141,4 +139,3 @@
   <script src="daily.js" type="module" defer></script>
 </body>
 </html>
-

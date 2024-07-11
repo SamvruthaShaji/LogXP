@@ -17,12 +17,19 @@ const firebaseConfig = {
   measurementId: "G-FVZH4VFV6T"
 };
 
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // Function to fetch attendance based on date
 async function fetchAttendance(date, elementId, showTotal = false) {
+  const todayDate = new Date().toISOString().slice(0, 10);
+  if (date > todayDate) {
+    console.error("Selected date cannot be in the future.");
+    return;
+  }
+
   const startOfWorkDay = new Date(`${date}T09:00:00`);
   const endOfWorkDay = new Date(`${date}T18:00:00`);
 
@@ -30,7 +37,7 @@ async function fetchAttendance(date, elementId, showTotal = false) {
 
   const q = query(
     collection(db, "in_out_details"),
-    where("emp_id", "==", "emp1"),
+    where("emp_id", "==", "emp2"),
     where("timestamp", ">=", new Date(date)),
     where("timestamp", "<=", new Date(new Date(date).setHours(23, 59, 59, 999)))
   );
@@ -72,7 +79,10 @@ async function fetchAttendance(date, elementId, showTotal = false) {
 
   if (workIntervals.length === 0) {
     appendSlot(attendance, startOfWorkDay, endOfWorkDay, "red");
-    return;
+    document.getElementById("no-details-message").style.display = "block";
+    return attendanceDetails;
+  } else {
+    document.getElementById("no-details-message").style.display = "none";
   }
 
   const combinedIntervals = [];
@@ -119,11 +129,6 @@ async function fetchAttendance(date, elementId, showTotal = false) {
         roundedMinutes / 60
       )} hrs ${roundedMinutes % 60} mins`;
     }
-
-    const attendanceLabels = document.getElementById("attendance-labels");
-    if (attendanceLabels) {
-      attendanceLabels.style.display = "flex";
-    }
   }
 
   // Display first login and last logout times
@@ -138,7 +143,6 @@ async function fetchAttendance(date, elementId, showTotal = false) {
 
   return attendanceDetails;
 }
-
 
 // Function to append time slots to attendance bar
 function appendSlot(parent, start, end, color) {
@@ -182,7 +186,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectedDate = document.getElementById("date-picker").value;
     document.getElementById("selected-date").innerText = formatDate(selectedDate);
     const attendanceDetails = await fetchAttendance(selectedDate, "attendance-details", true);
-    populateAttendanceModal(attendanceDetails);
+    if (Array.isArray(attendanceDetails)) {
+      populateAttendanceModal(attendanceDetails);
+    } else {
+      console.error("Failed to fetch attendance details or attendanceDetails is not an array.");
+    }
   });
 
   document.getElementById("view-details-button").addEventListener("click", () => {
@@ -190,6 +198,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("modal-selected-date").innerText = selectedDate;
     $("#attendanceModal").modal("show");
   });
+
+  // Set max attribute of date picker to today's date
+  document.getElementById("date-picker").setAttribute("max", todayDate);
 });
 
 // Function to populate the attendance details modal
@@ -197,20 +208,28 @@ function populateAttendanceModal(attendanceDetails) {
   const tableBody = document.getElementById("attendance-details-table");
   tableBody.innerHTML = "";
 
-  attendanceDetails.forEach((detail, index) => {
+  if (Array.isArray(attendanceDetails) && attendanceDetails.length > 0) {
+    attendanceDetails.forEach((detail, index) => {
+      const row = document.createElement("tr");
+      const slNoCell = document.createElement("td");
+      const inTimeCell = document.createElement("td");
+      const outTimeCell = document.createElement("td");
+
+      slNoCell.innerText = index + 1;
+      inTimeCell.innerText = detail.inTime ? formatTime(detail.inTime) : "N/A";
+      outTimeCell.innerText = detail.outTime ? formatTime(detail.outTime) : "N/A";
+
+      row.appendChild(slNoCell);
+      row.appendChild(inTimeCell);
+      row.appendChild(outTimeCell);
+      tableBody.appendChild(row);
+    });
+  } else {
     const row = document.createElement("tr");
-    const slNoCell = document.createElement("td");
-    const inTimeCell = document.createElement("td");
-    const outTimeCell = document.createElement("td");
-
-    slNoCell.innerText = index + 1;
-    inTimeCell.innerText = detail.inTime ? formatTime(detail.inTime) : "N/A";
-    outTimeCell.innerText = detail.outTime ? formatTime(detail.outTime) : "N/A";
-
-    row.appendChild(slNoCell);
-    row.appendChild(inTimeCell);
-    row.appendChild(outTimeCell);
+    const cell = document.createElement("td");
+    cell.colSpan = 3;
+    cell.innerText = "No attendance records available.";
+    row.appendChild(cell);
     tableBody.appendChild(row);
-  });
+  }
 }
-
