@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Update Attendance Ranking</title>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
+      authDomain: "logxp-31c62.firebaseapp.com",
+      projectId: "logxp-31c62",
+      storageBucket: "logxp-31c62.appspot.com",
+      messagingSenderId: "17276012238",
+      appId: "1:17276012238:web:464030eb3b2062bb55729f",
+      measurementId: "G-FVZH4VFV6T",
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function updateAttendanceRanking() {
+      try {
+        const attendanceSnapshot = await db.collection("attendance_register").get();
+        const empDetailsSnapshot = await db.collection("employee_details").get();
+        const rankingBatch = db.batch();
+
+        const empDetails = {};
+        empDetailsSnapshot.docs.forEach(doc => {
+          empDetails[doc.data().emp_id] = doc.data();
+        });
+
+        const empPoints = {};
+
+        for (const doc of attendanceSnapshot.docs) {
+          const data = doc.data();
+          const { emp_id, attendance_status, date } = data;
+          const month = date.toDate().toLocaleString('default', { month: 'long' });
+          const year = date.toDate().getFullYear();
+
+          if (!empPoints[emp_id]) {
+            empPoints[emp_id] = {};
+          }
+
+          if (!empPoints[emp_id][month]) {
+            empPoints[emp_id][month] = 0;
+          }
+
+          if (attendance_status === "p") {
+            empPoints[emp_id][month] += 1;
+          } else if (attendance_status === "h") {
+            empPoints[emp_id][month] += 0.5;
+          }
+        }
+
+        for (const empId in empPoints) {
+          for (const month in empPoints[empId]) {
+            const totalPoints = empPoints[empId][month];
+            const empName = empDetails[empId].emp_name;
+
+            // Check for existing documents with the same emp_id and month
+            const rankingSnapshot = await db.collection("attendance_ranking")
+              .where("emp_id", "==", empId)
+              .where("month", "==", month)
+              .where("year", "==", new Date().getFullYear())
+              .get();
+
+            if (!rankingSnapshot.empty) {
+              console.log(`Document for emp_id: ${empId}, month: ${month} already exists. Skipping.`);
+              continue; // Skip creating a new document if one already exists
+            }
+
+            const rankingDocRef = db.collection("attendance_ranking").doc();
+            rankingBatch.set(rankingDocRef, {
+              emp_id: empId,
+              emp_name: empName,
+              month: month,
+              total_points: totalPoints,
+              year: new Date().getFullYear(),
+            });
+          }
+        }
+
+        await rankingBatch.commit();
+        alert("Attendance ranking updated successfully!");
+      } catch (error) {
+        console.error("Error updating attendance ranking: ", error);
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Update Attendance Ranking</h1>
+  <button onclick="updateAttendanceRanking()">Update Attendance Ranking</button>
+</body>
+</html>
