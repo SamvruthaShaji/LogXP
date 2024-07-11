@@ -61,13 +61,13 @@ th {
     background-color: #ba0c0c;
     color: white;
 }
-.high-score {
+.high-points {
     background-color: #e0f7e0;
 }
-.medium-score {
+.medium-points {
     background-color: #ffffe0;
 }
-.low-score {
+.low-points {
     background-color: #ffe0e0;
 }
 @media (max-width: 1024px) {
