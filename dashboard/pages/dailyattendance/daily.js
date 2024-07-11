@@ -1,149 +1,235 @@
-// Function to format date as YYYY-MM-DD
-function formatDate(date) {
-  const d = new Date(date);
-  let month = '' + (d.getMonth() + 1);
-  let day = '' + d.getDate();
-  const year = d.getFullYear();
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  if (month.length < 2) month = '0' + month;
-  if (day.length < 2) day = '0' + day;
+const firebaseConfig = {
+  apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
+  authDomain: "logxp-31c62.firebaseapp.com",
+  projectId: "logxp-31c62",
+  storageBucket: "logxp-31c62",
+  messagingSenderId: "17276012238",
+  appId: "1:17276012238:web:464030eb3b2062bb55729f",
+  measurementId: "G-FVZH4VFV6T"
+};
 
-  return [year, month, day].join('-');
-}
 
-// Display today's date
-const today = new Date();
-document.getElementById("today-date").innerText = formatDate(today);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-// Fetch and display attendance for a specific date
-function fetchAttendance(date, empId, isToday = false) {
-  const formattedDate = formatDate(date);
-  const attendanceTable = isToday ? document.getElementById("attendance-today") : document.getElementById("attendance-details");
-  const totalHoursElem = isToday ? document.getElementById("total-hours-today") : document.getElementById("total-hours");
-  const firstLoginTimeElem = isToday ? document.getElementById("first-login-time-today") : document.getElementById("first-login-time");
-  const lastLogoutTimeElem = isToday ? document.getElementById("last-logout-time-today") : document.getElementById("last-logout-time");
-
-  attendanceTable.innerHTML = ""; // Clear previous data
-  totalHoursElem.innerText = "";
-  firstLoginTimeElem.innerText = "";
-  lastLogoutTimeElem.innerText = "";
-
-  const table = document.createElement("table");
-  table.className = "attendance-table";
-  const thead = document.createElement("thead");
-  const tbody = document.createElement("tbody");
-
-  const headerRow = document.createElement("tr");
-  const inTimeHeader = document.createElement("th");
-  inTimeHeader.innerText = "In Time";
-  const outTimeHeader = document.createElement("th");
-  outTimeHeader.innerText = "Out Time";
-  headerRow.appendChild(inTimeHeader);
-  headerRow.appendChild(outTimeHeader);
-  thead.appendChild(headerRow);
-  table.appendChild(thead);
-  table.appendChild(tbody);
-  attendanceTable.appendChild(table);
-
-  db.collection("in_out_details")
-    .where("emp_id", "==", empId)
-    .where("timestamp", ">=", new Date(`${formattedDate}T00:00:00`))
-    .where("timestamp", "<=", new Date(`${formattedDate}T23:59:59`))
-    .orderBy("timestamp")
-    .get()
-    .then((querySnapshot) => {
-      let firstLogin = null;
-      let lastLogout = null;
-      let lastStatus = null;
-      let lastTimestamp = null;
-
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const timestamp = data.timestamp.toDate();
-        
-        if (data.status === 1 && !firstLogin) {
-          firstLogin = timestamp;
-        }
-        if (data.status === 2) {
-          lastLogout = timestamp;
-        }
-
-        if (lastStatus === 1 && data.status === 2) {
-          const row = document.createElement("tr");
-          const inTimeCell = document.createElement("td");
-          const outTimeCell = document.createElement("td");
-          inTimeCell.innerText = lastTimestamp.toLocaleTimeString();
-          outTimeCell.innerText = timestamp.toLocaleTimeString();
-          row.appendChild(inTimeCell);
-          row.appendChild(outTimeCell);
-          tbody.appendChild(row);
-        }
-
-        lastStatus = data.status;
-        lastTimestamp = timestamp;
-      });
-
-      if (firstLogin && lastLogout) {
-        const totalTime = (lastLogout - firstLogin) / 1000 / 60 / 60;
-        totalHoursElem.innerText = `Total Hours: ${totalTime.toFixed(2)}`;
-        firstLoginTimeElem.innerText = `First Login: ${firstLogin.toLocaleTimeString()}`;
-        lastLogoutTimeElem.innerText = `Last Logout: ${lastLogout.toLocaleTimeString()}`;
-      }
-    })
-    .catch((error) => {
-      console.error("Error fetching attendance: ", error);
-    });
-}
-
-// Date picker functionality
-document.getElementById("submit-button").addEventListener("click", () => {
-  const selectedDate = new Date(document.getElementById("date-picker").value);
-  const user = firebase.auth().currentUser;
-
-  if (user) {
-    const email = user.email;
-    db.collection("employee_details")
-      .where("email", "==", email)
-      .get()
-      .then((querySnapshot) => {
-        if (!querySnapshot.empty) {
-          querySnapshot.forEach((doc) => {
-            const employee = doc.data();
-            document.getElementById("selected-date").innerText = formatDate(selectedDate);
-            document.getElementById("attendance-specific-date").style.display = "block";
-            fetchAttendance(selectedDate, employee.emp_id);
-          });
-        } else {
-          console.log("No matching documents.");
-        }
-      })
-      .catch((error) => {
-        console.log("Error getting documents: ", error);
-      });
+// Function to fetch attendance based on date
+async function fetchAttendance(date, elementId, showTotal = false) {
+  const todayDate = new Date().toISOString().slice(0, 10);
+  if (date > todayDate) {
+    console.error("Selected date cannot be in the future.");
+    return;
   }
-});
 
-// Initialize today's attendance
-document.addEventListener("DOMContentLoaded", (event) => {
-  firebase.auth().onAuthStateChanged(function (user) {
-    if (user) {
-      const email = user.email;
-      db.collection("employee_details")
-        .where("email", "==", email)
-        .get()
-        .then((querySnapshot) => {
-          if (!querySnapshot.empty) {
-            querySnapshot.forEach((doc) => {
-              const employee = doc.data();
-              fetchAttendance(today, employee.emp_id, true);
-            });
-          } else {
-            console.log("No matching documents.");
-          }
-        })
-        .catch((error) => {
-          console.log("Error getting documents: ", error);
-        });
+  const startOfWorkDay = new Date(`${date}T09:00:00`);
+  const endOfWorkDay = new Date(`${date}T18:00:00`);
+
+  console.log("Fetching attendance for date:", date);
+
+  const q = query(
+    collection(db, "in_out_details"),
+    where("emp_id", "==", "emp2"),
+    where("timestamp", ">=", new Date(date)),
+    where("timestamp", "<=", new Date(new Date(date).setHours(23, 59, 59, 999)))
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  console.log("Total records fetched:", querySnapshot.size);
+
+  const attendance = document.getElementById(elementId);
+  attendance.innerHTML = "";
+  let totalMinutes = 0;
+  const workIntervals = [];
+
+  let currentInTime = null;
+  let firstLoginTime = null;
+  let lastLogoutTime = null;
+
+  const attendanceDetails = [];
+
+  querySnapshot.forEach((doc, index) => {
+    const data = doc.data();
+    const timestamp = data.timestamp.toDate();
+    if (data.status === 1) {
+      if (!firstLoginTime) {
+        firstLoginTime = timestamp;
+      }
+      currentInTime = timestamp;
+      attendanceDetails.push({ slNo: index + 1, inTime: timestamp });
+    } else if (data.status === 2 && currentInTime) {
+      workIntervals.push({ start: currentInTime, end: timestamp });
+      totalMinutes += (timestamp - currentInTime) / (1000 * 60);
+      currentInTime = null;
+      lastLogoutTime = timestamp;
+      attendanceDetails[attendanceDetails.length - 1].outTime = timestamp;
     }
   });
+
+  console.log("Work intervals:", workIntervals);
+
+  if (workIntervals.length === 0) {
+    appendSlot(attendance, startOfWorkDay, endOfWorkDay, "red");
+    document.getElementById("no-details-message").style.display = "block";
+    return attendanceDetails;
+  } else {
+    document.getElementById("no-details-message").style.display = "none";
+  }
+
+  const combinedIntervals = [];
+  workIntervals.sort((a, b) => a.start - b.start);
+
+  let currentInterval = workIntervals[0];
+  for (let i = 1; i < workIntervals.length; i++) {
+    if (workIntervals[i].start <= currentInterval.end) {
+      currentInterval.end = new Date(
+        Math.max(currentInterval.end, workIntervals[i].end)
+      );
+    } else {
+      combinedIntervals.push(currentInterval);
+      currentInterval = workIntervals[i];
+    }
+  }
+  combinedIntervals.push(currentInterval);
+
+  console.log("Combined intervals:", combinedIntervals);
+
+  let lastEnd = startOfWorkDay;
+  combinedIntervals.forEach((interval) => {
+    if (interval.start > lastEnd) {
+      appendSlot(attendance, lastEnd, interval.start, "red");
+    }
+    appendSlot(attendance, interval.start, interval.end, "green");
+    lastEnd = interval.end;
+  });
+
+  if (lastEnd < endOfWorkDay) {
+    appendSlot(attendance, lastEnd, endOfWorkDay, "red");
+  }
+
+  if (showTotal) {
+    const attendanceSpecificDateElement = document.getElementById("attendance-specific-date");
+    if (attendanceSpecificDateElement) {
+      attendanceSpecificDateElement.style.display = "block";
+    }
+
+    const totalHours = document.getElementById("total-hours");
+    if (totalHours) {
+      const roundedMinutes = Math.round(totalMinutes);
+      totalHours.innerText = `Total working hours: ${Math.floor(
+        roundedMinutes / 60
+      )} hrs ${roundedMinutes % 60} mins`;
+    }
+  }
+
+  // Display first login and last logout times
+  const firstLoginDisplay = document.getElementById("first-login-time");
+  const lastLogoutDisplay = document.getElementById("last-logout-time");
+  if (firstLoginDisplay) {
+    firstLoginDisplay.innerText = firstLoginTime ? `Login Time: ${formatTime(firstLoginTime)}` : "Login Time: N/A";
+  }
+  if (lastLogoutDisplay) {
+    lastLogoutDisplay.innerText = lastLogoutTime ? `Logout Time: ${formatTime(lastLogoutTime)}` : "Logout Time: N/A";
+  }
+
+  return attendanceDetails;
+}
+
+// Function to append time slots to attendance bar
+function appendSlot(parent, start, end, color) {
+  const slotElement = document.createElement("div");
+  slotElement.className = `slot ${color}`;
+  const widthPercentage = ((end - start) / (9 * 60 * 60 * 1000)) * 100;
+  slotElement.style.width = `${widthPercentage}%`;
+
+  if (widthPercentage > 5) {
+    slotElement.innerText = `${formatTime(start)} - ${formatTime(end)}`;
+  }
+
+  slotElement.setAttribute("data-time", `${formatTime(start)} - ${formatTime(end)}`);
+  parent.appendChild(slotElement);
+
+  setTimeout(() => {
+    slotElement.classList.add("loaded");
+  }, 100);
+}
+
+// Function to format time to HH:mm format
+function formatTime(date) {
+  return date.toTimeString().split(" ")[0].slice(0, 5);
+}
+
+// Function to format date to "Month Day, Year" format
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return date.toLocaleDateString('en-US', options);
+}
+
+// Event listener for DOMContentLoaded
+document.addEventListener("DOMContentLoaded", () => {
+  const todayDate = new Date().toISOString().slice(0, 10);
+  document.getElementById("today-date").innerText = formatDate(todayDate);
+
+  fetchAttendance(todayDate, "attendance-today");
+
+  document.getElementById("submit-button").addEventListener("click", async () => {
+    const selectedDate = document.getElementById("date-picker").value;
+    document.getElementById("selected-date").innerText = formatDate(selectedDate);
+    const attendanceDetails = await fetchAttendance(selectedDate, "attendance-details", true);
+    if (Array.isArray(attendanceDetails)) {
+      populateAttendanceModal(attendanceDetails);
+    } else {
+      console.error("Failed to fetch attendance details or attendanceDetails is not an array.");
+    }
+  });
+
+  document.getElementById("view-details-button").addEventListener("click", () => {
+    const selectedDate = document.getElementById("selected-date").innerText;
+    document.getElementById("modal-selected-date").innerText = selectedDate;
+    $("#attendanceModal").modal("show");
+  });
+
+  // Set max attribute of date picker to today's date
+  document.getElementById("date-picker").setAttribute("max", todayDate);
 });
+
+// Function to populate the attendance details modal
+function populateAttendanceModal(attendanceDetails) {
+  const tableBody = document.getElementById("attendance-details-table");
+  tableBody.innerHTML = "";
+
+  if (Array.isArray(attendanceDetails) && attendanceDetails.length > 0) {
+    attendanceDetails.forEach((detail, index) => {
+      const row = document.createElement("tr");
+      const slNoCell = document.createElement("td");
+      const inTimeCell = document.createElement("td");
+      const outTimeCell = document.createElement("td");
+
+      slNoCell.innerText = index + 1;
+      inTimeCell.innerText = detail.inTime ? formatTime(detail.inTime) : "N/A";
+      outTimeCell.innerText = detail.outTime ? formatTime(detail.outTime) : "N/A";
+
+      row.appendChild(slNoCell);
+      row.appendChild(inTimeCell);
+      row.appendChild(outTimeCell);
+      tableBody.appendChild(row);
+    });
+  } else {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    cell.colSpan = 3;
+    cell.innerText = "No attendance records available.";
+    row.appendChild(cell);
+    tableBody.appendChild(row);
+  }
+}
