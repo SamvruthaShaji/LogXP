@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Employee</title>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
+      authDomain: "logxp-31c62.firebaseapp.com",
+      projectId: "logxp-31c62",
+      storageBucket: "logxp-31c62.appspot.com",
+      messagingSenderId: "17276012238",
+      appId: "1:17276012238:web:464030eb3b2062bb55729f",
+      measurementId: "G-FVZH4VFV6T",
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    async function createEmployee() {
+      const empName = document.getElementById("empName").value;
+      const empId = document.getElementById("empId").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const profilePic = document.getElementById("profilePic").value;
+      const batch = document.getElementById("batch").value;
+
+      if (!empName || !empId || !email || !password || !profilePic || !batch) {
+        alert("Please fill out all fields.");
+        return;
+      }
+
+      const existingEmp = await db.collection("employee_details").where("emp_id", "==", empId).get();
+      if (!existingEmp.empty) {
+        alert("Employee ID already exists.");
+        return;
+      }
+
+      const joiningDate = new Date();
+
+      try {
+        // Create user in Firebase Authentication
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+
+        // Add employee details to Firestore
+        await db.collection("employee_details").add({
+          emp_name: empName,
+          emp_id: empId,
+          email: email,
+          profile_pic: profilePic,
+          Batch: batch,
+          joining_date: firebase.firestore.Timestamp.fromDate(joiningDate),
+        });
+
+        alert("Employee created successfully.");
+        document.getElementById("employeeForm").reset();
+      } catch (error) {
+        console.error("Error creating employee: ", error);
+        alert("Error creating employee. Please try again.");
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    input,
+    button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+      width: 300px;
+    }
+    button {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Create Employee</h1>
+  <form id="employeeForm">
+    <input type="text" id="empName" placeholder="Enter Employee Name" />
+    <input type="text" id="empId" placeholder="Enter Employee ID" />
+    <input type="email" id="email" placeholder="Enter Employee Email" />
+    <input type="password" id="password" placeholder="Enter Employee Password" />
+    <input type="text" id="profilePic" placeholder="Enter Profile Picture URL" />
+    <input type="text" id="batch" placeholder="Enter Batch" />
+    <button type="button" onclick="createEmployee()">Create Employee</button>
+  </form>
+</body>
+</html>

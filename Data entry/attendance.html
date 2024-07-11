@@ -27,6 +27,14 @@
       return !empQuerySnapshot.empty;
     }
 
+    async function checkAttendanceEntry(empId, date) {
+      const snapshot = await db.collection("attendance_register")
+        .where("emp_id", "==", empId)
+        .where("date", "==", firebase.firestore.Timestamp.fromDate(date))
+        .get();
+      return !snapshot.empty;
+    }
+
     function getTotalHours(entries) {
       let totalHours = 0;
       let lastIn = null;
@@ -57,10 +65,25 @@
         return;
       }
 
-      const today = new Date();
-      const todayStart = new Date(today.setHours(0, 0, 0, 0));
-      const todayEnd = new Date(today.setHours(23, 59, 59, 999));
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinutes = now.getMinutes();
+      const currentTime = currentHour * 60 + currentMinutes; // current time in minutes from midnight
 
+      // Allowed time window: 21:00 (1260 minutes) to 07:00 next day (420 minutes)
+      if (currentTime < 1260 && currentTime > 420) {
+        alert("You can only update the attendance status between 21:00:00 and 07:00:00.");
+        return;
+      }
+
+      const todayStart = new Date(now.setHours(0, 0, 0, 0));
+      const attendanceEntryExists = await checkAttendanceEntry(empId, todayStart);
+      if (attendanceEntryExists) {
+        alert("Attendance status for today has already been updated");
+        return;
+      }
+
+      const todayEnd = new Date(now.setHours(23, 59, 59, 999));
       const snapshot = await db.collection("in_out_details")
         .where("emp_id", "==", empId)
         .where("timestamp", ">=", firebase.firestore.Timestamp.fromDate(todayStart))
@@ -82,7 +105,7 @@
       await db.collection("attendance_register").add({
         emp_id: empId,
         attendance_status: attendanceStatus,
-        date: firebase.firestore.Timestamp.fromDate(new Date()),
+        date: firebase.firestore.Timestamp.fromDate(todayStart),
         month: new Date().toLocaleString('default', { month: 'long' })
       });
 
