@@ -87,7 +87,6 @@ header {
 }
 
 h1 {
-  /* text-align: center; */
   padding-left: 500px;
   padding-top: 100px;
   padding-right: 0;
@@ -136,15 +135,6 @@ td {
 th {
   background-color: #ba0c0c;
   color: white;
-}
-.high-score {
-  background-color: #e0f7e0;
-}
-.medium-score {
-  background-color: #ffffe0;
-}
-.low-score {
-  background-color: #ffe0e0;
 }
 @media (max-width: 1024px) {
   h1 {
