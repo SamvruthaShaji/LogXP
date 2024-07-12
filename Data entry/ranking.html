@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Update Attendance Ranking</title>
+  <title>Ranking</title>
   <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
   <script>
@@ -22,72 +22,71 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    async function updateAttendanceRanking() {
-      try {
-        const attendanceSnapshot = await db.collection("attendance_register").get();
-        const empDetailsSnapshot = await db.collection("employee_details").get();
-        const rankingBatch = db.batch();
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 
-        const empDetails = {};
-        empDetailsSnapshot.docs.forEach(doc => {
-          empDetails[doc.data().emp_id] = doc.data();
+    async function generateAttendanceRanking() {
+      try {
+        const currentYear = new Date().getFullYear();
+        const employeeDetailsSnapshot = await db.collection("employee_details").get();
+        const attendanceRegisterSnapshot = await db.collection("attendance_register").get();
+
+        const employeeDetails = {};
+        employeeDetailsSnapshot.forEach((doc) => {
+          employeeDetails[doc.data().emp_id] = {
+            emp_name: doc.data().emp_name,
+            Batch: doc.data().Batch,
+          };
         });
 
-        const empPoints = {};
-
-        for (const doc of attendanceSnapshot.docs) {
+        const attendanceData = {};
+        attendanceRegisterSnapshot.forEach((doc) => {
           const data = doc.data();
-          const { emp_id, attendance_status, date } = data;
-          const month = date.toDate().toLocaleString('default', { month: 'long' });
-          const year = date.toDate().getFullYear();
-
-          if (!empPoints[emp_id]) {
-            empPoints[emp_id] = {};
+          const empId = data.emp_id;
+          if (!attendanceData[empId]) {
+            attendanceData[empId] = 0;
           }
 
-          if (!empPoints[emp_id][month]) {
-            empPoints[emp_id][month] = 0;
+          if (data.attendance_status === "p") {
+            attendanceData[empId] += 2;
+          } else if (data.attendance_status === "h") {
+            attendanceData[empId] += 1;
+          }
+        });
+
+        const attendanceRankingSnapshot = await db.collection("attendance_ranking").get();
+        const existingEmpIds = {};
+        attendanceRankingSnapshot.forEach((doc) => {
+          existingEmpIds[doc.data().emp_id] = true;
+        });
+
+        const batchPromises = [];
+        for (const empId in employeeDetails) {
+          if (existingEmpIds[empId]) {
+            console.log(`Document with emp_id ${empId} already exists.`);
+            continue;
           }
 
-          if (attendance_status === "p") {
-            empPoints[emp_id][month] += 1;
-          } else if (attendance_status === "h") {
-            empPoints[emp_id][month] += 0.5;
-          }
+          const totalPoints = attendanceData[empId] || 0;
+          const empName = employeeDetails[empId].emp_name;
+          const batch = employeeDetails[empId].Batch;
+
+          const attendanceRankingData = {
+            Batch: batch,
+            emp_id: empId,
+            emp_name: empName,
+            total_points: totalPoints,
+            year: currentYear,
+          };
+
+          batchPromises.push(db.collection("attendance_ranking").add(attendanceRankingData));
         }
 
-        for (const empId in empPoints) {
-          for (const month in empPoints[empId]) {
-            const totalPoints = empPoints[empId][month];
-            const empName = empDetails[empId].emp_name;
-
-            // Check for existing documents with the same emp_id and month
-            const rankingSnapshot = await db.collection("attendance_ranking")
-              .where("emp_id", "==", empId)
-              .where("month", "==", month)
-              .where("year", "==", new Date().getFullYear())
-              .get();
-
-            if (!rankingSnapshot.empty) {
-              console.log(`Document for emp_id: ${empId}, month: ${month} already exists. Skipping.`);
-              continue; // Skip creating a new document if one already exists
-            }
-
-            const rankingDocRef = db.collection("attendance_ranking").doc();
-            rankingBatch.set(rankingDocRef, {
-              emp_id: empId,
-              emp_name: empName,
-              month: month,
-              total_points: totalPoints,
-              year: new Date().getFullYear(),
-            });
-          }
-        }
-
-        await rankingBatch.commit();
-        alert("Attendance ranking updated successfully!");
+        await Promise.all(batchPromises);
+        alert("Attendance ranking generated successfully!");
       } catch (error) {
-        console.error("Error updating attendance ranking: ", error);
+        console.error("Error generating attendance ranking: ", error);
       }
     }
   </script>
@@ -108,7 +107,7 @@
   </style>
 </head>
 <body>
-  <h1>Update Attendance Ranking</h1>
-  <button onclick="updateAttendanceRanking()">Update Attendance Ranking</button>
+  <h1>Ranking</h1>
+  <button onclick="generateAttendanceRanking()">Generate Attendance Ranking</button>
 </body>
 </html>
