@@ -21,11 +21,21 @@ const firebaseConfig = {
   let currentUserEmpId = null;
   
   document.addEventListener("DOMContentLoaded", (event) => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const empId = urlParams.get('emp_id');
+  
+    if (!empId) {
+      console.error('Employee ID not provided in URL');
+      // Redirect or handle the error as needed
+      window.location.href = "../error-page.html"; // Example of redirecting to an error page
+      return;
+    }
+  
     firebase.auth().onAuthStateChanged(function (user) {
+      console.log(user);
       if (user) {
-        const email = user.email;
         db.collection("employee_details")
-          .where("email", "==", email)
+          .where("emp_id", "==", empId) // Query by emp_id instead of email
           .get()
           .then((querySnapshot) => {
             if (!querySnapshot.empty) {
@@ -38,7 +48,7 @@ const firebaseConfig = {
                 const currentMonth = new Date().getMonth() + 1;
                 const currentYear = new Date().getFullYear();
                 generateCalendar(currentMonth, currentYear);
-                fetchAttendanceData(currentMonth, currentYear);
+                fetchAttendanceData(empId, currentMonth, currentYear); // Pass empId to fetch attendance
               });
             } else {
               console.log("No matching documents.");
@@ -47,14 +57,13 @@ const firebaseConfig = {
           .catch((error) => {
             console.log("Error getting documents: ", error);
           });
-      } else {
-        window.location.href = "../login/traineelogin.html";
       }
     });
   
     // Populate dropdowns
     populateDropdowns();
   });
+  
   
   // DOM elements
   const monthSelect = document.getElementById("month");

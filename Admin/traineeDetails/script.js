@@ -1,3 +1,4 @@
+//gygfytfyy
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
@@ -326,6 +327,7 @@ toggleSearchButton();
 
 
 // Modal button actions
+
 document.getElementById('dailyAttendanceBtn').addEventListener('click', (event) => {
     const empId = event.target.getAttribute('data-emp-id');
     window.location.href = `dailyAttendance.html?emp_id=${empId}`;
@@ -333,7 +335,7 @@ document.getElementById('dailyAttendanceBtn').addEventListener('click', (event) 
 
 document.getElementById('monthlyAttendanceBtn').addEventListener('click', (event) => {
     const empId = event.target.getAttribute('data-emp-id');
-    window.location.href = `monthlyAttendance.html?emp_id=${empId}`;
+    window.location.href = `../traineepages/monthlyattendence/monthlyAtt.html?emp_id=${empId}`;
 });
 
 document.getElementById('lossOfPayBtn').addEventListener('click', (event) => {
