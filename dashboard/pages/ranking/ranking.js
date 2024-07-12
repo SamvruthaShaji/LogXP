@@ -63,47 +63,29 @@ async function fetchRankingData() {
     const querySnapshot = await getDocs(q);
     rankingBody.innerHTML = ''; // Clear previous results
 
-    if (querySnapshot.empty) {
+    let rank = 1;
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
       const row = document.createElement('tr');
-      const noDataCell = document.createElement('td');
-      noDataCell.colSpan = 4;
-      noDataCell.textContent = "No records found";
-      row.appendChild(noDataCell);
+
+      const rankCell = document.createElement('td');
+      rankCell.textContent = rank++;
+      row.appendChild(rankCell);
+
+      const empIdCell = document.createElement('td');
+      empIdCell.textContent = data.emp_id;
+      row.appendChild(empIdCell);
+
+      const nameCell = document.createElement('td');
+      nameCell.textContent = data.emp_name;
+      row.appendChild(nameCell);
+
+      const totalCell = document.createElement('td');
+      totalCell.textContent = data.total_points;
+      row.appendChild(totalCell);
+
       rankingBody.appendChild(row);
-    } else {
-      let rank = 1;
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const row = document.createElement('tr');
-
-        // Apply conditional styling based on total_points
-        if (data.total_points < 10) {
-          row.classList.add('low-points');
-        } else if (data.total_points >= 10 && data.total_points <= 20) {
-          row.classList.add('medium-points');
-        } else {
-          row.classList.add('high-points');
-        }
-
-        const rankCell = document.createElement('td');
-        rankCell.textContent = rank++;
-        row.appendChild(rankCell);
-
-        const empIdCell = document.createElement('td');
-        empIdCell.textContent = data.emp_id;
-        row.appendChild(empIdCell);
-
-        const nameCell = document.createElement('td');
-        nameCell.textContent = data.emp_name;
-        row.appendChild(nameCell);
-
-        const totalCell = document.createElement('td');
-        totalCell.textContent = data.total_points;
-        row.appendChild(totalCell);
-
-        rankingBody.appendChild(row);
-      });
-    }
+    });
 
     rankingTable.classList.remove('hidden');
   }
