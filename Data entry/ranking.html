@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LogXP Data Generator</title>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
+      authDomain: "logxp-31c62.firebaseapp.com",
+      projectId: "logxp-31c62",
+      storageBucket: "logxp-31c62.appspot.com",
+      messagingSenderId: "17276012238",
+      appId: "1:17276012238:web:464030eb3b2062bb55729f",
+      measurementId: "G-FVZH4VFV6T",
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    async function generateAttendanceRanking() {
+      try {
+        const currentYear = new Date().getFullYear();
+        const employeeDetailsSnapshot = await db.collection("employee_details").get();
+        const attendanceRegisterSnapshot = await db.collection("attendance_register").get();
+
+        const employeeDetails = {};
+        employeeDetailsSnapshot.forEach((doc) => {
+          employeeDetails[doc.data().emp_id] = {
+            emp_name: doc.data().emp_name,
+            Batch: doc.data().Batch,
+          };
+        });
+
+        const attendanceData = {};
+        attendanceRegisterSnapshot.forEach((doc) => {
+          const data = doc.data();
+          const empId = data.emp_id;
+          if (!attendanceData[empId]) {
+            attendanceData[empId] = 0;
+          }
+
+          if (data.attendance_status === "p") {
+            attendanceData[empId] += 2;
+          } else if (data.attendance_status === "h") {
+            attendanceData[empId] += 1;
+          }
+        });
+
+        const attendanceRankingSnapshot = await db.collection("attendance_ranking").get();
+        const existingEmpIds = {};
+        attendanceRankingSnapshot.forEach((doc) => {
+          existingEmpIds[doc.data().emp_id] = true;
+        });
+
+        const batchPromises = [];
+        for (const empId in employeeDetails) {
+          if (existingEmpIds[empId]) {
+            console.log(`Document with emp_id ${empId} already exists.`);
+            continue;
+          }
+
+          const totalPoints = attendanceData[empId] || 0;
+          const empName = employeeDetails[empId].emp_name;
+          const batch = employeeDetails[empId].Batch;
+
+          const attendanceRankingData = {
+            Batch: batch,
+            emp_id: empId,
+            emp_name: empName,
+            total_points: totalPoints,
+            year: currentYear,
+          };
+
+          batchPromises.push(db.collection("attendance_ranking").add(attendanceRankingData));
+        }
+
+        await Promise.all(batchPromises);
+        alert("Attendance ranking generated successfully!");
+      } catch (error) {
+        console.error("Error generating attendance ranking: ", error);
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>LogXP Data Generator</h1>
+  <button onclick="generateAttendanceRanking()">Generate Attendance Ranking</button>
+</body>
+</html>

@@ -1,38 +1,91 @@
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
-  padding: 0;
+  font-family: Arial, sans-serif;
   display: flex;
-  flex-direction: column;
   height: 100vh;
+  overflow: hidden;
 }
- 
+
 header {
   width: 100%;
-  height: 60px; /* Adjust based on your actual header height */
-}
- 
-.sidebar {
-  position: fixed;
-  top: 60px; /* Adjust based on your header height */
-  left: 0;
-  height: calc(100% - 60px); /* Adjust based on your header height */
-  width: 200px; /* Adjust based on your sidebar width */
-  background-color: #f04a41;
-  padding-top: 20px;
-}
- 
-.sidebar .contents a {
-  display: block;
+  background-color: #ea454c;
+  color: white;
   padding: 10px 20px;
+  z-index: 1001;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+}
+
+.profile img {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.navbar-brand {
+  color: #ddd;
+}
+
+.header-right button {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.sidebar {
+  height: 100vh;
+  width: 250px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color: #ea454c;
+  padding-top: 60px;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.contents {
+  padding-top: 10px;
+}
+
+.sidebar a {
+  padding: 15px;
+  text-decoration: none;
+  font-size: 18px;
   color: #fff;
+  display: block;
+}
+
+.sidebar a:hover {
+  background-color: #ddd;
+  color: #000;
   text-decoration: none;
 }
- 
-.sidebar .contents a:hover {
-  background-color: #ff6f61;
+
+.toggle-btn {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  display: none;
 }
- 
+
 .lop-container {
   display: flex;
   margin-left: 260px; /* Increase based on your sidebar width */
@@ -41,27 +94,29 @@ header {
   flex-direction: row;
   justify-content: space-between;
   margin-top: 80px; /* Adjust based on desired positioning below the header */
-  height: calc(100vh - 140px); /* Adjust based on your header height and additional margins */
+  height: calc(
+    100vh - 140px
+  ); /* Adjust based on your header height and additional margins */
   overflow-y: auto;
   background-color: white; /* Ensure the background color matches the white space */
   border-radius: 8px; /* Optional: Add some border-radius for better aesthetics */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: Add some shadow for better aesthetics */
 }
- 
+
 .lop-section {
   flex: 1;
   padding-right: 20px;
 }
- 
+
 .lop-form-group {
   margin-bottom: 20px;
 }
- 
+
 label {
   display: block;
   margin-bottom: 5px;
 }
- 
+
 select {
   width: 100%;
   padding: 10px;
@@ -69,41 +124,41 @@ select {
   max-width: 100%; /* Ensure the select element does not exceed its container width */
   overflow: hidden; /* Handle overflow */
 }
- 
+
 .lop-summary {
   margin-top: 20px;
 }
- 
+
 .lop-summary p {
   margin: 5px 0;
 }
- 
+
 .lop-calendar-section {
   flex: 2;
   padding-left: 20px;
 }
- 
+
 .lop-calendar-section h3 {
   margin-top: 0;
 }
- 
+
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
 }
- 
+
 table th,
 table td {
   border: 1px solid #ddd;
   padding: 10px;
   text-align: center;
 }
- 
+
 table th {
   background-color: #f2f2f2;
 }
- 
+
 .lop-sunday {
   color: red;
 }
@@ -111,121 +166,172 @@ table th {
 .lop-full-lop {
   background-color: #ffcdd2; /* Pink color for Full LOP */
 }
- 
+
 .lop-half-lop {
   background-color: #fff9c4; /* Yellow color for Half LOP */
 }
- 
+
 .lop-next-month {
   background-color: #eceff1;
 }
- 
+
 .lop-legend {
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
 }
- 
+
 .lop-legend-item {
   display: flex;
   align-items: center;
 }
- 
+
 .lop-legend-item span {
   display: inline-block;
   width: 20px;
   height: 20px;
   margin-right: 5px;
 }
- 
+
 @media (max-width: 1024px) {
   /* Tablet view */
   .lop-container {
-      flex-direction: column;
-      margin-left: 0;
-      width: 100%;
-      margin-top: 80px; /* Ensure enough space below the header */
-      height: calc(100vh - 140px); /* Ensure enough space below the header */
-      padding: 10px; /* Adjust padding for smaller screens */
+    flex-direction: column;
+    margin-left: 0;
+    width: 100%;
+    margin-top: 80px; /* Ensure enough space below the header */
+    height: calc(100vh - 140px); /* Ensure enough space below the header */
+    padding: 10px; /* Adjust padding for smaller screens */
   }
- 
+
   .lop-section,
   .lop-calendar-section {
-      padding: 0;
+    padding: 0;
   }
- 
+
   .lop-calendar-section table th,
   .lop-calendar-section table td {
-      padding: 5px;
+    padding: 5px;
   }
- 
+
   .lop-summary {
-      margin-top: 10px;
+    margin-top: 10px;
   }
- 
+
   .lop-summary p {
-      margin: 3px 0;
+    margin: 3px 0;
   }
- 
+
   .lop-legend {
-      flex-direction: column;
-      align-items: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
   }
- 
+
   .lop-legend-item {
-      margin-bottom: 5px;
+    margin-bottom: 5px;
   }
- 
+
   /* Adjusting the select elements to fit the screen */
   select {
-      width: 100%;
+    width: 100%;
   }
 }
- 
+
 @media (max-width: 768px) {
-  /* Mobile view */
-  .lop-container {
-      flex-direction: column;
-      margin-left: 0;
-      width: 100%;
-      margin-top: 80px; /* Ensure enough space below the header */
-      height: calc(100vh - 140px); /* Ensure enough space below the header */
-      padding: 10px; /* Adjust padding for smaller screens */
+  .toggle-btn {
+    display: block;
   }
- 
+
+  .sidebar {
+    display: none;
+  }
+
+  .sidebar.show {
+    display: block;
+    height: 250px;
+  }
+
+  .sidebar a {
+    padding: 10px;
+    font-size: 10px;
+    color: #000;
+  }
+
+  .content {
+    margin-left: 0;
+  }
+
+  .hdr {
+    align-items: flex-start;
+  }
+
+  .profile,
+  .header-center,
+  .header-right {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 10px;
+  }
+
+  .header-center {
+    text-align: center;
+  }
+
+  .profile img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .sidebar a {
+    font-size: 16px;
+  }
+
+  .header-right button {
+    font-size: 12px;
+  }
+
+  .lop-container {
+    flex-direction: column;
+    margin-left: 0;
+    width: 100%;
+    margin-top: 80px; /* Ensure enough space below the header */
+    height: calc(100vh - 140px); /* Ensure enough space below the header */
+    padding: 10px; /* Adjust padding for smaller screens */
+  }
+
   .lop-section,
   .lop-calendar-section {
-      padding: 0;
+    padding: 0;
   }
- 
+
   .lop-calendar-section table th,
   .lop-calendar-section table td {
-      padding: 3px;
+    padding: 3px;
   }
- 
+
   .lop-summary {
-      margin-top: 10px;
+    margin-top: 10px;
   }
- 
+
   .lop-summary p {
-      margin: 3px 0;
+    margin: 3px 0;
   }
- 
+
   .lop-legend {
-      flex-direction: column;
-      align-items: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
   }
- 
+
   .lop-legend-item {
-      margin-bottom: 5px;
+    margin-bottom: 5px;
   }
- 
+
   /* Adjusting the select elements to fit the screen */
   select {
-      width: 100%;
+    width: 100%;
   }
 }
- 
+
 /* Ensuring the dropdown fits within the screen */
 select {
   -webkit-appearance: none; /* Remove default styling */
@@ -240,14 +346,14 @@ select {
   max-width: 100%; /* Ensure select does not exceed container width */
   overflow: hidden; /* Handle overflow */
 }
- 
+
 /* Additional styling for dropdown arrow */
 select::-ms-expand {
   display: none; /* Remove default arrow in IE */
 }
- 
+
 select::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   right: 10px;
