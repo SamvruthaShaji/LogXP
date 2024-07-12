@@ -1,8 +1,9 @@
 body {
-  display: flex;
-  flex-direction: column;
   margin: 0;
   font-family: Arial, sans-serif;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
 }
 
 header {
@@ -13,18 +14,18 @@ header {
   z-index: 1001;
   position: fixed;
   top: 0;
+  left: 0;
 }
 
 .hdr {
   display: flex;
   align-items: center;
-  flex-direction: row;
   justify-content: space-between;
 }
 
 .profile {
   display: flex;
-  flex-direction: row;
+  align-items: center;
 }
 
 .profile img {
@@ -32,10 +33,6 @@ header {
   width: 40px;
   height: 40px;
   margin-right: 10px;
-}
-
-.profile span {
-  margin-right: 20px;
 }
 
 .navbar-brand {
@@ -55,13 +52,15 @@ header {
   width: 250px;
   position: fixed;
   left: 0;
+  top: 0;
   background-color: #ea454c;
-  padding-top: 20px;
+  padding-top: 60px;
   z-index: 1000;
+  overflow-y: auto;
 }
 
 .contents {
-  padding-top: 60px;
+  padding-top: 10px;
 }
 
 .sidebar a {
@@ -78,12 +77,6 @@ header {
   text-decoration: none;
 }
 
-.content {
-  margin-left: 250px;
-  margin-top: 60px;
-  padding: 20px;
-}
-
 .toggle-btn {
   background-color: transparent;
   border: none;
@@ -93,13 +86,10 @@ header {
   display: none;
 }
 
-.sidebar.show {
-  display: block;
-}
-
 .DA {
-  padding-left: 200px;
-  width: 100%;
+  padding-left: 370px;
+  width: 90%;
+  margin-top: 100px;
   box-sizing: border-box;
 }
 
@@ -122,6 +112,64 @@ h1 {
 .date-picker-container {
   margin-bottom: 20px;
   text-align: center;
+  max-width: 100%;
+}
+
+.attendance-bar {
+  display: flex;
+  height: 30px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  position: relative;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.slot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  position: relative;
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: transform 1s, opacity 2s;
+}
+
+.slot.loaded {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.slot.green {
+  background-color: #c8e6c9;
+  color: #388e3c;
+}
+
+.slot.red {
+  background-color: #ffcdd2;
+  color: #d32f2f;
+}
+
+.slot:hover::after {
+  content: attr(data-time);
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: 5px;
+  border-radius: 3px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
 }
 
 .date-picker-container {
@@ -176,38 +224,70 @@ h1 {
   background-color: #f2f2f2;
 }
 
+.label-box.red {
+  background-color: #ed4a5a;
+}
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  align-items: end;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+.legend div {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.legend-box {
+  width: 25px;
+  height: 25px;
+  display: inline-block;
+  margin-right: 5px;
+  border-radius: 5px;
+  border: 0px;
+}
+
+.legend-box.inside {
+  background-color: #8ed291;
+}
+
+.legend-box.outside {
+  background-color: #ed4a5a;
+}
+
 @media (max-width: 768px) {
-  body {
-    padding-top: 60px;
-  }
-  .DA {
-    padding-left: 0;
-  }
-  .container {
-    padding: 10px;
-    max-width: 100%;
-  }
   .toggle-btn {
     display: block;
   }
+
   .sidebar {
     display: none;
   }
+
   .sidebar.show {
     display: block;
-    background-color: transparent;
+    height: 250px;
   }
+
   .sidebar a {
     padding: 10px;
     font-size: 10px;
     color: #000;
   }
+
   .content {
     margin-left: 0;
   }
+
   .hdr {
     align-items: flex-start;
   }
+
   .profile,
   .header-center,
   .header-right {
@@ -215,34 +295,27 @@ h1 {
     text-align: left;
     margin-bottom: 10px;
   }
+
   .header-center {
     text-align: center;
   }
+
   .profile img {
     width: 30px;
     height: 30px;
   }
+
   .sidebar a {
     font-size: 16px;
   }
+
   .header-right button {
     font-size: 12px;
   }
-}
 
-@media (max-width: 480px) {
-  body {
-    padding-top: 200px;
-  }
-  .container {
-    padding: 5px;
-  }
-  .date-picker-container {
-    flex-direction: column;
-  }
-  .date-picker-container label,
-  .date-picker-container input,
-  .date-picker-container button {
-    margin: 5px 0;
+  .DA {
+    padding-left: 0;
+    width: 100%;
+    margin-top: 100px;
   }
 }

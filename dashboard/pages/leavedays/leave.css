@@ -1,3 +1,102 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+header {
+  width: 100%;
+  background-color: #ea454c;
+  color: white;
+  padding: 10px 20px;
+  z-index: 1001;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+}
+
+.profile img {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.navbar-brand {
+  color: #ddd;
+}
+
+.header-right button {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.sidebar {
+  height: 100vh;
+  width: 250px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color: #ea454c;
+  padding-top: 60px;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.contents {
+  padding-top: 10px;
+}
+
+.sidebar a {
+  padding: 15px;
+  text-decoration: none;
+  font-size: 18px;
+  color: #fff;
+  display: block;
+}
+
+.sidebar a:hover {
+  background-color: #ddd;
+  color: #000;
+  text-decoration: none;
+}
+
+.toggle-btn {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  display: none;
+}
+
+.LD {
+  margin-top: 60px;
+  margin-left: 250px;
+  padding: 9px 0px 1px 1px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  background-color: #f5f5f5;
+  box-sizing: border-box;
+  width: calc(100% - 250px);
+}
+
 .container {
   display: flex;
   width: 100%;
@@ -8,7 +107,7 @@
   box-shadow: none;
   border-radius: 0;
 }
- 
+
 .sid {
   padding: 30px;
   margin-left: -16px;
@@ -16,22 +115,22 @@
   margin-bottom: -5px;
   width: 30%;
   box-sizing: border-box;
-  background-color: #F8F8F8;
+  background-color: #f8f8f8;
 }
- 
+
 .sid h2 {
   font-size: 25px;
   margin-bottom: 30px;
   margin-top: 10px;
 }
- 
+
 .sid label {
   display: block;
   margin-top: 40px;
   font-size: 17px;
   color: #333;
 }
- 
+
 .sid select {
   width: 100%;
   padding: 5px;
@@ -39,17 +138,17 @@
   border: 1px solid #ddd;
   border-radius: 5px;
 }
- 
+
 .summary {
   margin-top: 40px;
   line-height: 1.9;
 }
- 
+
 .summary p {
   font-size: 18px;
   margin: 0px 0px 10px 10px;
 }
- 
+
 .calendar {
   display: flex;
   flex-direction: column;
@@ -59,20 +158,21 @@
   box-sizing: border-box;
   background-color: #fff;
 }
- 
+
 .calendar h2 {
   font-size: 24px;
   margin-bottom: 20px;
   text-align: center;
 }
- 
+
 .calendar table {
   width: 100%;
   max-width: 600px;
   border-collapse: collapse;
 }
- 
-.calendar th, .calendar td {
+
+.calendar th,
+.calendar td {
   width: calc(100% / 7);
   padding: 15px;
   text-align: center;
@@ -80,27 +180,27 @@
   border: 1px solid #ddd;
   font-size: 14px;
 }
- 
+
 .calendar th {
-  background-color: #F8F8F8;
+  background-color: #f8f8f8;
 }
- 
+
 .calendar td {
-  background-color: #FFF;
+  background-color: #fff;
 }
- 
+
 .calendar .working-day {
   background-color: #e0f7e0;
 }
- 
+
 .calendar .partial-leave {
   background-color: #ffffe0;
 }
- 
+
 .calendar .full-leave {
   background-color: #ffe0e0;
 }
- 
+
 .legend-container {
   display: flex;
   gap: 20px;
@@ -110,14 +210,14 @@
   background-color: #fff;
   margin-top: 20px;
 }
- 
+
 .legend-item {
   display: flex;
   align-items: center;
   font-size: 14px;
   color: #333;
 }
- 
+
 .legend-box {
   display: inline-block;
   width: 20px;
@@ -126,147 +226,205 @@
   border: 1px solid #ddd;
   border-radius: 3px;
 }
- 
+
 .legend-box.working-day {
   background-color: #e0f7e0;
 }
- 
+
 .legend-box.partial-leave {
   background-color: #ffffe0;
 }
- 
+
 .legend-box.full-leave {
   background-color: #ffe0e0;
 }
- 
- 
+
 /* Media queries for responsiveness */
 @media (max-width: 1024px) {
   .container {
     flex-direction: column; /* Stack items vertically */
   }
- 
-  .sid, .calendar {
+
+  .sid,
+  .calendar {
     width: 100%;
   }
- 
+
   .sid {
     margin-left: 0;
     padding: 20px;
   }
- 
+
   .summary {
     margin-top: 40px;
     line-height: 1.9;
     display: flex;
     align-items: center;
   }
- 
+
   .summary p {
     font-size: 18px;
     margin: 0 80px 0 0; /* Adjust margins to create space between items */
     white-space: nowrap; /* Prevent line wrapping */
   }
- 
- 
+
   .calendar {
     padding: 20px 10px;
   }
- 
+
   .calendar table {
     width: 100%;
   }
- 
-  .calendar th, .calendar td {
+
+  .calendar th,
+  .calendar td {
     padding: 12px;
     font-size: 12px;
     height: 22px; /* Reduced height */
   }
- 
+
   .legend-container {
     flex-direction: row;
     align-items: center;
   }
- 
+
   .legend-item {
     margin-bottom: 10px;
   }
 }
- 
- 
- 
- 
+
 @media (max-width: 768px) {
- 
-.container{
-  /* margin-top:60px; */
- 
+  .toggle-btn {
+    display: block;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .sidebar.show {
+    display: block;
+    height: 250px;
+  }
+
+  .sidebar a {
+    padding: 10px;
+    font-size: 10px;
+    color: #000;
+  }
+
+  .content {
+    margin-left: 0;
+  }
+
+  .hdr {
+    align-items: flex-start;
+  }
+
+  .profile,
+  .header-center,
+  .header-right {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 10px;
+  }
+
+  .header-center {
+    text-align: center;
+  }
+
+  .profile img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .sidebar a {
+    font-size: 16px;
+  }
+
+  .header-right button {
+    font-size: 12px;
+  }
+
+  .LD {
+    margin-left: 0px !important;
+    width: 100% !important;
+  }
 }
- 
-  .sid, .calendar {
+
+@media (max-width: 500px) {
+  .LD {
+    margin-top: 80px !important;
+    margin-left: 0px !important;
+    width: 100% !important;
+  }
+
+  .sid,
+  .calendar {
     width: 100%;
   }
- 
+
   .sid {
     margin-left: 0;
     padding: 15px; /* Adjusted padding for smaller screens */
     order: 1; /* Ensure sidebar is first in order */
   }
- 
+
   .sid h2 {
     font-size: 22px; /* Adjusted font size */
     margin-bottom: 20px;
   }
- 
+
   .sid label {
     margin-top: 25px; /* Adjusted margin */
     font-size: 15px;
   }
- 
+
   .sid select {
     padding: 4px;
     margin-top: 4px;
     font-size: 14px;
   }
- 
+
   .summary {
     margin-top: 30px;
     display: flex;
     flex-wrap: wrap; /* Allow items to wrap */
     align-items: center;
   }
- 
+
   .summary p {
     font-size: 16px;
     margin: 0px 10px 8px 0; /* Adjusted margins */
     white-space: nowrap; /* Prevent line wrapping */
   }
- 
+
   .calendar {
     padding: 15px 8px;
     order: 2; /* Ensure calendar is second in order */
   }
- 
+
   .calendar h2 {
     font-size: 20px;
     margin-bottom: 15px;
   }
- 
+
   .calendar table {
     width: 100%;
   }
- 
-  .calendar th, .calendar td {
+
+  .calendar th,
+  .calendar td {
     padding: 10px;
     font-size: 10px;
     height: 20px; /* Further reduced height */
   }
- 
+
   .legend-container {
     flex-direction: row;
     align-items: center;
   }
- 
+
   .legend-item {
     margin-bottom: 10px;
   }
