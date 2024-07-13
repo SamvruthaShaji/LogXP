@@ -23,7 +23,6 @@ const firebaseConfig = {
   document.addEventListener("DOMContentLoaded", (event) => {
     const urlParams = new URLSearchParams(window.location.search);
     const empId = urlParams.get('emp_id');
-  
     if (!empId) {
       console.error('Employee ID not provided in URL');
       // Redirect or handle the error as needed
@@ -32,7 +31,6 @@ const firebaseConfig = {
     }
   
     firebase.auth().onAuthStateChanged(function (user) {
-      console.log(user);
       if (user) {
         db.collection("employee_details")
           .where("emp_id", "==", empId) // Query by emp_id instead of email
@@ -42,13 +40,13 @@ const firebaseConfig = {
               querySnapshot.forEach((doc) => {
                 const employee = doc.data();
                 currentUserEmpId = employee.emp_id;
+                document.getElementById("profile-name").innerText = `${employee.emp_name}'s monthly Attendance`;             
                 document.getElementById("profile-pic").src = employee.profile_pic;
-                document.getElementById("profile-name").innerText = `Hi ${employee.emp_name}`;
                 // Fetch attendance data once emp_id is set
                 const currentMonth = new Date().getMonth() + 1;
                 const currentYear = new Date().getFullYear();
                 generateCalendar(currentMonth, currentYear);
-                fetchAttendanceData(empId, currentMonth, currentYear); // Pass empId to fetch attendance
+                fetchAttendanceData(currentMonth, currentYear); // Pass empId to fetch attendance
               });
             } else {
               console.log("No matching documents.");
@@ -125,7 +123,7 @@ const firebaseConfig = {
     const daysInMonth = new Date(year, month, 0).getDate();
     const firstDay = new Date(year, month - 1, 1).getDay(); // 0 (Sunday) to 6 (Saturday)
     
-    calendarTitle.textContent = `${monthSelect.options[month - 1].textContent} ${year}`;
+    calendarTitle.textContent = `${monthSelect.options[month].textContent} ${year}`;
     calendarBody.innerHTML = "";
   
     let date = 1;
