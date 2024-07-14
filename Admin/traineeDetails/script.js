@@ -72,79 +72,6 @@ async function fetchEmployeeIds(batch) {
     return empIds;
   }
 
-// Fetch and display attendance details for multiple employees
-async function fetchAttendanceDetails(empIds) {
-    try {
-        const attendanceTable = document.getElementById('attendance-table');
-        const attendanceRecords = [];
-
-        for (const empId of empIds) {
-            const attendanceQuery = query(
-                collection(db, 'in_out_details'),
-                where('emp_id', '==', empId),
-                orderBy('timestamp')
-            );
-
-            const querySnapshot = await getDocs(attendanceQuery);
-
-            querySnapshot.forEach(doc => {
-                const data = doc.data();
-                attendanceRecords.push({
-                    empId: data.emp_id,
-                    date: data.timestamp.toDate().toLocaleDateString(),
-                    time: data.timestamp.toDate(),
-                    status: data.status
-                });
-            });
-        }
-
-        // Process attendance records to find first login and last logout for each date
-        const attendanceSummary = {};
-
-        attendanceRecords.forEach(record => {
-            if (!attendanceSummary[record.empId]) {
-                attendanceSummary[record.empId] = {};
-            }
-            if (!attendanceSummary[record.empId][record.date]) {
-                attendanceSummary[record.empId][record.date] = {
-                    firstLogin: null,
-                    lastLogout: null
-                };
-            }
-
-            if (record.status === 1) { // Assuming 1 is login
-                if (!attendanceSummary[record.empId][record.date].firstLogin || record.time < attendanceSummary[record.empId][record.date].firstLogin) {
-                    attendanceSummary[record.empId][record.date].firstLogin = record.time;
-                }
-            } else if (record.status === 2) { // Assuming 2 is logout
-                if (!attendanceSummary[record.empId][record.date].lastLogout || record.time > attendanceSummary[record.empId][record.date].lastLogout) {
-                    attendanceSummary[record.empId][record.date].lastLogout = record.time;
-                }
-            }
-        });
-
-        // Append summary to the table
-        Object.keys(attendanceSummary).forEach(empId => {
-            Object.keys(attendanceSummary[empId]).forEach(date => {
-                const summary = attendanceSummary[empId][date];
-                if (summary.firstLogin && summary.lastLogout) {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${empId}</td>
-                        <td>${date}</td>
-                        <td>${summary.firstLogin.toLocaleTimeString()}</td>
-                        <td>${summary.lastLogout.toLocaleTimeString()}</td>
-                    `;
-                    attendanceTable.appendChild(row);
-                }
-            });
-        });
-    } catch (error) {
-        console.error('Error getting attendance details: ', error);
-    }
-}
-
-
 
 // Fetch and display employee details
 async function fetchAndDisplayEmployeeDetails(empIds) {
@@ -263,6 +190,96 @@ getDocs(q).then(querySnapshot => {
     }
 }
   
+// Fetch and display attendance details for multiple employees
+
+async function fetchAttendanceDetails(empIds) {
+    try {
+        const attendanceTable = document.getElementById('attendance-table');
+        attendanceTable.innerHTML = ''; // Clear the table before appending new rows
+        const attendanceRecords = [];
+
+        for (const empId of empIds) {
+            const attendanceQuery = query(
+                collection(db, 'in_out_details'),
+                where('emp_id', '==', empId),
+                orderBy('timestamp')
+            );
+
+            const querySnapshot = await getDocs(attendanceQuery);
+
+            querySnapshot.forEach(doc => {
+                const data = doc.data();
+                attendanceRecords.push({
+                    empId: data.emp_id,
+                    date: data.timestamp.toDate(),
+                    time: data.timestamp.toDate(),
+                    status: data.status
+                });
+            });
+        }
+
+        // Process attendance records to find first login and last logout for each date
+        const attendanceSummary = {};
+
+        attendanceRecords.forEach(record => {
+            const formattedDate = record.date.toLocaleDateString('en-GB'); // Format date as dd/mm/yyyy
+            if (!attendanceSummary[record.empId]) {
+                attendanceSummary[record.empId] = {};
+            }
+            if (!attendanceSummary[record.empId][formattedDate]) {
+                attendanceSummary[record.empId][formattedDate] = {
+                    firstLogin: null,
+                    lastLogout: null
+                };
+            }
+
+            if (record.status === 1) { // Assuming 1 is login
+                if (!attendanceSummary[record.empId][formattedDate].firstLogin || record.time < attendanceSummary[record.empId][formattedDate].firstLogin) {
+                    attendanceSummary[record.empId][formattedDate].firstLogin = record.time;
+                }
+            } else if (record.status === 2) { // Assuming 2 is logout
+                if (!attendanceSummary[record.empId][formattedDate].lastLogout || record.time > attendanceSummary[record.empId][formattedDate].lastLogout) {
+                    attendanceSummary[record.empId][formattedDate].lastLogout = record.time;
+                }
+            }
+        });
+
+        // Convert attendanceSummary into a sorted array
+        const sortedRecords = [];
+
+        Object.keys(attendanceSummary).forEach(empId => {
+            Object.keys(attendanceSummary[empId]).forEach(date => {
+                const summary = attendanceSummary[empId][date];
+                if (summary.firstLogin && summary.lastLogout) {
+                    sortedRecords.push({
+                        empId,
+                        date: new Date(date.split('/').reverse().join('/')), // Convert dd/mm/yyyy to Date object for sorting
+                        firstLogin: summary.firstLogin,
+                        lastLogout: summary.lastLogout
+                    });
+                }
+            });
+        });
+
+        // Sort records by date in descending order
+        sortedRecords.sort((a, b) => b.date - a.date);
+
+        // Append sorted records to the table
+        sortedRecords.forEach(record => {
+            const formattedDate = record.date.toLocaleDateString('en-GB'); // Format date as dd/mm/yyyy
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${record.empId}</td>
+                <td>${formattedDate}</td>
+                <td>${record.firstLogin.toLocaleTimeString()}</td>
+                <td>${record.lastLogout.toLocaleTimeString()}</td>
+            `;
+            attendanceTable.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error getting attendance details: ', error);
+    }
+}
     
 // Retrieve batch ID from URL query string
 const urlParams = new URLSearchParams(window.location.search);
@@ -270,9 +287,9 @@ const batchId = urlParams.get('batchId');
 // Fetch employee IDs and then fetch and display employee details
 if (batchId) {
   fetchEmployeeIds(batchId).then(empIds => {
-   
-    fetchAndDisplayEmployeeDetails(empIds);
-    fetchAttendanceDetails(empIds); 
+    const assendingEmployees = sortEmployeeIds(empIds);
+    fetchAndDisplayEmployeeDetails(assendingEmployees);
+    fetchAttendanceDetails(assendingEmployees); 
   });
 
 }
@@ -347,3 +364,18 @@ document.getElementById('profileBtn').addEventListener('click', (event) => {
     const empId = event.target.getAttribute('data-emp-id');
     window.location.href = `profile.html?emp_id=${empId}`;
 });
+
+
+
+//function to sort employee based on their empid
+
+function sortEmployeeIds(empIds) {
+    return empIds.sort((a, b) => {
+      // Extract the numeric part of each employee ID
+      const numA = parseInt(a.replace('emp', ''));
+      const numB = parseInt(b.replace('emp', ''));
+      
+      // Compare the numeric parts
+      return numA - numB;
+    });
+  }
