@@ -28,7 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
           const empId = employee.emp_id;
 
           document.getElementById("profile-pic-large").src = employee.profile_pic;
-          document.getElementById("emp_name").innerText = employee.emp_name;
+          document.getElementById("emp_name_header").innerText = employee.emp_name;
+          document.getElementById("emp_name_details").innerText = employee.emp_name;
           document.getElementById("emp-id").innerText = empId;
           document.getElementById("Batch").innerText = employee.Batch;
           document.getElementById("email").innerText = email;
@@ -84,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
               datasets: [{
                 label: 'Absences',
                 data: monthlyAbsences,
-                backgroundColor: ''
+                backgroundColor: '#FF6384'
               }]
             },
             options: {
@@ -108,5 +109,19 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("Error getting documents: ", error);
       }
     }
+  });
+
+  // Back button functionality
+  document.getElementById("back-button").addEventListener("click", () => {
+    window.history.back();
+  });
+
+  // Logout button functionality
+  document.getElementById("logout-button").addEventListener("click", () => {
+    firebase.auth().signOut().then(() => {
+      window.location.href = "/public/index.html"; // Redirect to login page after logout
+    }).catch((error) => {
+      console.error("Error logging out: ", error);
+    });
   });
 });
