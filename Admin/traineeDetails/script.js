@@ -284,7 +284,7 @@ if (batchId) {
 // Modal button actions
 document.getElementById('dailyAttendanceBtn').addEventListener('click', (event) => {
     const empId = event.target.getAttribute('data-emp-id');
-    window.location.href = `dailyAttendance.html?emp_id=${empId}`;
+    window.location.href = `../traineepages/dailyattendence/dailyAttendence.html?emp_id=${empId}`;
 });
 
 document.getElementById('monthlyAttendanceBtn').addEventListener('click', (event) => {
