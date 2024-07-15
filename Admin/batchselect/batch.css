@@ -27,6 +27,16 @@ body {
 .card-text {
     font-size: 1rem;
 }
+.red-button {
+    background-color: #ea454c;
+    /* border-color: red; */
+    color: white; /* Ensures text color contrasts well with red */
+    font: 20px;
+}
+.red-button:hover {
+    background-color: darkred;
+    border-color: darkred;
+}
 
 .container {
     padding-top: 20px;
