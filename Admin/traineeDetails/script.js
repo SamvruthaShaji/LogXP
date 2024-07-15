@@ -340,7 +340,7 @@ document.getElementById('monthlyAttendanceBtn').addEventListener('click', (event
 
 document.getElementById('lossOfPayBtn').addEventListener('click', (event) => {
     const empId = event.target.getAttribute('data-emp-id');
-    window.location.href = `lossOfPay.html?emp_id=${empId}`;
+    window.location.href = `../traineepages/leave/loppage.html?emp_id=${empId}`;
 });
 
 document.getElementById('profileBtn').addEventListener('click', (event) => {
