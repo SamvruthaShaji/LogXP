@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Page</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>  
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -31,6 +32,7 @@
                         </div>
                         <button class="btn btn-primary btn-sm" id="searchBtn">Search</button>
                         <div id="errorMessage" class="text-danger mt-2"></div>
+                        <button class="btn btn-primary btn-sm" id="excelbutton">Upload data</button>
                     </div>
                     <div class="col-md-9">
                         <div class="d-flex justify-content-between align-items-center">
@@ -70,7 +72,7 @@
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Profile Modal -->
     <div class="modal fade" id="profileModal" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -90,12 +92,35 @@
       </div>
     </div>
 
+    <!-- Upload Data Modal -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="uploadModalLabel">Upload Data</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <input type="file" id="fileInput" class="form-control mb-2" accept=".xlsx, .xls, .csv">
+            <button id="viewDataBtn" class="btn btn-primary btn-block mb-2">View Data</button>
+            <button id="clearDataBtn" class="btn btn-danger btn-block mb-2">Clear Data</button>
+            <button id="saveDataBtn" class="btn btn-success btn-block">Save Data</button>
+            <div id="uploadedData" class="mt-2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script type='module' src="script.js"></script>
+    <script type="module" src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
 </body>
 </html>

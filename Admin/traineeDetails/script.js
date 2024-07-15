@@ -1,17 +1,10 @@
-//gygfytfyy
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
-import { getFirestore, collection, query,orderBy,where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
-
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getFirestore, collection, doc, writeBatch, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 
-  
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
+// Your web app's Firebase configuration
+const firebaseConfig = {
     apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
     authDomain: "logxp-31c62.firebaseapp.com",
     projectId: "logxp-31c62",
@@ -19,11 +12,10 @@ import { getFirestore, collection, query,orderBy,where, getDocs } from "https://
     messagingSenderId: "17276012238",
     appId: "1:17276012238:web:464030eb3b2062bb55729f",
     measurementId: "G-FVZH4VFV6T"
-  };
+};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 const db = getFirestore(app);
 
 const profileContainer = document.getElementById('profileContainer');
@@ -59,18 +51,17 @@ document.getElementById('scrollRightBtn').addEventListener('click', scrollRight)
 window.addEventListener('resize', updateVisibleCards);
 updateVisibleCards();
 
-
-// Function to fetch employee IDs based on batch and store them in an array 
+// Function to fetch employee IDs based on batch and store them in an array
 async function fetchEmployeeIds(batch) {
     const empIds = [];
     const q = query(collection(db, 'employee_details'), where('Batch', '==', batch));
     const querySnapshot = await getDocs(q);
-    
+
     querySnapshot.forEach(doc => {
-      empIds.push(doc.data().emp_id);
+        empIds.push(doc.data().emp_id);
     });
     return empIds;
-  }
+}
 
 // Fetch and display attendance details for multiple employees
 async function fetchAttendanceDetails(empIds) {
@@ -89,261 +80,165 @@ async function fetchAttendanceDetails(empIds) {
 
             querySnapshot.forEach(doc => {
                 const data = doc.data();
-                attendanceRecords.push({
-                    empId: data.emp_id,
-                    date: data.timestamp.toDate().toLocaleDateString(),
-                    time: data.timestamp.toDate(),
-                    status: data.status
-                });
+                const record = {
+                    id: data.emp_id,
+                    date: data.date,
+                    loginTime: data.login_time,
+                    logoutTime: data.logout_time,
+                };
+                attendanceRecords.push(record);
             });
         }
 
-        // Process attendance records to find first login and last logout for each date
-        const attendanceSummary = {};
-
-        attendanceRecords.forEach(record => {
-            if (!attendanceSummary[record.empId]) {
-                attendanceSummary[record.empId] = {};
-            }
-            if (!attendanceSummary[record.empId][record.date]) {
-                attendanceSummary[record.empId][record.date] = {
-                    firstLogin: null,
-                    lastLogout: null
-                };
-            }
-
-            if (record.status === 1) { // Assuming 1 is login
-                if (!attendanceSummary[record.empId][record.date].firstLogin || record.time < attendanceSummary[record.empId][record.date].firstLogin) {
-                    attendanceSummary[record.empId][record.date].firstLogin = record.time;
-                }
-            } else if (record.status === 2) { // Assuming 2 is logout
-                if (!attendanceSummary[record.empId][record.date].lastLogout || record.time > attendanceSummary[record.empId][record.date].lastLogout) {
-                    attendanceSummary[record.empId][record.date].lastLogout = record.time;
-                }
-            }
-        });
-
-        // Append summary to the table
-        Object.keys(attendanceSummary).forEach(empId => {
-            Object.keys(attendanceSummary[empId]).forEach(date => {
-                const summary = attendanceSummary[empId][date];
-                if (summary.firstLogin && summary.lastLogout) {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${empId}</td>
-                        <td>${date}</td>
-                        <td>${summary.firstLogin.toLocaleTimeString()}</td>
-                        <td>${summary.lastLogout.toLocaleTimeString()}</td>
-                    `;
-                    attendanceTable.appendChild(row);
-                }
-            });
-        });
+        attendanceTable.innerHTML = attendanceRecords.map(record => `
+            <tr>
+                <td>${record.id}</td>
+                <td>${record.date}</td>
+                <td>${record.loginTime}</td>
+                <td>${record.logoutTime}</td>
+            </tr>
+        `).join('');
     } catch (error) {
-        console.error('Error getting attendance details: ', error);
+        console.error('Error fetching attendance details:', error);
     }
 }
 
+// Fetch data for a specific batch
+async function fetchBatchData(batch) {
+    try {
+        const empIds = await fetchEmployeeIds(batch);
+        await fetchAttendanceDetails(empIds);
+    } catch (error) {
+        console.error('Error fetching batch data:', error);
+    }
+}
 
+// Upload Data Modal Event Listeners
+document.getElementById('excelbutton').addEventListener('click', () => {
+    $('#uploadModal').modal('show');
+});
+// Function to handle file upload
+document.getElementById('fileInput').addEventListener('change', handleFileUpload);
 
-// Fetch and display employee details
-async function fetchAndDisplayEmployeeDetails(empIds) {
-    for (const empId of empIds) {
-        const q = query(collection(db, 'employee_details'), where('emp_id', '==', empId));
-        const querySnapshot = await getDocs(q);
-     
-        querySnapshot.forEach(doc => {
-            const employeeData = doc.data();
+let uploadedData = null;
 
-    // Create profile card
-    const profileCard = document.createElement('div');
-    profileCard.classList.add('profile-card');
-    
-    const profileCardInner = document.createElement('div');
-    profileCardInner.classList.add('profile-card-inner');
-    profileCard.appendChild(profileCardInner);
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
 
-    const profileCardFront = document.createElement('div');
-    profileCardFront.classList.add('profile-card-front');
-    profileCardInner.appendChild(profileCardFront);
+    reader.onload = function (e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        uploadedData = XLSX.utils.sheet_to_json(worksheet);
+        console.log(uploadedData);
+    };
 
-    const profilePic = document.createElement('img');
-    profilePic.id = `profile-pic-${empId}`;
-    profilePic.alt = "Profile Picture";
-    profilePic.classList.add('img-thumbnail');
-    profilePic.style.width = '60px';
-    profilePic.style.height = '60px';
-    profilePic.style.borderRadius = '50%';
-    profilePic.style.marginBottom = '5px';
-    profileCardFront.appendChild(profilePic);
+    reader.readAsArrayBuffer(file);
+}
 
-    const empid = document.createElement('h4');
-    empid.id = `emp-id-${empId}`;
-    profileCardFront.appendChild(empid);
-  
-    const empName = document.createElement('h5');
-    empName.id = `emp-name-${empId}`;
-    profileCardFront.appendChild(empName);
+document.getElementById('viewDataBtn').addEventListener('click', () => {
+    if (uploadedData) {
+        const uploadedDataDiv = document.getElementById('uploadedData');
+        let tableHtml = '<table border="1"><tr>';
+        // Create table headers based on keys of the first object
+        const headers = Object.keys(uploadedData[0]);
+        headers.forEach(header => {
+            tableHtml += `<th>${header}</th>`;
+        });
+        tableHtml += '</tr>';
 
-    const empPosition = document.createElement('p');
-    empPosition.id = `emp-position-${empId}`;
-    profileCardFront.appendChild(empPosition);
+        // Create table rows
+        uploadedData.forEach(record => {
+            tableHtml += '<tr>';
+            headers.forEach(header => {
+                tableHtml += `<td>${record[header]}</td>`;
+            });
+            tableHtml += '</tr>';
+        });
+        tableHtml += '</table>';
+        uploadedDataDiv.innerHTML = tableHtml;
+    }
+});
 
-    const profileCardBack = document.createElement('div');
-    profileCardBack.classList.add('profile-card-back');
-    profileCardInner.appendChild(profileCardBack);
+document.getElementById('clearDataBtn').addEventListener('click', () => {
+    document.getElementById('fileInput').value = '';
+    uploadedData = null;
+    document.getElementById('uploadedData').innerHTML = '';
+});
 
-    const backEmpName = document.createElement('h4');
-    backEmpName.id = `back-emp-name-${empId}`;
-    profileCardBack.appendChild(backEmpName);
+document.getElementById('saveDataBtn').addEventListener('click', async () => {
+    if (uploadedData) {
+        try {
+            const batch = writeBatch(db);
 
-    const month = document.createElement('p');
-    month.id = `month-${empId}`;
-    profileCardBack.appendChild(month);
+            uploadedData.forEach((record) => {
+                // Extract required fields emp_id, status, timestamp
+                const { emp_id, status, timestamp } = record;
 
-    const total = document.createElement('p');
-    total.id = `total-${empId}`;
-    profileCardBack.appendChild(total);
+                // Parse timestamp using moment.js
+                const parsedTimestamp = moment(timestamp, 'MMMM DD, YYYY [at] hh:mm:ss A Z').toDate();
 
-    // Add "View Profile" button
-    const profileButton = document.createElement('button');
-    profileButton.id = `profilebtn-${empId}`;
-    profileButton.classList.add('btn', 'btn-secondary', 'btn-sm');
-    profileButton.innerText = 'View Profile';
-    profileCardBack.appendChild(profileButton);
+                // Check if parsedTimestamp is a valid Date
+                if (isNaN(parsedTimestamp.getTime())) {
+                    console.error('Invalid timestamp:', timestamp);
+                    return; // Skip this record if timestamp is invalid
+                }
 
-    // Attach event listener to the button
-    profileButton.addEventListener('click', () => {
-        // Set the employee ID in the modal's buttons for later use
-        document.getElementById('dailyAttendanceBtn').setAttribute('data-emp-id', empId);
-        document.getElementById('monthlyAttendanceBtn').setAttribute('data-emp-id', empId);
-        document.getElementById('lossOfPayBtn').setAttribute('data-emp-id', empId);
-        document.getElementById('profileBtn').setAttribute('data-emp-id', empId);
+                // Convert timestamp to Firestore Timestamp format
+                const timestampFirestore = Timestamp.fromDate(parsedTimestamp);
 
-        // Show the modal
+                // Create a new document reference for each record
+                const docRef = doc(collection(db, 'in_out_details'));
+
+                // Set the document data with emp_id, status, and timestamp
+                batch.set(docRef, { emp_id, status, timestamp: timestampFirestore });
+            });
+
+            // Commit the batch write
+            await batch.commit();
+            alert('Data saved successfully!');
+            $('#uploadModal').modal('hide');
+        } catch (error) {
+            console.error('Error saving data:', error);
+            alert('Error saving data. Please try again.');
+        }
+    }
+});
+
+// Attach event listeners to profile action buttons
+document.querySelectorAll('.profile-card').forEach(card => {
+    card.addEventListener('click', () => {
         $('#profileModal').modal('show');
     });
-
-    // Append profile card to container
-    profileContainer.appendChild(profileCard);
-
-    // Fetch and display trainee details
-    const q = query(collection(db, 'employee_details'), where('emp_id', '==', empId));
-getDocs(q).then(querySnapshot => {
-    querySnapshot.forEach(doc => {
-        const data = doc.data();
-        profilePic.src = data.profile_pic;
-        empid.innerHTML = data.emp_id;
-        
-        empName.innerText = data.emp_name;
-        backEmpName.innerText = data.emp_name;
-        empPosition.innerText = data.emp_position;
-    });
-}).catch(error => {
-    console.error('Error getting document: ', error);
 });
 
-    // Fetch and display performance details
-    // Assuming db is already initialized
-    const performanceQuery = query(collection(db, 'performance_details'), where('emp_id', '==', empId));
-    getDocs(performanceQuery).then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-            const data = doc.data();
-            month.innerText = `Month: ${data.month}`;
-            total.innerText = `Total: ${data.total}%`;
-        });
-    }).catch(error => {
-        console.error('Error getting performance details: ', error);
-    });
-    
-
-  
-
+document.getElementById('dailyAttendanceBtn').addEventListener('click', () => {
+    window.location.href = 'daily.html';
 });
+
+document.getElementById('monthlyAttendanceBtn').addEventListener('click', () => {
+    window.location.href = 'monthly.html';
+});
+
+document.getElementById('lossOfPayBtn').addEventListener('click', () => {
+    window.location.href = 'lop.html';
+});
+
+document.getElementById('profileBtn').addEventListener('click', () => {
+    window.location.href = 'profile.html';
+});
+
+document.getElementById('searchBtn').addEventListener('click', async () => {
+    const searchInput = document.getElementById('searchInput').value.trim().toLowerCase();
+    const errorMessage = document.getElementById('errorMessage');
+
+    if (searchInput === '') {
+        errorMessage.textContent = 'Please enter a valid batch number.';
+        return;
     }
-}
-  
-    
-// Retrieve batch ID from URL query string
-const urlParams = new URLSearchParams(window.location.search);
-const batchId = urlParams.get('batchId');
-// Fetch employee IDs and then fetch and display employee details
-if (batchId) {
-  fetchEmployeeIds(batchId).then(empIds => {
-   
-    fetchAndDisplayEmployeeDetails(empIds);
-    fetchAttendanceDetails(empIds); 
-  });
 
-}
-
-// Search functionality
-function searchTrainee() {
-    const searchInput = document.getElementById('searchInput').value.toLowerCase();
-    const profileCards = document.querySelectorAll('.profile-card');
-    let traineeFound = false;
-
-    profileCards.forEach(card => {
-        const name = card.querySelector('h5').innerText.toLowerCase();
-        if (name === searchInput) {
-            const imgSrc = card.querySelector('img').src;
-           
-
-            // Redirect to profile page with trainee details
-            window.location.href = "../../profile/profile.html";
-            traineeFound = true;
-        }
-    });
-    if (!traineeFound) {
-        document.getElementById('errorMessage').innerText = 'Trainee does not exist.';
-    } else {
-        document.getElementById('errorMessage').innerText = '';
-    }
-}
-
-// Enable or disable the search button based on input length
-function toggleSearchButton() {
-    const searchInput = document.getElementById('searchInput').value;
-    const searchBtn = document.getElementById('searchBtn');
-    if (searchInput.length >= 3) {
-        searchBtn.disabled = false;
-    } else {
-        searchBtn.disabled = true;
-    }
-}
-
-document.getElementById('searchInput').addEventListener('input', toggleSearchButton);
-document.getElementById('searchBtn').addEventListener('click', searchTrainee);
-document.getElementById('searchInput').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        if (!document.getElementById('searchBtn').disabled) {
-            searchTrainee();
-        }
-    }
-});
-
-// Initialize the search button state on page load
-toggleSearchButton();
-
-
-// Modal button actions
-
-document.getElementById('dailyAttendanceBtn').addEventListener('click', (event) => {
-    const empId = event.target.getAttribute('data-emp-id');
-    window.location.href = `dailyAttendance.html?emp_id=${empId}`;
-});
-
-document.getElementById('monthlyAttendanceBtn').addEventListener('click', (event) => {
-    const empId = event.target.getAttribute('data-emp-id');
-    window.location.href = `../traineepages/monthlyattendence/monthlyAtt.html?emp_id=${empId}`;
-});
-
-document.getElementById('lossOfPayBtn').addEventListener('click', (event) => {
-    const empId = event.target.getAttribute('data-emp-id');
-    window.location.href = `lossOfPay.html?emp_id=${empId}`;
-});
-
-document.getElementById('profileBtn').addEventListener('click', (event) => {
-    const empId = event.target.getAttribute('data-emp-id');
-    window.location.href = `profile.html?emp_id=${empId}`;
+    errorMessage.textContent = '';
+    await fetchBatchData(searchInput);
 });
