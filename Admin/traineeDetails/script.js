@@ -1,17 +1,14 @@
-//gygfytfyy
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
-import { getFirestore, collection, query,orderBy,where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+import { getFirestore, collection, query, orderBy, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
-
-  
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
     apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
     authDomain: "logxp-31c62.firebaseapp.com",
     projectId: "logxp-31c62",
@@ -19,7 +16,7 @@ import { getFirestore, collection, query,orderBy,where, getDocs } from "https://
     messagingSenderId: "17276012238",
     appId: "1:17276012238:web:464030eb3b2062bb55729f",
     measurementId: "G-FVZH4VFV6T"
-  };
+};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -59,7 +56,6 @@ document.getElementById('scrollRightBtn').addEventListener('click', scrollRight)
 window.addEventListener('resize', updateVisibleCards);
 updateVisibleCards();
 
-
 // Function to fetch employee IDs based on batch and store them in an array 
 async function fetchEmployeeIds(batch) {
     const empIds = [];
@@ -67,11 +63,10 @@ async function fetchEmployeeIds(batch) {
     const querySnapshot = await getDocs(q);
     
     querySnapshot.forEach(doc => {
-      empIds.push(doc.data().emp_id);
+        empIds.push(doc.data().emp_id);
     });
     return empIds;
-  }
-
+}
 
 // Fetch and display employee details
 async function fetchAndDisplayEmployeeDetails(empIds) {
@@ -82,116 +77,109 @@ async function fetchAndDisplayEmployeeDetails(empIds) {
         querySnapshot.forEach(doc => {
             const employeeData = doc.data();
 
-    // Create profile card
-    const profileCard = document.createElement('div');
-    profileCard.classList.add('profile-card');
-    
-    const profileCardInner = document.createElement('div');
-    profileCardInner.classList.add('profile-card-inner');
-    profileCard.appendChild(profileCardInner);
+            // Create profile card
+            const profileCard = document.createElement('div');
+            profileCard.classList.add('profile-card');
+            
+            const profileCardInner = document.createElement('div');
+            profileCardInner.classList.add('profile-card-inner');
+            profileCard.appendChild(profileCardInner);
 
-    const profileCardFront = document.createElement('div');
-    profileCardFront.classList.add('profile-card-front');
-    profileCardInner.appendChild(profileCardFront);
+            const profileCardFront = document.createElement('div');
+            profileCardFront.classList.add('profile-card-front');
+            profileCardInner.appendChild(profileCardFront);
 
-    const profilePic = document.createElement('img');
-    profilePic.id = `profile-pic-${empId}`;
-    profilePic.alt = "Profile Picture";
-    profilePic.classList.add('img-thumbnail');
-    profilePic.style.width = '60px';
-    profilePic.style.height = '60px';
-    profilePic.style.borderRadius = '50%';
-    profilePic.style.marginBottom = '5px';
-    profileCardFront.appendChild(profilePic);
+            const profilePic = document.createElement('img');
+            profilePic.id = `profile-pic-${empId}`;
+            profilePic.alt = "Profile Picture";
+            profilePic.classList.add('img-thumbnail');
+            profilePic.style.width = '60px';
+            profilePic.style.height = '60px';
+            profilePic.style.borderRadius = '50%';
+            profilePic.style.marginBottom = '5px';
+            profileCardFront.appendChild(profilePic);
 
-    const empid = document.createElement('h4');
-    empid.id = `emp-id-${empId}`;
-    profileCardFront.appendChild(empid);
-  
-    const empName = document.createElement('h5');
-    empName.id = `emp-name-${empId}`;
-    profileCardFront.appendChild(empName);
+            const empid = document.createElement('h4');
+            empid.id = `emp-id-${empId}`;
+            profileCardFront.appendChild(empid);
+          
+            const empName = document.createElement('h5');
+            empName.id = `emp-name-${empId}`;
+            profileCardFront.appendChild(empName);
 
-    const empPosition = document.createElement('p');
-    empPosition.id = `emp-position-${empId}`;
-    profileCardFront.appendChild(empPosition);
+            const empPosition = document.createElement('p');
+            empPosition.id = `emp-position-${empId}`;
+            profileCardFront.appendChild(empPosition);
 
-    const profileCardBack = document.createElement('div');
-    profileCardBack.classList.add('profile-card-back');
-    profileCardInner.appendChild(profileCardBack);
+            const profileCardBack = document.createElement('div');
+            profileCardBack.classList.add('profile-card-back');
+            profileCardInner.appendChild(profileCardBack);
 
-    const backEmpName = document.createElement('h4');
-    backEmpName.id = `back-emp-name-${empId}`;
-    profileCardBack.appendChild(backEmpName);
+            const backEmpName = document.createElement('h4');
+            backEmpName.id = `back-emp-name-${empId}`;
+            profileCardBack.appendChild(backEmpName);
 
-    const month = document.createElement('p');
-    month.id = `month-${empId}`;
-    profileCardBack.appendChild(month);
+            const month = document.createElement('p');
+            month.id = `month-${empId}`;
+            profileCardBack.appendChild(month);
 
-    const total = document.createElement('p');
-    total.id = `total-${empId}`;
-    profileCardBack.appendChild(total);
+            const total = document.createElement('p');
+            total.id = `total-${empId}`;
+            profileCardBack.appendChild(total);
 
-    // Add "View Profile" button
-    const profileButton = document.createElement('button');
-    profileButton.id = `profilebtn-${empId}`;
-    profileButton.classList.add('btn', 'btn-secondary', 'btn-sm');
-    profileButton.innerText = 'View Profile';
-    profileCardBack.appendChild(profileButton);
+            // Add "View Profile" button
+            const profileButton = document.createElement('button');
+            profileButton.id = `profilebtn-${empId}`;
+            profileButton.classList.add('btn', 'btn-secondary', 'btn-sm');
+            profileButton.innerText = 'View Profile';
+            profileCardBack.appendChild(profileButton);
 
-    // Attach event listener to the button
-    profileButton.addEventListener('click', () => {
-        // Set the employee ID in the modal's buttons for later use
-        document.getElementById('dailyAttendanceBtn').setAttribute('data-emp-id', empId);
-        document.getElementById('monthlyAttendanceBtn').setAttribute('data-emp-id', empId);
-        document.getElementById('lossOfPayBtn').setAttribute('data-emp-id', empId);
-        document.getElementById('profileBtn').setAttribute('data-emp-id', empId);
+            // Attach event listener to the button
+            profileButton.addEventListener('click', () => {
+                // Set the employee ID in the modal's buttons for later use
+                document.getElementById('dailyAttendanceBtn').setAttribute('data-emp-id', empId);
+                document.getElementById('monthlyAttendanceBtn').setAttribute('data-emp-id', empId);
+                document.getElementById('lossOfPayBtn').setAttribute('data-emp-id', empId);
+                document.getElementById('profileBtn').setAttribute('data-emp-id', empId);
 
-        // Show the modal
-        $('#profileModal').modal('show');
-    });
+                // Show the modal
+                $('#profileModal').modal('show');
+            });
 
-    // Append profile card to container
-    profileContainer.appendChild(profileCard);
+            // Append profile card to container
+            profileContainer.appendChild(profileCard);
 
-    // Fetch and display trainee details
-    const q = query(collection(db, 'employee_details'), where('emp_id', '==', empId));
-getDocs(q).then(querySnapshot => {
-    querySnapshot.forEach(doc => {
-        const data = doc.data();
-        profilePic.src = data.profile_pic;
-        empid.innerHTML = data.emp_id;
-        
-        empName.innerText = data.emp_name;
-        backEmpName.innerText = data.emp_name;
-        empPosition.innerText = data.emp_position;
-    });
-}).catch(error => {
-    console.error('Error getting document: ', error);
-});
+            // Fetch and display trainee details
+            const q = query(collection(db, 'employee_details'), where('emp_id', '==', empId));
+            getDocs(q).then(querySnapshot => {
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    profilePic.src = data.profile_pic;
+                    empid.innerHTML = data.emp_id;
+                    empName.innerText = data.emp_name;
+                    backEmpName.innerText = data.emp_name;
+                    empPosition.innerText = data.emp_position;
+                });
+            }).catch(error => {
+                console.error('Error getting document: ', error);
+            });
 
-    // Fetch and display performance details
-    // Assuming db is already initialized
-    const performanceQuery = query(collection(db, 'performance_details'), where('emp_id', '==', empId));
-    getDocs(performanceQuery).then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-            const data = doc.data();
-            month.innerText = `Month: ${data.month}`;
-            total.innerText = `Total: ${data.total}%`;
+            // Fetch and display performance details
+            const performanceQuery = query(collection(db, 'performance_details'), where('emp_id', '==', empId));
+            getDocs(performanceQuery).then(querySnapshot => {
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    month.innerText = `Month: ${data.month}`;
+                    total.innerText = `Total: ${data.total}%`;
+                });
+            }).catch(error => {
+                console.error('Error getting performance details: ', error);
+            });
         });
-    }).catch(error => {
-        console.error('Error getting performance details: ', error);
-    });
-    
-
-  
-
-});
     }
 }
   
 // Fetch and display attendance details for multiple employees
-
 async function fetchAttendanceDetails(empIds) {
     try {
         const attendanceTable = document.getElementById('attendance-table');
@@ -291,60 +279,9 @@ if (batchId) {
     fetchAndDisplayEmployeeDetails(assendingEmployees);
     fetchAttendanceDetails(assendingEmployees); 
   });
-
 }
-
-// Search functionality
-function searchTrainee() {
-    const searchInput = document.getElementById('searchInput').value.toLowerCase();
-    const profileCards = document.querySelectorAll('.profile-card');
-    let traineeFound = false;
-
-    profileCards.forEach(card => {
-        const name = card.querySelector('h5').innerText.toLowerCase();
-        if (name === searchInput) {
-            const imgSrc = card.querySelector('img').src;
-           
-
-            // Redirect to profile page with trainee details
-            window.location.href = "../../profile/profile.html";
-            traineeFound = true;
-        }
-    });
-    if (!traineeFound) {
-        document.getElementById('errorMessage').innerText = 'Trainee does not exist.';
-    } else {
-        document.getElementById('errorMessage').innerText = '';
-    }
-}
-
-// Enable or disable the search button based on input length
-function toggleSearchButton() {
-    const searchInput = document.getElementById('searchInput').value;
-    const searchBtn = document.getElementById('searchBtn');
-    if (searchInput.length >= 3) {
-        searchBtn.disabled = false;
-    } else {
-        searchBtn.disabled = true;
-    }
-}
-
-document.getElementById('searchInput').addEventListener('input', toggleSearchButton);
-document.getElementById('searchBtn').addEventListener('click', searchTrainee);
-document.getElementById('searchInput').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        if (!document.getElementById('searchBtn').disabled) {
-            searchTrainee();
-        }
-    }
-});
-
-// Initialize the search button state on page load
-toggleSearchButton();
-
 
 // Modal button actions
-
 document.getElementById('dailyAttendanceBtn').addEventListener('click', (event) => {
     const empId = event.target.getAttribute('data-emp-id');
     window.location.href = `dailyAttendance.html?emp_id=${empId}`;
@@ -365,17 +302,50 @@ document.getElementById('profileBtn').addEventListener('click', (event) => {
     window.location.href = `profile.html?emp_id=${empId}`;
 });
 
-
-
-//function to sort employee based on their empid
-
+// Function to sort employees based on their empid
 function sortEmployeeIds(empIds) {
     return empIds.sort((a, b) => {
-      // Extract the numeric part of each employee ID
-      const numA = parseInt(a.replace('emp', ''));
-      const numB = parseInt(b.replace('emp', ''));
-      
-      // Compare the numeric parts
-      return numA - numB;
+        // Extract the numeric part of each employee ID
+        const numA = parseInt(a.replace('emp', ''));
+        const numB = parseInt(b.replace('emp', ''));
+        
+        // Compare the numeric parts
+        return numA - numB;
     });
-  }
+}
+
+// Add search functionality
+document.getElementById('searchBtn').addEventListener('click', async () => {
+    const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+    if (searchTerm) {
+        const searchResults = [];
+        const q = query(collection(db, 'employee_details'));
+        const querySnapshot = await getDocs(q);
+
+        querySnapshot.forEach(doc => {
+            const data = doc.data();
+            if (data.emp_name.toLowerCase().includes(searchTerm) || data.emp_id.toLowerCase().includes(searchTerm)) {
+                searchResults.push(data.emp_id);
+            }
+        });
+
+        if (searchResults.length > 0) {
+            profileContainer.innerHTML = ''; // Clear existing profiles
+            fetchAndDisplayEmployeeDetails(sortEmployeeIds(searchResults));
+            fetchAttendanceDetails(sortEmployeeIds(searchResults));
+        } else {
+            profileContainer.innerHTML = '<p>No results found</p>';
+        }
+    }
+});
+async function fetchAllEmployees() {
+    if (batchId) {
+        const empIds = await fetchEmployeeIds(batchId);
+        const sortedEmpIds = sortEmployeeIds(empIds);
+        profileContainer.innerHTML = ''; // Clear existing profiles
+        fetchAndDisplayEmployeeDetails(sortedEmpIds);
+        fetchAttendanceDetails(sortedEmpIds);
+    }
+}
+
+document.getElementById('resetBtn').addEventListener('click', fetchAllEmployees);
