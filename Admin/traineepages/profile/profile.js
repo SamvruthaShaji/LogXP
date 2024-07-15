@@ -1,4 +1,4 @@
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
   authDomain: "logxp-31c62.firebaseapp.com",
@@ -9,119 +9,117 @@ const firebaseConfig = {
   measurementId: "G-FVZH4VFV6T",
 };
 
-firebase.initializeApp(firebaseConfig);
+// Check if Firebase has already been initialized
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+} else {
+  firebase.app(); // if already initialized, use that one
+}
+
 const db = firebase.firestore();
 
-document.addEventListener("DOMContentLoaded", () => {
-  firebase.auth().onAuthStateChanged(async (user) => {
-    if (user) {
-      const email = user.email;
+let currentUserEmpId = null;
 
-      try {
-        const employeeSnapshot = await db
-          .collection("employee_details")
-          .where("email", "==", email)
-          .get();
+document.addEventListener("DOMContentLoaded", async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const empId = urlParams.get('emp_id');
+  if (!empId) {
+    console.error('Employee ID not provided in URL');
+    window.location.href = "../error-page.html"; // Example of redirecting to an error page
+    return;
+  }
 
-        if (!employeeSnapshot.empty) {
-          const employee = employeeSnapshot.docs[0].data();
-          const empId = employee.emp_id;
+  try {
+    const employeeSnapshot = await db
+      .collection("employee_details")
+      .where("emp_id", "==", empId)
+      .get();
 
-          document.getElementById("profile-pic-large").src = employee.profile_pic;
-          document.getElementById("emp_name_header").innerText = employee.emp_name;
-          document.getElementById("emp_name_details").innerText = employee.emp_name;
-          document.getElementById("emp-id").innerText = empId;
-          document.getElementById("Batch").innerText = employee.Batch;
-          document.getElementById("email").innerText = email;
+    if (!employeeSnapshot.empty) {
+      const employee = employeeSnapshot.docs[0].data();
+      currentUserEmpId = employee.emp_id;
 
-          const attendanceSnapshot = await db
-            .collection("attendance_register")
-            .where("emp_id", "==", empId)
-            .get();
+      document.getElementById("profile-pic-large").src = employee.profile_pic;
+      document.getElementById("emp_name_header").innerText = employee.emp_name;
+      document.getElementById("emp_name_details").innerText = employee.emp_name;
+      document.getElementById("emp-id").innerText = currentUserEmpId;
+      document.getElementById("Batch").innerText = employee.Batch;
+      document.getElementById("email").innerText = employee.email;
 
-          const totalAttendance = attendanceSnapshot.size;
+      // Fetch attendance data once emp_id is set
+      const attendanceSnapshot = await db
+        .collection("attendance_register")
+        .where("emp_id", "==", currentUserEmpId)
+        .get();
 
-          const attendanceData = attendanceSnapshot.docs.map(doc => doc.data().attendance_status);
+      const totalAttendance = attendanceSnapshot.size;
 
-          const presentDays = attendanceData.filter(status => status === 'p').length;
-          const absentDays = attendanceData.filter(status => status === 'a').length;
-          const halfDays = attendanceData.filter(status => status === 'h').length;
+      const attendanceData = attendanceSnapshot.docs.map(doc => doc.data().attendance_status);
 
-          // Pie chart for attendance
-          const pieCtx = document.getElementById('attendance-pie-chart').getContext('2d');
-          new Chart(pieCtx, {
-            type: 'pie',
-            data: {
-              labels: ['Present', 'Absent', 'Half Day'],
-              datasets: [{
-                data: [presentDays, absentDays, halfDays],
-                backgroundColor: ['#DEF9DC', '#FFE0E0', '#FFFDD1']
-              }]
-            },
-            options: {
-              title: {
-                display: true,
-                text: 'Attendance Distribution'
-              }
-            }
-          });
+      const presentDays = attendanceData.filter(status => status === 'p').length;
+      const absentDays = attendanceData.filter(status => status === 'a').length;
+      const halfDays = attendanceData.filter(status => status === 'h').length;
 
-          // Bar chart for monthly absences
-          const months = [
-            'January', 'February', 'March', 'April', 'May', 'June',
-            'July', 'August', 'September', 'October', 'November', 'December'
-          ];
-
-          const monthlyAbsences = months.map(month => {
-            return attendanceSnapshot.docs.filter(doc =>
-              doc.data().attendance_status === 'a' && doc.data().month === month).length;
-          });
-
-          const barCtx = document.getElementById('attendance-bar-chart').getContext('2d');
-          new Chart(barCtx, {
-            type: 'bar',
-            data: {
-              labels: months,
-              datasets: [{
-                label: 'Absences',
-                data: monthlyAbsences,
-                backgroundColor: '#FF6384'
-              }]
-            },
-            options: {
-              title: {
-                display: true,
-                text: 'Monthly Absences'
-              },
-              scales: {
-                yAxes: [{
-                  ticks: {
-                    beginAtZero: true
-                  }
-                }]
-              }
-            }
-          });
-        } else {
-          console.log("No matching documents.");
+      // Pie chart for attendance
+      const pieCtx = document.getElementById('attendance-pie-chart').getContext('2d');
+      new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+          labels: ['Present', 'Absent', 'Half Day'],
+          datasets: [{
+            data: [presentDays, absentDays, halfDays],
+            backgroundColor: ['#DEF9DC', '#FFE0E0', '#FFFDD1']
+          }]
+        },
+        options: {
+          title: {
+            display: true,
+            text: 'Attendance Distribution'
+          }
         }
-      } catch (error) {
-        console.log("Error getting documents: ", error);
-      }
+      });
+
+      // Bar chart for monthly absences
+      const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+
+      const monthlyAbsences = months.map(month => {
+        return attendanceSnapshot.docs.filter(doc =>
+          doc.data().attendance_status === 'a' && doc.data().month === month).length;
+      });
+
+      const barCtx = document.getElementById('attendance-bar-chart').getContext('2d');
+      new Chart(barCtx, {
+        type: 'bar',
+        data: {
+          labels: months,
+          datasets: [{
+            label: 'Absences',
+            data: monthlyAbsences,
+            backgroundColor: '#FF6384'
+          }]
+        },
+        options: {
+          title: {
+            display: true,
+            text: 'Monthly Absences'
+          },
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              }
+            }]
+          }
+        }
+      });
+
+    } else {
+      console.log("No matching documents.");
     }
-  });
-
-  // Back button functionality
-  document.getElementById("back-button").addEventListener("click", () => {
-    window.history.back();
-  });
-
-  // Logout button functionality
-  document.getElementById("logout-button").addEventListener("click", () => {
-    firebase.auth().signOut().then(() => {
-      window.location.href = "/public/index.html"; // Redirect to login page after logout
-    }).catch((error) => {
-      console.error("Error logging out: ", error);
-    });
-  });
+  } catch (error) {
+    console.log("Error getting documents: ", error);
+  }
 });

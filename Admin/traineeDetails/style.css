@@ -25,7 +25,7 @@
             display: inline-block;
             perspective: 1000px;
             border-radius: 5px;
-            border: 1px solid black;
+            border: 1px solid #EA454C;
         }
 
         .profile-card-inner {
@@ -40,7 +40,7 @@
 
         .profile-card:hover .profile-card-inner {
             transform: rotateY(180deg);
-            background-color: #0e1012;
+            background-color: #EA454C;
             border-radius: 5px;
         }
 
@@ -55,11 +55,11 @@
         }
 
         .profile-card-front {
-            background-color: #d6e7f9;
+            background-color: #ffffff;
         }
 
         .profile-card-back {
-            color: #EA454C;
+            color: #ffffff;
             transform: rotateY(180deg);
             display: flex;
             flex-direction: column;
