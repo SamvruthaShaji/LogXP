@@ -2,6 +2,7 @@
   "devDependencies": {
     "@types/bootstrap": "^5.2.10",
     "@types/firebase": "^3.2.1",
+    "@types/jquery": "^3.5.30",
     "firebase": "^10.12.3",
     "typescript": "^5.5.2"
   },
