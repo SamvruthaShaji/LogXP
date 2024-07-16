@@ -337,7 +337,7 @@ document
   .getElementById("dailyAttendanceBtn")
   .addEventListener("click", (event) => {
     const empId = event.target.getAttribute("data-emp-id");
-    window.location.href = `dailyAttendance.html?emp_id=${empId}`;
+    window.location.href = `../traineepages/dailyattendence/daily.html?emp_id=${empId}`;
   });
 
 document

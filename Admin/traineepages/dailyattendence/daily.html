@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Attendance</title>
+  <link rel="stylesheet" href="daily.css" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+</head>
+<body>
+  <header>
+    <div class="hdr">
+      <button class="toggle-btn" id="toggle-btn">
+        <span class="fas fa-bars"></span>
+      </button>
+      <div class="profile">
+        <img src="https://via.placeholder.com/100x100" id="profile-pic" class="rounded-circle mb-3" alt="Profile Picture" />
+        <span id="profile-name">Hi</span>
+      </div>
+      <div class="header-center">
+        <h6 class="navbar-brand">LogXP</h6>
+      </div>
+      <div class="header-right">
+        <a href="../../../login/traineelogin.html" class="btn btn-outline-light" type="button">Logout</a>
+      </div>
+    </div>
+  </header>
+  
+  <div class="DA">
+    <div class="container">
+      <h1>Daily Attendance Tracker</h1>
+      <div id="today-date-container">
+        <p>Today's Date: <span id="today-date"></span></p>
+        <div class="attendance-bar" id="attendance-today"></div>
+      </div>
+      <div class="date-picker-container">
+        <label for="date-picker">Select Date:</label>
+        <input type="date" id="date-picker" max="">
+        <button id="submit-button">Submit</button>
+      </div>
+      <div id="attendance-specific-date" style="display:none;">
+        <h2>Attendance - <span id="selected-date"></span></h2>
+        <div class="attendance-bar" id="attendance-details"></div>
+        <p id="total-hours"></p>
+        <p id="first-login-time"></p>
+        <p id="last-logout-time"></p>
+        <button id="view-details-button">View Details</button>
+      </div>
+      <div id="no-details-message" style="display:none; color: red; text-align: center;">There are no details available for this date.</div>
+      <div id="attendance-legend" class="legend">
+        <div>
+          Inside Office  :
+          <span class="legend-box inside"></span>
+        </div>
+        <div>
+          Outside Office  :
+          <span class="legend-box outside"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Detailed Attendance View -->
+  <div class="modal fade" id="attendanceModal" tabindex="-1" aria-labelledby="attendanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="attendanceModalLabel">Date: <span id="modal-selected-date"></span></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Sl. No</th>
+                <th scope="col">In Time</th>
+                <th scope="col">Out Time</th>
+              </tr>
+            </thead>
+            <tbody id="attendance-details-table">
+              <!-- Dynamic Content -->
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="details-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Details for <span id="modal-date"></span></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Sl. No</th>
+                <th scope="col">In Time</th>
+                <th scope="col">Out Time</th>
+              </tr>
+            </thead>
+            <tbody id="modal-table-body">
+              <!-- Table content will be inserted dynamically -->
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="../../dashboard.js"></script>
+  <script src="daily.js" type="module" defer></script>
+</body>
+</html>
