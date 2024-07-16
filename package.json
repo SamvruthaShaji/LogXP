@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "@types/bootstrap": "^5.2.10",
     "@types/firebase": "^3.2.1",
     "firebase": "^10.12.3",
     "typescript": "^5.5.2"
