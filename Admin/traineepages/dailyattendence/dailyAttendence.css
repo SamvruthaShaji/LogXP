@@ -2,31 +2,42 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
   display: flex;
+  flex-direction: column;
   height: 100vh;
-  overflow: hidden;
 }
 
 header {
   width: 100%;
-  background-color: #ea454c;
-  color: white;
-  padding: 10px 20px;
+  background-color: white; /* Changed header color to white */
+  color: black; /* Changed text color to black */
+  /* padding: 10px 20px; */
   z-index: 1001;
   position: fixed;
   top: 0;
   left: 0;
 }
 
-.hdr {
+/* .hdr {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
+} */
 
-.profile {
+/* .profile {
   display: flex;
   align-items: center;
+} */
+.profile {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+ margin: 50px;
 }
+ #profile-name{
+  font-size: larger;
+  font-weight: bolder;
+ }
 
 .profile img {
   border-radius: 50%;
@@ -36,31 +47,26 @@ header {
 }
 
 .navbar-brand {
-  color: #ddd;
+  color: black; /* Changed brand text color to black */
 }
 
 .header-right button {
   background-color: transparent;
   border: none;
-  color: white;
+  color: black; /* Changed button text color to black */
   font-size: 1rem;
   cursor: pointer;
-}
-
-.toggle-btn {
-  background-color: transparent;
-  border: none;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  display: none;
 }
 
 .DA {
-  padding-left: 370px;
-  width: 90%;
-  margin-top: 100px;
+  margin-top: 60px; /* Ensure this matches the header height */
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   box-sizing: border-box;
+  padding: 20px;
+  width: 100%;
 }
 
 .container {
@@ -282,6 +288,6 @@ h1 {
   .DA {
     padding-left: 0;
     width: 100%;
-    margin-top: 100px;
+    margin-top: 60px;
   }
 }

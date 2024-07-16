@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Daily Attendance</title>
-  <link rel="stylesheet" href="daily.css" />
+  <link rel="stylesheet" href="dailyAttendence.css" />
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -14,7 +14,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 </head>
 <body>
-  <header>
+  <!-- <header>
     <div class="hdr">
       <button class="toggle-btn" id="toggle-btn">
         <span class="fas fa-bars"></span>
@@ -30,7 +30,29 @@
         <a href="../../../login/traineelogin.html" class="btn btn-outline-light" type="button">Logout</a>
       </div>
     </div>
-  </header>
+  </header> -->
+  <header>
+    <div class="hdr">
+       
+        <div class="profile">  
+          <div class="header-center">
+            <h6 class="navbar-brand">LogXP</h6>
+          </div>           
+            <span id="profile-name"></span>
+            <img src="https://via.placeholder.com/100x100" id="profile-pic" class="rounded-circle" alt="Profile Picture">
+        </div>
+       
+    </div>
+</header>
+
+  <!-- <nav class="sidebar">
+    <div class="contents">
+      <a aria-current="page" href="./daily.html">Daily Attendance</a>
+      <a href="../leavedays/leavedays.html">Leave Days</a>
+      <a href="../lop/lop.html">LOP</a>
+      <a href="../ranking/ranking.html">Ranking</a>
+    </div>
+  </nav> -->
   
   <div class="DA">
     <div class="container">
@@ -125,7 +147,6 @@
       </div>
     </div>
   </div>
-  <script src="../../dashboard.js"></script>
-  <script src="daily.js" type="module" defer></script>
+  <script type="module" src="dailyAttendence.js"  defer></script>
 </body>
 </html>

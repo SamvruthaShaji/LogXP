@@ -333,12 +333,10 @@ if (batchId) {
 }
 
 // Modal button actions
-document
-  .getElementById("dailyAttendanceBtn")
-  .addEventListener("click", (event) => {
-    const empId = event.target.getAttribute("data-emp-id");
-    window.location.href = `../traineepages/dailyattendence/daily.html?emp_id=${empId}`;
-  });
+document.getElementById('dailyAttendanceBtn').addEventListener('click', (event) => {
+    const empId = event.target.getAttribute('data-emp-id');
+    window.location.href = `../traineepages/dailyattendence/dailyAttendence.html?emp_id=${empId}`;
+});
 
 document
   .getElementById("monthlyAttendanceBtn")

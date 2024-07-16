@@ -6,9 +6,7 @@ import {
   where,
   getDocs,
   doc,
-  getDoc,
-  updateDoc,
-  arrayUnion,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
@@ -27,67 +25,21 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let currentUserEmpId = null;
+// Function to fetch and display profile details using emp_id
+async function fetchProfileDetails(empId) {
+  const q = query(collection(db, "employee_details"), where("emp_id", "==", empId));
+  const querySnapshot = await getDocs(q);
 
-document.addEventListener("DOMContentLoaded", (event) => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const empId = urlParams.get('emp_id');
-  if (!empId) {
-    console.error('Employee ID not provided in URL');
-    // Redirect or handle the error as needed
-    window.location.href = "../error-page.html"; // Example of redirecting to an error page
-    return;
+  if (!querySnapshot.empty) {
+    querySnapshot.forEach((doc) => {
+      const employee = doc.data();
+      document.getElementById("profile-pic").src = employee.profile_pic;
+      document.getElementById("profile-name").innerText = `${employee.emp_name} 's daily attendance`;
+    });
+  } else {
+    console.log("No matching documents.");
   }
-
-  // Set the currentUserEmpId
-  currentUserEmpId = empId;
-
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      const emp_id = currentUserEmpId;
-      const todayDate = new Date().toISOString().slice(0, 10);
-      document.getElementById("today-date").innerText = formatDate(todayDate);
-
-      fetchAttendance(emp_id, todayDate, "attendance-today");
-
-      document.getElementById("submit-button").addEventListener("click", async () => {
-        const selectedDate = document.getElementById("date-picker").value;
-        document.getElementById("selected-date").innerText = formatDate(selectedDate);
-        const attendanceDetails = await fetchAttendance(emp_id, selectedDate, "attendance-details", true);
-        if (Array.isArray(attendanceDetails)) {
-          populateAttendanceModal(attendanceDetails);
-        } else {
-          console.error("Failed to fetch attendance details or attendanceDetails is not an array.");
-        }
-      });
-
-      document.getElementById("view-details-button").addEventListener("click", () => {
-        const selectedDate = document.getElementById("selected-date").innerText;
-        document.getElementById("modal-selected-date").innerText = selectedDate;
-        $("#attendanceModal").modal("show");
-      });
-
-      // Set max attribute of date-picker to today's date
-      document.getElementById("date-picker").max = todayDate;
-
-      // Logout functionality
-      document.getElementById("logout-button").addEventListener("click", async () => {
-        try {
-          await auth.signOut();
-          window.location.href = "../login.html"; // Redirect to login page after logout
-        } catch (error) {
-          console.error("Error signing out:", error);
-        }
-      });
-    } else {
-      console.error("User is not authenticated.");
-      window.location.href = "../login.html"; // Redirect to login page if user is not authenticated
-    }
-  });
-
-  // Populate dropdowns
-  populateDropdowns();
-});
+}
 
 // Function to fetch attendance based on date and emp_id
 async function fetchAttendance(emp_id, date, elementId, showTotal = false) {
@@ -242,41 +194,76 @@ function formatDate(dateString) {
   return date.toLocaleDateString('en-US', options);
 }
 
+// Event listener for DOMContentLoaded
+document.addEventListener("DOMContentLoaded", () => {
+  // Get emp_id from the URL parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const empId = urlParams.get('emp_id');
+  if (!empId) {
+    console.error('Employee ID not provided in URL');
+    window.location.href = "../error-page.html"; // Redirect to error page if emp_id is missing
+    return;
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      await fetchProfileDetails(empId); // Fetch and display profile details using emp_id
+
+      const todayDate = new Date().toISOString().slice(0, 10);
+      document.getElementById("today-date").innerText = formatDate(todayDate);
+      // Fetch and display today's attendance for the employee
+      fetchAttendance(empId, todayDate, "attendance-today");
+
+      document.getElementById("submit-button").addEventListener("click", async () => {
+        const selectedDate = document.getElementById("date-picker").value;
+        document.getElementById("selected-date").innerText = formatDate(selectedDate);
+        const attendanceDetails = await fetchAttendance(empId, selectedDate, "attendance-details", true);
+        if (Array.isArray(attendanceDetails)) {
+          populateAttendanceModal(attendanceDetails);
+        } else {
+          console.error("Failed to fetch attendance details or attendanceDetails is not an array.");
+        }
+      });
+
+      document.getElementById("view-details-button").addEventListener("click", () => {
+        const selectedDate = document.getElementById("selected-date").innerText;
+        document.getElementById("modal-selected-date").innerText = selectedDate;
+        $("#attendanceModal").modal("show");
+      });
+
+      // Set max attribute of date-picker to today's date
+      document.getElementById("date-picker").max = todayDate;
+    }
+  });
+});
+
 // Function to populate attendance modal with details
 function populateAttendanceModal(attendanceDetails) {
   const tableBody = document.getElementById("attendance-details-table");
   tableBody.innerHTML = "";
 
   if (Array.isArray(attendanceDetails) && attendanceDetails.length > 0) {
-    attendanceDetails.forEach(detail => {
+    attendanceDetails.forEach((detail, index) => {
       const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${detail.slNo}</td>
-        <td>${formatTime(detail.inTime)}</td>
-        <td>${formatTime(detail.outTime)}</td>
-      `;
+      const slNoCell = document.createElement("td");
+      const inTimeCell = document.createElement("td");
+      const outTimeCell = document.createElement("td");
+
+      slNoCell.innerText = index + 1;
+      inTimeCell.innerText = detail.inTime ? formatTime(detail.inTime) : "N/A";
+      outTimeCell.innerText = detail.outTime ? formatTime(detail.outTime) : "N/A";
+
+      row.appendChild(slNoCell);
+      row.appendChild(inTimeCell);
+      row.appendChild(outTimeCell);
       tableBody.appendChild(row);
     });
   } else {
     const row = document.createElement("tr");
-    row.innerHTML = `<td colspan="3">No details available for selected date.</td>`;
+    const cell = document.createElement("td");
+    cell.colSpan = 3;
+    cell.innerText = "No attendance records available.";
+    row.appendChild(cell);
     tableBody.appendChild(row);
   }
 }
-
-// Function to populate dropdowns with date values
-function populateDropdowns() {
-  const todayDate = new Date();
-  const datePicker = document.getElementById("date-picker");
-  datePicker.value = todayDate.toISOString().slice(0, 10);
-}
-
-// Logout button click listener
-document.getElementById("logout-button").addEventListener("click", async () => {
-  try {
-    await auth.signOut();
-    window.location.href = "../login.html"; // Redirect to login page after logout
-  } catch (error) {
-    console.error("Error signing out:", error);
-  }
-});
