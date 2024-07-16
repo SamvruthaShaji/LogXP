@@ -6,7 +6,6 @@
     <title>Admin Page</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
 </head>
 <body>
     <div class="container1">
@@ -19,58 +18,21 @@
                     <div class="col-md-4">
                         <h3>LOGXP</h3>
                     </div>
-                    <button id="downloadAttendanceBtn"> Download<br>Attendance</button>
-                    
+                    <div class="col-md-1">
+                        <button id="downloadBtn">Download</button>
+                    </div>
                     <div class="col-md-2 text-right">
                         <button class="btn btn-light">Log Out</button>
                     </div>
                 </div>
             </div>
-                  
-
-<!-- Month Selection Modal -->
-<div class="modal fade" id="monthSelectModal" tabindex="-1" role="dialog" aria-labelledby="monthSelectLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="monthSelectLabel">Monthly Attendance of All Trainees</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <select id="monthSelect" class="form-control">
-            <option value="" disabled selected>Select a Month</option>
-            <option value="January">January</option>
-            <option value="February">February</option>
-            <option value="March">March</option>
-            <option value="April">April</option>
-            <option value="May">May</option>
-            <option value="June">June</option>
-            <option value="July">July</option>
-            <option value="August">August</option>
-            <option value="September">September</option>
-            <option value="October">October</option>
-            <option value="November">November</option>
-            <option value="December">December</option>
-          </select>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" id="confirmDownload" class="btn btn-danger">Download</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
                             <input type="text" class="form-control" id="searchInput" placeholder="Search Trainee">
                         </div>
-                        <button class="btn btn-danger" id="searchBtn">Search</button>
+                        <button class="btn btn-danger" id="searchBtn" disabled>Search</button>
                         <div id="errorMessage" class="text-danger mt-2"></div>
                     </div>
                     <div class="col-md-9">
@@ -113,22 +75,46 @@
 
     <!-- Modal -->
     <div class="modal fade" id="profileModal" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="profileModalLabel">Profile Actions</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <button id="dailyAttendanceBtn" class="btn btn-primary btn-block">Daily Attendance</button>
-            <button id="monthlyAttendanceBtn" class="btn btn-secondary btn-block">Monthly Attendance</button>
-            <button id="lossOfPayBtn" class="btn btn-danger btn-block">Loss of Pay</button>
-            <button id="profileBtn" class="btn btn-info btn-block">Profile</button>
-          </div>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="profileModalLabel">Profile Actions</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <button id="dailyAttendanceBtn" class="btn btn-primary btn-block">Daily Attendance</button>
+                    <button id="monthlyAttendanceBtn" class="btn btn-secondary btn-block">Monthly Attendance</button>
+                    <button id="lossOfPayBtn" class="btn btn-danger btn-block">Loss of Pay</button>
+                    <button id="profileBtn" class="btn btn-info btn-block">Profile</button>
+                </div>
+            </div>
         </div>
-      </div>
+    </div>
+
+    <!-- Month Selection Modal -->
+    <div class="modal fade" id="monthModal" tabindex="-1" role="dialog" aria-labelledby="monthModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="monthModalLabel">Select Month</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="monthSelect">Month</label>
+                        <input type="month" class="form-control" id="monthSelect">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="submitMonthBtn">Submit</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Firebase -->
@@ -137,6 +123,6 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script type='module' src="script.js"></script>
+    <script type='module' src="scripts.js"></script>
 </body>
 </html>

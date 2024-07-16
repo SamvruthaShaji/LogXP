@@ -1,12 +1,10 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
-import { getFirestore, collection, query,orderBy,where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+import { getFirestore, collection, query, orderBy, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
-  
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
+// Your web app's Firebase configuration
+const firebaseConfig = {
     apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
     authDomain: "logxp-31c62.firebaseapp.com",
     projectId: "logxp-31c62",
@@ -14,7 +12,7 @@ import { getFirestore, collection, query,orderBy,where, getDocs } from "https://
     messagingSenderId: "17276012238",
     appId: "1:17276012238:web:464030eb3b2062bb55729f",
     measurementId: "G-FVZH4VFV6T"
-  };
+};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -54,7 +52,6 @@ document.getElementById('scrollRightBtn').addEventListener('click', scrollRight)
 window.addEventListener('resize', updateVisibleCards);
 updateVisibleCards();
 
-
 // Function to fetch employee IDs based on batch and store them in an array 
 async function fetchEmployeeIds(batch) {
     const empIds = [];
@@ -65,8 +62,7 @@ async function fetchEmployeeIds(batch) {
       empIds.push(doc.data().emp_id);
     });
     return empIds;
-  }
-
+}
 
 // Fetch and display employee details
 async function fetchAndDisplayEmployeeDetails(empIds) {
@@ -77,18 +73,20 @@ async function fetchAndDisplayEmployeeDetails(empIds) {
         querySnapshot.forEach(doc => {
             const employeeData = doc.data();
 
-    // Create profile card
-    const profileCard = document.createElement('div');
-    profileCard.classList.add('profile-card');
-    
-    const profileCardInner = document.createElement('div');
+            // Create profile card
+            const profileCard = document.createElement('div');
+            profileCard.classList.add('profile-card');
+
+            
+            const profileCardInner = document.createElement('div');
     profileCardInner.classList.add('profile-card-inner');
     profileCard.appendChild(profileCardInner);
-
-    const profileCardFront = document.createElement('div');
-    profileCardFront.classList.add('profile-card-front');
-    profileCardInner.appendChild(profileCardFront);
-
+            
+            const profileCardFront = document.createElement('div');
+            profileCardFront.classList.add('profile-card-front');
+            profileCardInner.appendChild(profileCardFront);
+            
+            
     const profilePic = document.createElement('img');
     profilePic.id = `profile-pic-${empId}`;
     profilePic.alt = "Profile Picture";
@@ -177,16 +175,14 @@ getDocs(q).then(querySnapshot => {
     }).catch(error => {
         console.error('Error getting performance details: ', error);
     });
-    
 
-  
-
-});
+            
+           
+        });
     }
 }
-  
-// Fetch and display attendance details for multiple employees
 
+// Fetch and display attendance details for multiple employees
 async function fetchAttendanceDetails(empIds) {
     try {
         const attendanceTable = document.getElementById('attendance-table');
@@ -275,145 +271,10 @@ async function fetchAttendanceDetails(empIds) {
         console.error('Error getting attendance details: ', error);
     }
 }
-    
-
 
 // Retrieve batch ID from URL query string
 const urlParams = new URLSearchParams(window.location.search);
 const batchId = urlParams.get('batchId');
-
-// Function to fetch employees based on batchId
-async function fetchEmployeesByBatch(batchId) {
-    try {
-    const employeesRef = collection(db, 'employee_details');
-    const performanceQuery = query(employeesRef, where('Batch', '==', batchId));
-    const snapshot = await getDocs(performanceQuery);
-
-      const employees = [];
-  
-      snapshot.forEach(doc => {
-        employees.push({ id: doc.id, ...doc.data() });
-      });
-  
-      return employees;
-    } 
-    catch (error) {
-      console.error('Error fetching employees:', error);
-      return [];
-    }
-  }
-  
-
-// Function to fetch attendance details for an employee
-async function fetchAttendance(empId, month) {
-    const attendanceRef = collection(db, 'attendance_register');
-    const attendanceQuery = query(
-      attendanceRef,
-      where('emp_id', '==', empId),
-      where('month', '==', month)
-    );
-
-    const snapshot = await getDocs(attendanceQuery);
-    const attendanceDetails = {
-    presentDays: 0,
-    absentDays: 0,
-    halfDays: 0
-  };
-
-  snapshot.forEach(doc => {
-    const status = doc.data().attendance_status;
-    if (status === 'p') {
-      attendanceDetails.presentDays += 1;
-    } else if (status === 'a') {
-      attendanceDetails.absentDays += 1;
-    } else if (status === 'h') {
-      attendanceDetails.halfDays += 1;
-    }
-  });
-
-  return attendanceDetails;
-}
-
-// Function to convert JSON data to CSV format
-// function convertToCSV(data) {
-//   const array = [Object.keys(data[0])].concat(data);
-//   return array.map(row => {
-//     return Object.values(row).map(value => `"${value}"`).join(',');
-//   }).join('\n');
-// }
-
-// // Function to trigger CSV download
-// function triggerDownload(csv, filename) {
-//   const blob = new Blob([csv], { type: 'text/csv' });
-//   const url = window.URL.createObjectURL(blob);
-//   const a = document.createElement('a');
-//   a.setAttribute('hidden', '');
-//   a.setAttribute('href', url);
-//   a.setAttribute('download', filename);
-//   document.body.appendChild(a);
-//   a.click();
-//   document.body.removeChild(a);
-// }
-
-// Function to fetch and download attendance details
-async function fetchAndDownloadAttendanceDetails(batchId, month) {
-  try {
-    const employees = await fetchEmployeesByBatch(batchId);
-    const attendanceData = [];
-
-    for (const employee of employees) {
-      const empId = employee.emp_id; // Use document ID
-      const attendanceDetails = await fetchAttendance(empId, month);
-      attendanceData.push({
-        empId: empId,
-        name: employee.emp_name,
-        ...attendanceDetails
-      });
-    }
-   
-    if (attendanceData.length > 0) {
-      // const csv = convertToCSV(attendanceData);
-      // triggerDownload(csv, `attendance_batch_${batchId}_${month}.csv`);
-      console.log(attendanceData);
-      // Convert the data to a worksheet
-      const worksheet = XLSX.utils.json_to_sheet(attendanceData);
-                // Print the worksheet contents to the console
-                console.log(XLSX.utils.sheet_to_json(worksheet, { header: 1 }));
-      // Create a new workbook
-      const workbook = XLSX.utils.book_new();
-      
-      // Append the worksheet to the workbook
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Attendance');
-
-      // Write the workbook to an Excel file and trigger the download
-      XLSX.writeFile(workbook, 'attendance.xlsx');
-    } else {
-      alert('No attendance data found for this batch and month.');
-    }
-  } catch (error) {
-    console.error('Error fetching attendance details:', error);
-  }
-}
-
-//Adding event listener to download button
-document.getElementById('downloadAttendanceBtn').addEventListener('click', () => {
-  // Show the modal when the download button is clicked
-  $('#monthSelectModal').modal('show');
-});
-
-document.getElementById('confirmDownload').addEventListener('click', () => {
-  const month = document.getElementById('monthSelect').value;
-  if (month) {
-      console.log(batchId);
-      fetchAndDownloadAttendanceDetails(batchId, month);
-      $('#monthSelectModal').modal('hide');
-  } else {
-      alert("Please select a month.");
-  }
-});
-
-
-
 // Fetch employee IDs and then fetch and display employee details
 if (batchId) {
   fetchEmployeeIds(batchId).then(empIds => {
@@ -459,21 +320,62 @@ function toggleSearchButton() {
     }
 }
 
-document.getElementById('searchInput').addEventListener('input', toggleSearchButton);
-document.getElementById('searchBtn').addEventListener('click', searchTrainee);
-document.getElementById('searchInput').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        if (!document.getElementById('searchBtn').disabled) {
-            searchTrainee();
+// Function to handle month selection
+document.getElementById('downloadBtn').addEventListener('click', () => {
+    $('#monthModal').modal('show');
+});
+
+document.getElementById('submitMonthBtn').addEventListener('click', () => {
+    const selectedMonth = document.getElementById('monthSelect').value;
+    if (selectedMonth) {
+        const confirmed = confirm(`Do you want to download attendance for ${selectedMonth}?`);
+        if (confirmed) {
+            const selectedEmpId = sessionStorage.getItem('selectedEmpId');
+            if (selectedEmpId) {
+                fetchAndDownloadAttendanceDetails(selectedEmpId, selectedMonth);
+            } else {
+                alert("No employee selected.");
+            }
         }
+        $('#monthModal').modal('hide');
     }
 });
 
-// Initialize the search button state on page load
-toggleSearchButton();
+// Fetch and download attendance details based on selected employee and month
+async function fetchAndDownloadAttendanceDetails(empId, month) {
+    const q = query(collection(db, 'attendance'), where('emp_id', '==', empId));
+    const querySnapshot = await getDocs(q);
 
+    const attendanceData = [];
+    querySnapshot.forEach(doc => {
+        const data = doc.data();
+        const date = new Date(data.date);
+        const selectedDate = new Date(month);
 
-// Modal button actions
+        if (date.getFullYear() === selectedDate.getFullYear() && date.getMonth() === selectedDate.getMonth()) {
+            attendanceData.push(data);
+        }
+    });
+
+    if (attendanceData.length > 0) {
+        const csvContent = "data:text/csv;charset=utf-8,"
+            + attendanceData.map(e => `${e.emp_id},${e.date},${e.login_time},${e.logout_time}`).join("\n");
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `${empId}_attendance_${month}.csv`);
+        document.body.appendChild(link);
+
+        link.click();
+        document.body.removeChild(link);
+    } else {
+        alert("No attendance data found for the selected month.");
+    }
+}
+
+// Event listeners for profile modal buttons
+
 
 document.getElementById('dailyAttendanceBtn').addEventListener('click', (event) => {
     const empId = event.target.getAttribute('data-emp-id');
@@ -495,6 +397,61 @@ document.getElementById('profileBtn').addEventListener('click', (event) => {
     window.location.href = `profile.html?emp_id=${empId}`;
 });
 
+// Event listener for search functionality
+document.getElementById('searchBtn').addEventListener('click', async () => {
+    const searchInput = document.getElementById('searchInput').value.toLowerCase();
+    const q = query(collection(db, 'employee_details'));
+    const querySnapshot = await getDocs(q);
+
+    let found = false;
+
+    querySnapshot.forEach(doc => {
+        const employeeData = doc.data();
+        if (employeeData.name.toLowerCase() === searchInput) {
+            sessionStorage.setItem('selectedEmpId', employeeData.emp_id);
+            fetchAndDisplayAttendanceDetails(employeeData.emp_id);
+            found = true;
+        }
+    });
+
+    if (!found) {
+        document.getElementById('errorMessage').innerText = 'Trainee does not exist';
+    } else {
+        document.getElementById('errorMessage').innerText = '';
+    }
+});
+
+
+document.getElementById('searchInput').addEventListener('input', toggleSearchButton);
+document.getElementById('searchBtn').addEventListener('click', searchTrainee);
+
+document.getElementById('searchInput').addEventListener('keypress', async (event) => {
+    if (event.key === 'Enter') {
+        const searchInput = document.getElementById('searchInput').value.toLowerCase();
+        const q = query(collection(db, 'employee_details'));
+        const querySnapshot = await getDocs(q);
+
+        let found = false;
+
+        querySnapshot.forEach(doc => {
+            const employeeData = doc.data();
+            if (employeeData.name.toLowerCase() === searchInput) {
+                sessionStorage.setItem('selectedEmpId', employeeData.emp_id);
+                fetchAndDisplayAttendanceDetails(employeeData.emp_id);
+                found = true;
+            }
+        });
+
+        if (!found) {
+            document.getElementById('errorMessage').innerText = 'Trainee does not exist';
+        } else {
+            document.getElementById('errorMessage').innerText = '';
+        }
+    }
+});
+
+// Initialize the search button state on page load
+toggleSearchButton();
 
 
 //function to sort employee based on their empid
