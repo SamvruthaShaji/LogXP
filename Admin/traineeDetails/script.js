@@ -121,10 +121,6 @@ async function fetchAndDisplayEmployeeDetails(empIds) {
       empName.id = `emp-name-${empId}`;
       profileCardFront.appendChild(empName);
 
-      const empPosition = document.createElement("p");
-      empPosition.id = `emp-position-${empId}`;
-      profileCardFront.appendChild(empPosition);
-
       const profileCardBack = document.createElement("div");
       profileCardBack.classList.add("profile-card-back");
       profileCardInner.appendChild(profileCardBack);
@@ -132,14 +128,6 @@ async function fetchAndDisplayEmployeeDetails(empIds) {
       const backEmpName = document.createElement("h4");
       backEmpName.id = `back-emp-name-${empId}`;
       profileCardBack.appendChild(backEmpName);
-
-      const month = document.createElement("p");
-      month.id = `month-${empId}`;
-      profileCardBack.appendChild(month);
-
-      const total = document.createElement("p");
-      total.id = `total-${empId}`;
-      profileCardBack.appendChild(total);
 
       // Add "View Profile" button
       const profileButton = document.createElement("button");
@@ -185,8 +173,7 @@ async function fetchAndDisplayEmployeeDetails(empIds) {
             profilePic.src = data.profile_pic;
             empid.innerHTML = data.emp_id;
             empName.innerText = data.emp_name;
-            backEmpName.innerText = data.emp_name;
-            empPosition.innerText = data.emp_position;
+            backEmpName.innerText = data.emp_name;        
           });
         })
         .catch((error) => {
@@ -202,8 +189,6 @@ async function fetchAndDisplayEmployeeDetails(empIds) {
         .then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
             const data = doc.data();
-            month.innerText = `Month: ${data.month}`;
-            total.innerText = `Total: ${data.total}%`;
           });
         })
         .catch((error) => {
