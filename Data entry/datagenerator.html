@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LogXP Data Generator</title>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
+      authDomain: "logxp-31c62.firebaseapp.com",
+      projectId: "logxp-31c62",
+      storageBucket: "logxp-31c62.appspot.com",
+      messagingSenderId: "17276012238",
+      appId: "1:17276012238:web:464030eb3b2062bb55729f",
+      measurementId: "G-FVZH4VFV6T",
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function updateAllAttendance() {
+      const inOutSnapshot = await db.collection("in_out_details").get();
+
+      if (inOutSnapshot.empty) {
+        alert("No in/out details found");
+        return;
+      }
+
+      const attendanceMap = {};
+
+      inOutSnapshot.forEach(doc => {
+        const data = doc.data();
+        const empId = data.emp_id;
+        const dateKey = data.timestamp.toDate().toISOString().split('T')[0];
+
+        if (!attendanceMap[empId]) {
+          attendanceMap[empId] = {};
+        }
+        if (!attendanceMap[empId][dateKey]) {
+          attendanceMap[empId][dateKey] = { in: [], out: [] };
+        }
+
+        if (data.status === 1) { // Check-in
+          attendanceMap[empId][dateKey].in.push(data.timestamp.toDate());
+        } else if (data.status === 2) { // Check-out
+          attendanceMap[empId][dateKey].out.push(data.timestamp.toDate());
+        }
+      });
+
+      for (const empId in attendanceMap) {
+        for (const dateKey in attendanceMap[empId]) {
+          const dateInTimes = attendanceMap[empId][dateKey].in.sort((a, b) => a - b);
+          const dateOutTimes = attendanceMap[empId][dateKey].out.sort((a, b) => a - b);
+          if (dateInTimes.length === 0 || dateOutTimes.length === 0) {
+            continue;
+          }
+
+          const firstInTime = dateInTimes[0];
+          const lastOutTime = dateOutTimes[dateOutTimes.length - 1];
+          const workDuration = (lastOutTime - firstInTime) / (1000 * 60 * 60); // Convert to hours
+
+          let attendanceStatus = 'a';
+          if (workDuration >= 8) {
+            attendanceStatus = 'p';
+          } else if (workDuration > 3) {
+            attendanceStatus = 'h';
+          }
+
+          const attendanceDate = new Date(firstInTime);
+          attendanceDate.setHours(0, 0, 0, 0);
+          const month = attendanceDate.toLocaleString('default', { month: 'long' });
+
+          const attendanceQuerySnapshot = await db.collection("attendance_register")
+            .where("emp_id", "==", empId)
+            .where("date", "==", firebase.firestore.Timestamp.fromDate(attendanceDate))
+            .get();
+
+          if (attendanceQuerySnapshot.empty) {
+            await db.collection("attendance_register").add({
+              emp_id: empId,
+              attendance_status: attendanceStatus,
+              date: firebase.firestore.Timestamp.fromDate(attendanceDate),
+              month: month,
+            });
+          }
+        }
+      }
+
+      alert("Attendance updated successfully for all employees!");
+    }
+
+    async function updateAttendanceRanking() {
+      const currentYear = new Date().getFullYear();
+      const attendanceSnapshot = await db.collection("attendance_register").get();
+      const employeeSnapshot = await db.collection("employee_details").get();
+
+      if (attendanceSnapshot.empty || employeeSnapshot.empty) {
+        alert("No data found in attendance_register or employee_details");
+        return;
+      }
+
+      const employeeMap = {};
+      employeeSnapshot.forEach(doc => {
+        const data = doc.data();
+        employeeMap[data.emp_id] = data;
+      });
+
+      const pointsMap = {};
+      attendanceSnapshot.forEach(doc => {
+        const data = doc.data();
+        const empId = data.emp_id;
+        if (!pointsMap[empId]) {
+          pointsMap[empId] = 0;
+        }
+
+        if (data.attendance_status === 'p') {
+          pointsMap[empId] += 2;
+        } else if (data.attendance_status === 'h') {
+          pointsMap[empId] += 1;
+        }
+      });
+
+      for (const empId in pointsMap) {
+        const employee = employeeMap[empId];
+        if (!employee) {
+          continue;
+        }
+
+        await db.collection("attendance_ranking").add({
+          emp_id: empId,
+          emp_name: employee.emp_name,
+          Batch: employee.Batch,
+          total_points: pointsMap[empId],
+          year: currentYear,
+        });
+      }
+
+      alert("Attendance ranking updated successfully for all employees!");
+    }
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>LogXP Data Generator</h1>
+  <button onclick="updateAllAttendance()">Update Attendance Register</button>
+  <button onclick="updateAttendanceRanking()">Update Attendance Ranking</button>
+</body>
+</html>
