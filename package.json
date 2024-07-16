@@ -1,7 +1,7 @@
 {
   "devDependencies": {
     "@types/firebase": "^3.2.1",
-    "firebase": "^10.12.2",
+    "firebase": "^10.12.3",
     "typescript": "^5.5.2"
   },
   "name": "logxp",
@@ -15,6 +15,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@firebase/app": "^0.10.6",
+    "@firebase/auth": "^1.7.5",
+    "@firebase/firestore": "^4.6.4",
     "bootstrap": "^5.3.3"
   }
 }
