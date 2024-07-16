@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Days</title>
+    <link rel="stylesheet" href="monthlyAtt.css">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script type="module" src="./monthlyAtt.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="hdr">
+           
+            <div class="profile">  
+              <div class="header-center">
+                <h6 class="navbar-brand">LogXP</h6>
+              </div>           
+                <span id="profile-name"></span>
+                <img src="https://via.placeholder.com/100x100" id="profile-pic" class="rounded-circle" alt="Profile Picture">
+            </div>
+           
+        </div>
+    </header>
+
+    <div class="LD">
+        <div class="container">
+            <div class="sid">
+                <h2>Check Leave Days</h2>
+                <label for="month">Month</label>
+                <select id="month">
+                    <option>Select month</option>
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+
+                <label for="year">Year</label>
+                <select id="year">
+                    <option>Select year</option>
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+
+                <div class="summary">
+                    <p>Total Working Days: <span id="total-working-days">0</span></p>
+                    <p>Total Days Present: <span id="total-present-days">0</span></p>
+                    <p>Total Full Day Leaves: <span id="total-full-leaves">0</span></p>
+                    <p>Total Half Day Leaves: <span id="total-half-leaves">0</span></p>
+                </div>
+            </div>
+
+            <div class="calendar">
+                <h2 id="calendar-title"></h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mo</th>
+                            <th>Tu</th>
+                            <th>We</th>
+                            <th>Th</th>
+                            <th>Fr</th>
+                            <th>Sa</th>
+                            <th>Su</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Calendar days will be populated by JavaScript -->
+                    </tbody>
+                </table>
+                <div class="legend-container">
+                    <div class="legend-item">
+                        <span class="legend-box working-day"></span>
+                        Working Day
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-box partial-leave"></span>
+                        Partial Leave
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-box full-leave"></span>
+                        Full Leave
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -3,10 +3,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/fireba
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
 import { getFirestore, collection, query,orderBy,where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-
   
   // Your web app's Firebase configuration
   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -26,7 +22,7 @@ const analytics = getAnalytics(app);
 const db = getFirestore(app);
 
 const profileContainer = document.getElementById('profileContainer');
-const profileCardWidth = 160; // Width of profile card plus margin
+const profileCardWidth = 160; 
 let visibleCards = 4;
 let scrollPosition = 0;
 
@@ -70,79 +66,6 @@ async function fetchEmployeeIds(batch) {
     });
     return empIds;
   }
-
-// Fetch and display attendance details for multiple employees
-async function fetchAttendanceDetails(empIds) {
-    try {
-        const attendanceTable = document.getElementById('attendance-table');
-        const attendanceRecords = [];
-
-        for (const empId of empIds) {
-            const attendanceQuery = query(
-                collection(db, 'in_out_details'),
-                where('emp_id', '==', empId),
-                orderBy('timestamp')
-            );
-
-            const querySnapshot = await getDocs(attendanceQuery);
-
-            querySnapshot.forEach(doc => {
-                const data = doc.data();
-                attendanceRecords.push({
-                    empId: data.emp_id,
-                    date: data.timestamp.toDate().toLocaleDateString(),
-                    time: data.timestamp.toDate(),
-                    status: data.status
-                });
-            });
-        }
-
-        // Process attendance records to find first login and last logout for each date
-        const attendanceSummary = {};
-
-        attendanceRecords.forEach(record => {
-            if (!attendanceSummary[record.empId]) {
-                attendanceSummary[record.empId] = {};
-            }
-            if (!attendanceSummary[record.empId][record.date]) {
-                attendanceSummary[record.empId][record.date] = {
-                    firstLogin: null,
-                    lastLogout: null
-                };
-            }
-
-            if (record.status === 1) { // Assuming 1 is login
-                if (!attendanceSummary[record.empId][record.date].firstLogin || record.time < attendanceSummary[record.empId][record.date].firstLogin) {
-                    attendanceSummary[record.empId][record.date].firstLogin = record.time;
-                }
-            } else if (record.status === 2) { // Assuming 2 is logout
-                if (!attendanceSummary[record.empId][record.date].lastLogout || record.time > attendanceSummary[record.empId][record.date].lastLogout) {
-                    attendanceSummary[record.empId][record.date].lastLogout = record.time;
-                }
-            }
-        });
-
-        // Append summary to the table
-        Object.keys(attendanceSummary).forEach(empId => {
-            Object.keys(attendanceSummary[empId]).forEach(date => {
-                const summary = attendanceSummary[empId][date];
-                if (summary.firstLogin && summary.lastLogout) {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${empId}</td>
-                        <td>${date}</td>
-                        <td>${summary.firstLogin.toLocaleTimeString()}</td>
-                        <td>${summary.lastLogout.toLocaleTimeString()}</td>
-                    `;
-                    attendanceTable.appendChild(row);
-                }
-            });
-        });
-    } catch (error) {
-        console.error('Error getting attendance details: ', error);
-    }
-}
-
 
 
 // Fetch and display employee details
@@ -262,16 +185,241 @@ getDocs(q).then(querySnapshot => {
     }
 }
   
+// Fetch and display attendance details for multiple employees
+
+async function fetchAttendanceDetails(empIds) {
+    try {
+        const attendanceTable = document.getElementById('attendance-table');
+        attendanceTable.innerHTML = ''; // Clear the table before appending new rows
+        const attendanceRecords = [];
+
+        for (const empId of empIds) {
+            const attendanceQuery = query(
+                collection(db, 'in_out_details'),
+                where('emp_id', '==', empId),
+                orderBy('timestamp')
+            );
+
+            const querySnapshot = await getDocs(attendanceQuery);
+
+            querySnapshot.forEach(doc => {
+                const data = doc.data();
+                attendanceRecords.push({
+                    empId: data.emp_id,
+                    date: data.timestamp.toDate(),
+                    time: data.timestamp.toDate(),
+                    status: data.status
+                });
+            });
+        }
+
+        // Process attendance records to find first login and last logout for each date
+        const attendanceSummary = {};
+
+        attendanceRecords.forEach(record => {
+            const formattedDate = record.date.toLocaleDateString('en-GB'); // Format date as dd/mm/yyyy
+            if (!attendanceSummary[record.empId]) {
+                attendanceSummary[record.empId] = {};
+            }
+            if (!attendanceSummary[record.empId][formattedDate]) {
+                attendanceSummary[record.empId][formattedDate] = {
+                    firstLogin: null,
+                    lastLogout: null
+                };
+            }
+
+            if (record.status === 1) { // Assuming 1 is login
+                if (!attendanceSummary[record.empId][formattedDate].firstLogin || record.time < attendanceSummary[record.empId][formattedDate].firstLogin) {
+                    attendanceSummary[record.empId][formattedDate].firstLogin = record.time;
+                }
+            } else if (record.status === 2) { // Assuming 2 is logout
+                if (!attendanceSummary[record.empId][formattedDate].lastLogout || record.time > attendanceSummary[record.empId][formattedDate].lastLogout) {
+                    attendanceSummary[record.empId][formattedDate].lastLogout = record.time;
+                }
+            }
+        });
+
+        // Convert attendanceSummary into a sorted array
+        const sortedRecords = [];
+
+        Object.keys(attendanceSummary).forEach(empId => {
+            Object.keys(attendanceSummary[empId]).forEach(date => {
+                const summary = attendanceSummary[empId][date];
+                if (summary.firstLogin && summary.lastLogout) {
+                    sortedRecords.push({
+                        empId,
+                        date: new Date(date.split('/').reverse().join('/')), // Convert dd/mm/yyyy to Date object for sorting
+                        firstLogin: summary.firstLogin,
+                        lastLogout: summary.lastLogout
+                    });
+                }
+            });
+        });
+
+        // Sort records by date in descending order
+        sortedRecords.sort((a, b) => b.date - a.date);
+
+        // Append sorted records to the table
+        sortedRecords.forEach(record => {
+            const formattedDate = record.date.toLocaleDateString('en-GB'); // Format date as dd/mm/yyyy
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${record.empId}</td>
+                <td>${formattedDate}</td>
+                <td>${record.firstLogin.toLocaleTimeString()}</td>
+                <td>${record.lastLogout.toLocaleTimeString()}</td>
+            `;
+            attendanceTable.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error getting attendance details: ', error);
+    }
+}
     
+
+
 // Retrieve batch ID from URL query string
 const urlParams = new URLSearchParams(window.location.search);
 const batchId = urlParams.get('batchId');
+
+// Function to fetch employees based on batchId
+async function fetchEmployeesByBatch(batchId) {
+    try {
+    const employeesRef = collection(db, 'employee_details');
+    const performanceQuery = query(employeesRef, where('Batch', '==', batchId));
+    const snapshot = await getDocs(performanceQuery);
+
+      const employees = [];
+  
+      snapshot.forEach(doc => {
+        employees.push({ id: doc.id, ...doc.data() });
+      });
+  
+      return employees;
+    } 
+    catch (error) {
+      console.error('Error fetching employees:', error);
+      return [];
+    }
+  }
+  
+
+// Function to fetch attendance details for an employee
+async function fetchAttendance(empId, month) {
+    const attendanceRef = collection(db, 'attendance_register');
+    const attendanceQuery = query(
+      attendanceRef,
+      where('emp_id', '==', empId),
+      where('month', '==', month)
+    );
+
+    const snapshot = await getDocs(attendanceQuery);
+    const attendanceDetails = {
+    presentDays: 0,
+    absentDays: 0,
+    halfDays: 0
+  };
+
+  snapshot.forEach(doc => {
+    const status = doc.data().attendance_status;
+    if (status === 'p') {
+      attendanceDetails.presentDays += 1;
+    } else if (status === 'a') {
+      attendanceDetails.absentDays += 1;
+    } else if (status === 'h') {
+      attendanceDetails.halfDays += 1;
+    }
+  });
+
+  return attendanceDetails;
+}
+
+// Function to convert JSON data to CSV format
+// function convertToCSV(data) {
+//   const array = [Object.keys(data[0])].concat(data);
+//   return array.map(row => {
+//     return Object.values(row).map(value => `"${value}"`).join(',');
+//   }).join('\n');
+// }
+
+// // Function to trigger CSV download
+// function triggerDownload(csv, filename) {
+//   const blob = new Blob([csv], { type: 'text/csv' });
+//   const url = window.URL.createObjectURL(blob);
+//   const a = document.createElement('a');
+//   a.setAttribute('hidden', '');
+//   a.setAttribute('href', url);
+//   a.setAttribute('download', filename);
+//   document.body.appendChild(a);
+//   a.click();
+//   document.body.removeChild(a);
+// }
+
+// Function to fetch and download attendance details
+async function fetchAndDownloadAttendanceDetails(batchId, month) {
+  try {
+    const employees = await fetchEmployeesByBatch(batchId);
+    const attendanceData = [];
+
+    for (const employee of employees) {
+      const empId = employee.emp_id; // Use document ID
+      const attendanceDetails = await fetchAttendance(empId, month);
+      attendanceData.push({
+        empId: empId,
+        name: employee.emp_name,
+        ...attendanceDetails
+      });
+    }
+   
+    if (attendanceData.length > 0) {
+      // const csv = convertToCSV(attendanceData);
+      // triggerDownload(csv, `attendance_batch_${batchId}_${month}.csv`);
+      console.log(attendanceData);
+      // Convert the data to a worksheet
+      const worksheet = XLSX.utils.json_to_sheet(attendanceData);
+                // Print the worksheet contents to the console
+                console.log(XLSX.utils.sheet_to_json(worksheet, { header: 1 }));
+      // Create a new workbook
+      const workbook = XLSX.utils.book_new();
+      
+      // Append the worksheet to the workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Attendance');
+
+      // Write the workbook to an Excel file and trigger the download
+      XLSX.writeFile(workbook, 'attendance.xlsx');
+    } else {
+      alert('No attendance data found for this batch and month.');
+    }
+  } catch (error) {
+    console.error('Error fetching attendance details:', error);
+  }
+}
+
+//Adding event listener to download button
+document.getElementById('downloadAttendanceBtn').addEventListener('click', () => {
+  // Show the modal when the download button is clicked
+  $('#monthSelectModal').modal('show');
+});
+
+document.getElementById('confirmDownload').addEventListener('click', () => {
+  const month = document.getElementById('monthSelect').value;
+  if (month) {
+      console.log(batchId);
+      fetchAndDownloadAttendanceDetails(batchId, month);
+      $('#monthSelectModal').modal('hide');
+  } else {
+      alert("Please select a month.");
+  }
+});
+
+
+
 // Fetch employee IDs and then fetch and display employee details
 if (batchId) {
   fetchEmployeeIds(batchId).then(empIds => {
-   
-    fetchAndDisplayEmployeeDetails(empIds);
-    fetchAttendanceDetails(empIds); 
+    const assendingEmployees = sortEmployeeIds(empIds);
+    fetchAndDisplayEmployeeDetails(assendingEmployees);
+    fetchAttendanceDetails(assendingEmployees); 
   });
 
 }
@@ -326,6 +474,7 @@ toggleSearchButton();
 
 
 // Modal button actions
+
 document.getElementById('dailyAttendanceBtn').addEventListener('click', (event) => {
     const empId = event.target.getAttribute('data-emp-id');
     window.location.href = `dailyAttendance.html?emp_id=${empId}`;
@@ -333,7 +482,7 @@ document.getElementById('dailyAttendanceBtn').addEventListener('click', (event) 
 
 document.getElementById('monthlyAttendanceBtn').addEventListener('click', (event) => {
     const empId = event.target.getAttribute('data-emp-id');
-    window.location.href = `monthlyAttendance.html?emp_id=${empId}`;
+    window.location.href = `../traineepages/monthlyattendence/monthlyAtt.html?emp_id=${empId}`;
 });
 
 document.getElementById('lossOfPayBtn').addEventListener('click', (event) => {
@@ -345,3 +494,18 @@ document.getElementById('profileBtn').addEventListener('click', (event) => {
     const empId = event.target.getAttribute('data-emp-id');
     window.location.href = `profile.html?emp_id=${empId}`;
 });
+
+
+
+//function to sort employee based on their empid
+
+function sortEmployeeIds(empIds) {
+    return empIds.sort((a, b) => {
+      // Extract the numeric part of each employee ID
+      const numA = parseInt(a.replace('emp', ''));
+      const numB = parseInt(b.replace('emp', ''));
+      
+      // Compare the numeric parts
+      return numA - numB;
+    });
+  }
