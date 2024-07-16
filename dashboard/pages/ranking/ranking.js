@@ -20,91 +20,97 @@ const db = getFirestore(app);
 // Populate the year and month dropdowns
 document.addEventListener('DOMContentLoaded', () => {
   const yearSelect = document.getElementById('year');
-  const monthSelect = document.getElementById('month');
+  const BatchSelect = document.getElementById('Batch');
 
   const currentYear = new Date().getFullYear();
-  for (let year = 2010; year <= currentYear; year++) {
+  for (let year = 2020; year <= currentYear; year++) {
     const option = document.createElement('option');
     option.value = year;
     option.textContent = year;
     yearSelect.appendChild(option);
   }
 
-  const months = [
-    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+  const Batch = [
+    "All Batches", "ILPBatch 1", "ILPBatch 2", "ILPBatch 3", "ILPBatch 4", "ILPBatch 5"
   ];
-  months.forEach((month, index) => {
+  Batch.forEach((Batch) => {
     const option = document.createElement('option');
-    option.value = month; // Use month names directly
-    option.textContent = month;
-    monthSelect.appendChild(option);
+    option.value = Batch; // Use month names directly
+    option.textContent = Batch;
+    BatchSelect.appendChild(option);
   });
 
   yearSelect.addEventListener('change', fetchRankingData);
-  monthSelect.addEventListener('change', fetchRankingData);
+  BatchSelect.addEventListener('change', fetchRankingData);
 });
 
 // Fetch and display the ranking data
 async function fetchRankingData() {
   const year = document.getElementById('year').value;
-  const month = document.getElementById('month').value;
+  const Batch = document.getElementById('Batch').value;
 
-  if (year && month) {
+  if (year && Batch) {
     const rankingTable = document.getElementById('rankingTable');
     const rankingBody = document.getElementById('rankingBody');
 
-    const q = query(
-      collection(db, "attendance_ranking"),
-      where("year", "==", Number(year)), // Ensure year is treated as a number
-      where("month", "==", month),
-      orderBy("total_points", "desc") // Order by total_points
-    );
+    let q;
+
+    if (Batch === 'All Batches') {
+      q = query(
+        collection(db, "attendance_ranking"),
+        where("year", "==", Number(year)), // Ensure year is treated as a number
+        where("Batch", "in", ["ILPBatch 1", "ILPBatch 2", "ILPBatch 3", "ILPBatch 4", "ILPBatch 5"]),
+        orderBy("total_points", "desc") // Order by total_points
+      );
+    } else {
+      q = query(
+        collection(db, "attendance_ranking"),
+        where("year", "==", Number(year)), // Ensure year is treated as a number
+        where("Batch", "==", Batch),
+        orderBy("total_points", "desc") // Order by total_points
+      );
+    }
 
     const querySnapshot = await getDocs(q);
     rankingBody.innerHTML = ''; // Clear previous results
 
     if (querySnapshot.empty) {
       const row = document.createElement('tr');
-      const noDataCell = document.createElement('td');
-      noDataCell.colSpan = 4;
-      noDataCell.textContent = "No records found";
-      row.appendChild(noDataCell);
+      const noRecordsCell = document.createElement('td');
+      noRecordsCell.colSpan = 5; // Adjust based on the number of columns
+      noRecordsCell.textContent = 'No records found';
+      row.appendChild(noRecordsCell);
       rankingBody.appendChild(row);
-    } else {
-      let rank = 1;
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const row = document.createElement('tr');
+    } else{
 
-        // Apply conditional styling based on total_points
-        if (data.total_points < 10) {
-          row.classList.add('low-points');
-        } else if (data.total_points >= 10 && data.total_points <= 20) {
-          row.classList.add('medium-points');
-        } else {
-          row.classList.add('high-points');
-        }
+    let rank = 1;
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const row = document.createElement('tr');
 
-        const rankCell = document.createElement('td');
-        rankCell.textContent = rank++;
-        row.appendChild(rankCell);
+      const rankCell = document.createElement('td');
+      rankCell.textContent = rank++;
+      row.appendChild(rankCell);
 
-        const empIdCell = document.createElement('td');
-        empIdCell.textContent = data.emp_id;
-        row.appendChild(empIdCell);
+      const empIdCell = document.createElement('td');
+      empIdCell.textContent = data.emp_id;
+      row.appendChild(empIdCell);
 
-        const nameCell = document.createElement('td');
-        nameCell.textContent = data.emp_name;
-        row.appendChild(nameCell);
+      const nameCell = document.createElement('td');
+      nameCell.textContent = data.emp_name;
+      row.appendChild(nameCell);
 
-        const totalCell = document.createElement('td');
-        totalCell.textContent = data.total_points;
-        row.appendChild(totalCell);
+      const BatchCell = document.createElement('td');
+      BatchCell.textContent = data.Batch;
+      row.appendChild(BatchCell);
 
-        rankingBody.appendChild(row);
-      });
+      const totalCell = document.createElement('td');
+      totalCell.textContent = data.total_points;
+      row.appendChild(totalCell);
+
+      rankingBody.appendChild(row);
+    });
     }
-
     rankingTable.classList.remove('hidden');
   }
 }

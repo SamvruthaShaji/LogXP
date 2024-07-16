@@ -3,7 +3,6 @@
             margin: 0;
             padding: 0;
             height: 100vh;
-            overflow: hidden;
         }
 
         .container1 {
@@ -11,7 +10,6 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-
         }
 
         .card {
@@ -27,7 +25,7 @@
             display: inline-block;
             perspective: 1000px;
             border-radius: 5px;
-            border: 1px solid black;
+            border: 1px solid #EA454C;
         }
 
         .profile-card-inner {
@@ -42,7 +40,7 @@
 
         .profile-card:hover .profile-card-inner {
             transform: rotateY(180deg);
-            background-color: #0e1012;
+            background-color: #EA454C;
             border-radius: 5px;
         }
 
@@ -57,11 +55,11 @@
         }
 
         .profile-card-front {
-            background-color: #d6e7f9;
+            background-color: #ffffff;
         }
 
         .profile-card-back {
-            color: #EA454C;
+            color: #ffffff;
             transform: rotateY(180deg);
             display: flex;
             flex-direction: column;
@@ -120,30 +118,6 @@
             height: 150px;
         }
 
-        .summary {
-            margin-top: 40px;
-            line-height: 1.3;
-          }
-          
-          .summary p {
-            font-size: 15px;
-            margin: 0px 0px 10px 10px;
-          }
-
-          @media (max-width: 1024px) {
-          
-  .summary {
-    margin-top: 40px;
-    font-size: 6px;
-    line-height: 1.4;
-}
-
-.summary p {
-    font-size: 18px;
-    margin: 0 80px 0 0; /* Adjust margins to create space between items */
-    white-space: nowrap; /* Prevent line wrapping */
-}
-          }
         /* Media queries for responsiveness */
         @media (max-width: 768px) {
             .profile-container-wrapper {
@@ -159,11 +133,7 @@
                 max-height: 240px;
                 overflow-y: auto;
             }
-            #downloadAttendanceBtn{
-                
-                margin-left:15px;
-                margin-bottom: -40px;
-            }
+
             .table-responsive tbody tr:nth-child(-n+4) {
                 display: table-row;
             }
@@ -171,18 +141,6 @@
             .card-body {
                 height: 300px;
             }
-        }
-
-        .summary {
-            margin-top: 30px;
-            display: flex;
-            flex-direction: column; /* Stack summary items vertically */
-            align-items: flex-start; /* Align items to the start */
-        }
-      
-        .summary p {
-            font-size: 16px;
-            margin: 0 0 10px 0; /* Reduced margin */
         }
         @media (max-width: 521px) {
             .card-body {
@@ -214,23 +172,4 @@
             margin-bottom: 10px;
         }
 
-        .summary {
-            margin-top: 20px;
-        }
-      
-        .summary p {
-            font-size: 14px;
-            margin: 0 0 8px 0; /* Further reduced margin */
-        }
 
-
-        #downloadAttendanceBtn{
-            margin-top: 2px;
-            font-size: 12px;
-            height: 50px;
-            border: none;
-            border-radius: 5px;
-        }
-
-
-        
