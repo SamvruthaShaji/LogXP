@@ -64,6 +64,7 @@ const totalWorkingDays = document.getElementById("total-working-days");
 const totalPresentDays = document.getElementById("total-present-days");
 const totalFullLeaves = document.getElementById("total-full-leaves");
 const totalHalfLeaves = document.getElementById("total-half-leaves");
+const totalAvailableLeaves = document.getElementById("total-avaiable-leaves");
 const calendarBody = document.querySelector(".calendar tbody");
 
 // Populate options for month and year dropdowns
@@ -156,6 +157,7 @@ function fetchAttendanceData(month, year) {
   totalPresentDays.textContent = "0";
   totalFullLeaves.textContent = "0";
   totalHalfLeaves.textContent = "0";
+  totalAvailableLeaves.textContent = "1";
 
   // Fetch data from Firestore
   db.collection("attendance_register")
@@ -168,6 +170,7 @@ function fetchAttendanceData(month, year) {
         const data = doc.data();
         const day = data.date.toDate().getDate();
         const status = data.attendance_status;
+        console.log(status);
 
         // Update calendar day color based on status
         const cells = calendarBody.querySelectorAll("td");
@@ -190,6 +193,9 @@ function fetchAttendanceData(month, year) {
           totalHalfLeaves.textContent = String(parseInt(totalHalfLeaves.textContent) + 1);
         } else if (status === 'a') {
           totalFullLeaves.textContent = String(parseInt(totalFullLeaves.textContent) + 1);
+          if(parseInt(totalAvailableLeaves.textContent) > 0){
+            totalAvailableLeaves.textContent = String(parseInt(totalAvailableLeaves.textContent) - 1); 
+          }
         }
       });
     })
