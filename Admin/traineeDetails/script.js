@@ -461,16 +461,18 @@ document.getElementById("searchBtn").addEventListener("click", async () => {
     .getElementById("searchInput")
     .value.trim()
     .toLowerCase();
+  const selectedBatchId = batchId; // Assuming you have the batch ID stored in this variable
   if (searchTerm) {
     const searchResults = [];
     const q = query(collection(db, "employee_details"));
     const querySnapshot = await getDocs(q);
-
+    
     querySnapshot.forEach((doc) => {
       const data = doc.data();
       if (
-        data.emp_name.toLowerCase().includes(searchTerm) ||
-        data.emp_id.toLowerCase().includes(searchTerm)
+        (data.emp_name.toLowerCase().includes(searchTerm) || 
+         data.emp_id.toLowerCase().includes(searchTerm)) && 
+        data.Batch === selectedBatchId // Check if the batch ID matches
       ) {
         searchResults.push(data.emp_id);
       }
@@ -481,10 +483,13 @@ document.getElementById("searchBtn").addEventListener("click", async () => {
       fetchAndDisplayEmployeeDetails(sortEmployeeIds(searchResults));
       fetchAttendanceDetails(sortEmployeeIds(searchResults));
     } else {
-      profileContainer.innerHTML = "<p>No results found</p>";
+      profileContainer.innerHTML = "<p>No results found for the selected batch</p>";
     }
   }
 });
+
+
+
 async function fetchAllEmployees() {
   if (batchId) {
     const empIds = await fetchEmployeeIds(batchId);
