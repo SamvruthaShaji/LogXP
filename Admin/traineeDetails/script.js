@@ -10,11 +10,6 @@ import {
   getDocs,
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
   authDomain: "logxp-31c62.firebaseapp.com",
