@@ -85,10 +85,11 @@
       <button class="btn btn-danger" onclick="navigateToRanking()">
         Rankings
       </button>
-      <button class="btn btn-danger mx-3" id="excelbutton">
-        Upload data
+      <button class="btn btn-danger ml-3" id="excelbutton">Upload data</button>
+      <button class="btn btn-danger ml-3" onclick="navigateToUpdate()">
+        Update Data
       </button>
-      <button class="btn btn-danger " onclick="navigateToAdd()">
+      <button class="btn btn-danger ml-3" onclick="navigateToAdd()">
         Add New Trainee
       </button>
     </div>
@@ -148,6 +149,9 @@
       }
       function navigateToAdd() {
         window.location.href = "../../Data entry/employee.html";
+      }
+      function navigateToUpdate() {
+        window.location.href = "../../Data entry/datagenerator.html";
       }
     </script>
   </body>
