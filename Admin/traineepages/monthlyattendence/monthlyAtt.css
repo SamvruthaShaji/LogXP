@@ -9,6 +9,12 @@ body, html {
   overflow: hidden;
 }
 
+.back {
+  position: fixed;
+  bottom: 20px;
+  right: 70px;
+}
+
 .container {
   display: flex;
   width: 100%;

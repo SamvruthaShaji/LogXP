@@ -6,6 +6,12 @@ body {
   height: 100vh;
 }
 
+.back {
+  position: fixed;
+  bottom: 20px;
+  right: 70px;
+}
+
 header {
   width: 100%;
   background-color: white; /* Changed header color to white */
