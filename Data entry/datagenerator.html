@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LogXP Data Generator</title>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
+      authDomain: "logxp-31c62.firebaseapp.com",
+      projectId: "logxp-31c62",
+      storageBucket: "logxp-31c62.appspot.com",
+      messagingSenderId: "17276012238",
+      appId: "1:17276012238:web:464030eb3b2062bb55729f",
+      measurementId: "G-FVZH4VFV6T",
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generateRandomPassword(length = 8) {
+      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      let password = "";
+      for (let i = 0; i < length; i++) {
+        password += chars.charAt(getRandomInt(0, chars.length - 1));
+      }
+      return password;
+    }
+
+    function generateData() {
+      const empId = document.getElementById("empId").value;
+      if (!empId) {
+        alert("Please enter an Employee ID");
+        return;
+      }
+
+      const month = "April";
+      const year = "2024";
+      const empNames = ["John Doe", "Jane Smith", "Sanjay Nair", "Rithika Joffi"];
+      const empName = empNames[getRandomInt(0, empNames.length - 1)];
+      const attendanceStatus = ["p", "a", "l"];
+      const attendanceDate = new Date();
+      const profilePic = "https://th.bing.com/th/id/OIP.tLotgCDtzgTdwJcTiXWRCwHaEK?rs=1&pid=ImgDetMain";
+
+      // Random Data
+      const totalPoints = getRandomInt(0, 100);
+      const status = getRandomInt(0, 1);
+      const remark = ["Half_LOP", "Full_LOP", "Sick Leave"][getRandomInt(0, 2)];
+
+      // Attendance Ranking
+      db.collection("attendance_ranking").add({
+        emp_id: empId,
+        emp_name: empName,
+        month: month,
+        total_points: totalPoints,
+        year: year,
+      });
+
+      // Attendance Register
+      db.collection("attendance_register").add({
+        attendance_status: attendanceStatus[getRandomInt(0, attendanceStatus.length - 1)],
+        date: firebase.firestore.Timestamp.fromDate(attendanceDate),
+        emp_id: empId,
+      });
+
+      // Employee Details
+      db.collection("employee_details").add({
+        Batch: "ILPBatch 4",
+        email: `${empName.replace(" ", "").toLowerCase()}@example.com`,
+        emp_id: empId,
+        emp_name: empName,
+        joining_date: firebase.firestore.Timestamp.fromDate(attendanceDate),
+        profile_pic: profilePic,
+        password: generateRandomPassword(),
+      });
+
+      // In Out Details
+      db.collection("in_out_details").add({
+        emp_id: empId,
+        status: status,
+        timestamp: firebase.firestore.Timestamp.fromDate(new Date()),
+      });
+
+      // Leave Details
+      db.collection("leave_details").add({
+        emp_id: empId,
+        leave_date: firebase.firestore.Timestamp.fromDate(new Date()),
+        remark: remark,
+      });
+
+      alert("Data generated successfully!");
+    }
+
+    function wipeAttendanceRanking() {
+      db.collection("attendance_ranking")
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            db.collection("attendance_ranking").doc(doc.id).delete();
+          });
+        })
+        .then(() => {
+          alert("All attendance ranking data wiped successfully!");
+        })
+        .catch((error) => {
+          console.error("Error wiping attendance ranking data: ", error);
+        });
+    }
+
+    async function createAttendanceRanking() {
+      try {
+        // Fetch employee details
+        const empDetailsSnapshot = await db.collection("employee_details").get();
+        const empDetails = {};
+        empDetailsSnapshot.forEach((doc) => {
+          empDetails[doc.data().emp_id] = doc.data().emp_name;
+        });
+
+        // Fetch attendance register
+        const attendanceSnapshot = await db.collection("attendance_register").get();
+        const attendanceData = {};
+        attendanceSnapshot.forEach((doc) => {
+          const data = doc.data();
+          const empId = data.emp_id;
+          const month = data.date.toDate().toLocaleString("default", { month: "long" });
+          const year = data.date.toDate().getFullYear();
+          const key = `${empId}_${month}_${year}`;
+
+          if (!attendanceData[key]) {
+            attendanceData[key] = {
+              emp_id: empId,
+              emp_name: empDetails[empId],
+              month: month,
+              year: year,
+              total_points: 0,
+            };
+          }
+
+          if (data.attendance_status === "p") {
+            attendanceData[key].total_points += 1;
+          } else if (data.attendance_status === "h") {
+            attendanceData[key].total_points += 0.5;
+          }
+        });
+
+        // Add calculated attendance ranking to the database
+        for (const key in attendanceData) {
+          if (attendanceData.hasOwnProperty(key)) {
+            await db.collection("attendance_ranking").add(attendanceData[key]);
+          }
+        }
+
+        alert("Attendance ranking created successfully!");
+      } catch (error) {
+        console.error("Error creating attendance ranking: ", error);
+      }
+    }
+
+    async function deleteDuplicates() {
+      try {
+        const snapshot = await db.collection("attendance_ranking").get();
+        const uniqueEntries = {};
+        const duplicates = [];
+
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const key = `${data.emp_name}_${data.month}`;
+
+          if (uniqueEntries[key]) {
+            duplicates.push(doc.id);
+          } else {
+            uniqueEntries[key] = true;
+          }
+        });
+
+        const deletePromises = duplicates.map((id) =>
+          db.collection("attendance_ranking").doc(id).delete()
+        );
+        await Promise.all(deletePromises);
+
+        alert("Duplicate entries deleted successfully!");
+      } catch (error) {
+        console.error("Error deleting duplicates: ", error);
+      }
+    }
+
+    async function addInOutDetails() {
+      try {
+        // Fetch employee details
+        const empDetailsSnapshot = await db.collection("employee_details").get();
+        const empIds = [];
+        empDetailsSnapshot.forEach((doc) => {
+          empIds.push(doc.data().emp_id);
+        });
+
+        // Select a random employee ID
+        const empId = empIds[getRandomInt(0, empIds.length - 1)];
+        
+        // Add 6 in_out_details entries
+        const inOutPromises = [];
+        for (let i = 0; i < 6; i++) {
+          const status = i % 2 === 0 ? 1 : 2; // Alternating between 1 and 2
+          inOutPromises.push(
+            db.collection("in_out_details").add({
+              emp_id: empId,
+              status: status,
+              timestamp: firebase.firestore.Timestamp.fromDate(new Date()),
+            })
+          );
+        }
+
+        await Promise.all(inOutPromises);
+        alert("6 In/Out details added successfully!");
+      } catch (error) {
+        console.error("Error adding In/Out details: ", error);
+      }
+    }
+
+    async function addPasswordFields() {
+      try {
+        const empDetailsSnapshot = await db.collection("employee_details").get();
+        const updatePromises = [];
+        empDetailsSnapshot.forEach((doc) => {
+          const empId = doc.id;
+          const password = generateRandomPassword();
+          updatePromises.push(
+            db.collection("employee_details").doc(empId).update({ password: password })
+          );
+        });
+
+        await Promise.all(updatePromises);
+        alert("Password fields added to all employee details successfully!");
+      } catch (error) {
+        console.error("Error adding password fields: ", error);
+      }
+    }
+
+    async function createAdminCollection() {
+      const adminId = prompt("Enter Admin ID");
+      const adminName = prompt("Enter Admin Name");
+      const adminEmail = prompt("Enter Admin Email");
+      const adminPassword = generateRandomPassword();
+
+      try {
+        await db.collection("admin").add({
+          admin_id: adminId,
+          admin_name: adminName,
+          admin_email: adminEmail,
+          admin_password: adminPassword,
+        });
+        alert(`Admin created successfully!\nPassword: ${adminPassword}`);
+      } catch (error) {
+        console.error("Error creating admin: ", error);
+      }
+    }
+
+    async function wipeInOutDetailsExceptOne() {
+      try {
+        const snapshot = await db.collection("in_out_details").get();
+        const docIds = snapshot.docs.map((doc) => doc.id);
+
+        if (docIds.length > 1) {
+          const deletePromises = docIds.slice(1).map((id) =>
+            db.collection("in_out_details").doc(id).delete()
+          );
+          await Promise.all(deletePromises);
+          alert("All in/out details wiped successfully except one!");
+        } else {
+          alert("There is only one or no document in in_out_details!");
+        }
+      } catch (error) {
+        console.error("Error wiping in/out details: ", error);
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    input,
+    button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>LogXP Data Generator</h1>
+  <input type="text" id="empId" placeholder="Enter Employee ID" />
+  <button onclick="generateData()">Generate Data</button>
+  <button onclick="wipeAttendanceRanking()">Wipe Attendance Ranking</button>
+  <button onclick="createAttendanceRanking()">Create Attendance Ranking</button>
+  <button onclick="deleteDuplicates()">Delete Duplicates</button>
+  <button onclick="addInOutDetails()">Add In/Out Details</button>
+  <button onclick="addPasswordFields()">Add Password Fields</button>
+  <button onclick="createAdminCollection()">Create Admin Collection</button>
+  <button onclick="wipeInOutDetailsExceptOne()">Wipe In/Out Details Except One</button>
+</body>
+</html>
