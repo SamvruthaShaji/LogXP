@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Page</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,17 +13,56 @@
         <div class="card">
             <div class="card-header bg-danger text-white">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-5">
                         <h3>Hi Admin</h3>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <h3>LOGXP</h3>
                     </div>
-                    <div class="col-md-3 text-right">
+                    <button id="downloadAttendanceBtn"> Download<br>Attendance</button>
+                    <div class="col-md-2 text-right">
                         <button class="btn btn-light">Log Out</button>
                     </div>
                 </div>
             </div>
+
+            <!-- Month Selection Modal -->
+<div class="modal fade" id="monthSelectModal" tabindex="-1" role="dialog" aria-labelledby="monthSelectLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="monthSelectLabel">Monthly Attendance of All Trainees</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <select id="monthSelect" class="form-control">
+            <option value="" disabled selected>Select a Month</option>
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" id="confirmDownload" class="btn btn-danger">Download</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-3">

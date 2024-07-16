@@ -318,6 +318,114 @@ async function fetchAttendanceDetails(empIds) {
 // Retrieve batch ID from URL query string
 const urlParams = new URLSearchParams(window.location.search);
 const batchId = urlParams.get("batchId");
+
+// Function to fetch employees based on batchId
+async function fetchEmployeesByBatch(batchId) {
+  try {
+  const employeesRef = collection(db, 'employee_details');
+  const performanceQuery = query(employeesRef, where('Batch', '==', batchId));
+  const snapshot = await getDocs(performanceQuery);
+
+    const employees = [];
+
+    snapshot.forEach(doc => {
+      employees.push({ id: doc.id, ...doc.data() });
+    });
+
+    return employees;
+  } 
+  catch (error) {
+    console.error('Error fetching employees:', error);
+    return [];
+  }
+}
+
+// Function to fetch attendance details for an employee
+async function fetchAttendance(empId, month) {
+  const attendanceRef = collection(db, 'attendance_register');
+  const attendanceQuery = query(
+    attendanceRef,
+    where('emp_id', '==', empId),
+    where('month', '==', month)
+  );
+
+  const snapshot = await getDocs(attendanceQuery);
+  const attendanceDetails = {
+  presentDays: 0,
+  absentDays: 0,
+  halfDays: 0
+};
+
+snapshot.forEach(doc => {
+  const status = doc.data().attendance_status;
+  if (status === 'p') {
+    attendanceDetails.presentDays += 1;
+  } else if (status === 'a') {
+    attendanceDetails.absentDays += 1;
+  } else if (status === 'h') {
+    attendanceDetails.halfDays += 1;
+  }
+});
+
+return attendanceDetails;
+}
+
+// Function to fetch and download attendance details
+async function fetchAndDownloadAttendanceDetails(batchId, month) {
+  try {
+    const employees = await fetchEmployeesByBatch(batchId);
+    const attendanceData = [];
+
+    for (const employee of employees) {
+      const empId = employee.emp_id; // Use document ID
+      const attendanceDetails = await fetchAttendance(empId, month);
+      attendanceData.push({
+        empId: empId,
+        name: employee.emp_name,
+        ...attendanceDetails
+      });
+    }
+   
+    if (attendanceData.length > 0) {
+      // const csv = convertToCSV(attendanceData);
+      // triggerDownload(csv, `attendance_batch_${batchId}_${month}.csv`);
+      console.log(attendanceData);
+      // Convert the data to a worksheet
+      const worksheet = XLSX.utils.json_to_sheet(attendanceData);
+                // Print the worksheet contents to the console
+                console.log(XLSX.utils.sheet_to_json(worksheet, { header: 1 }));
+      // Create a new workbook
+      const workbook = XLSX.utils.book_new();
+      
+      // Append the worksheet to the workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Attendance');
+
+      // Write the workbook to an Excel file and trigger the download
+      XLSX.writeFile(workbook, 'attendance.xlsx');
+    } else {
+      alert('No attendance data found for this batch and month.');
+    }
+  } catch (error) {
+    console.error('Error fetching attendance details:', error);
+  }
+}
+//Adding event listener to download button
+document.getElementById('downloadAttendanceBtn').addEventListener('click', () => {
+  // Show the modal when the download button is clicked
+  $('#monthSelectModal').modal('show');
+});
+
+document.getElementById('confirmDownload').addEventListener('click', () => {
+  const month = document.getElementById('monthSelect').value;
+  if (month) {
+      console.log(batchId);
+      fetchAndDownloadAttendanceDetails(batchId, month);
+      $('#monthSelectModal').modal('hide');
+  } else {
+      alert("Please select a month.");
+  }
+});
+
 // Fetch employee IDs and then fetch and display employee details
 if (batchId) {
   fetchEmployeeIds(batchId).then((empIds) => {
