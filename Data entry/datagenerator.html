@@ -108,6 +108,18 @@
 
       // Update Attendance Ranking
       async function updateAttendanceRanking() {
+        // Step 1: Delete all existing documents in attendance_ranking collection
+        const rankingSnapshot = await db.collection("attendance_ranking").get();
+        const deleteBatch = db.batch();
+
+        rankingSnapshot.forEach((doc) => {
+          deleteBatch.delete(doc.ref);
+        });
+
+        await deleteBatch.commit();
+        console.log("All documents in attendance_ranking collection deleted");
+
+        // Step 2: Recalculate and update attendance ranking
         const currentYear = new Date().getFullYear();
         const attendanceSnapshot = await db
           .collection("attendance_register")
@@ -148,27 +160,14 @@
             continue;
           }
 
-          const rankingQuerySnapshot = await db
-            .collection("attendance_ranking")
-            .where("emp_id", "==", empId)
-            .get();
-
-          if (rankingQuerySnapshot.empty) {
-            const newDocRef = db.collection("attendance_ranking").doc();
-            attendanceRankingBatch.set(newDocRef, {
-              emp_id: empId,
-              emp_name: employee.emp_name,
-              Batch: employee.Batch,
-              total_points: pointsMap[empId],
-              year: currentYear,
-            });
-          } else {
-            const existingDocRef = rankingQuerySnapshot.docs[0].ref;
-            attendanceRankingBatch.update(existingDocRef, {
-              total_points: pointsMap[empId],
-              year: currentYear,
-            });
-          }
+          const newDocRef = db.collection("attendance_ranking").doc();
+          attendanceRankingBatch.set(newDocRef, {
+            emp_id: empId,
+            emp_name: employee.emp_name,
+            Batch: employee.Batch,
+            total_points: pointsMap[empId],
+            year: currentYear,
+          });
         }
 
         await attendanceRankingBatch.commit();
@@ -346,11 +345,11 @@
       <button class="button" onclick="updateAllAttendance()">
         Update Attendance
       </button>
-      <button class="button" onclick="updateAttendanceRanking()">
-        Update Attendance Ranking
-      </button>
       <button class="button" onclick="updateLeaveDetails()">
         Update Leave Details
+      </button>
+      <button class="button" onclick="updateAttendanceRanking()">
+        Update Attendance Ranking
       </button>
     </div>
   </body>
