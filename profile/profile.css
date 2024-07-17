@@ -10,7 +10,7 @@ body {
 .profile img {
     width: 100px; 
     height: 100px; 
-    border-radius: 15px; /* Rounded square */
+    border-radius: 15px; 
 }
 
 .details p {
