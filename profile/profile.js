@@ -1,4 +1,3 @@
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
   authDomain: "logxp-31c62.firebaseapp.com",
@@ -58,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
             (status) => status === "h"
           ).length;
 
-          // Pie chart for attendance
+
           const pieCtx = document
             .getElementById("attendance-pie-chart")
             .getContext("2d");
@@ -81,7 +80,6 @@ document.addEventListener("DOMContentLoaded", () => {
             },
           });
 
-          // Bar chart for monthly absences
           const months = [
             "January",
             "February",
@@ -145,12 +143,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Back button functionality
   document.getElementById("back-button").addEventListener("click", () => {
     window.history.back();
   });
 
-  // Logout button functionality
   document
     .getElementById("log-out-button")
     .addEventListener("click", async () => {
@@ -158,7 +154,6 @@ document.addEventListener("DOMContentLoaded", () => {
         await firebase.auth().signOut();
         console.log("User signed out successfully");
         window.location.href = "/login/traineelogin.html";
-        // Redirect or handle post-logout actions as needed
       } catch (error) {
         console.error("Error signing out:", error);
       }
