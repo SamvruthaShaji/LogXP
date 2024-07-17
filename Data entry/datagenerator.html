@@ -9,16 +9,15 @@
     <script>
       // Your web app's Firebase configuration
       const firebaseConfig = {
-      apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
-      authDomain: "logxp-31c62.firebaseapp.com",
-      projectId: "logxp-31c62",
-      storageBucket: "logxp-31c62.appspot.com",
-      messagingSenderId: "17276012238",
-      appId: "1:17276012238:web:464030eb3b2062bb55729f",
-      measurementId: "G-FVZH4VFV6T",
-    };
+        apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
+        authDomain: "logxp-31c62.firebaseapp.com",
+        projectId: "logxp-31c62",
+        storageBucket: "logxp-31c62.appspot.com",
+        messagingSenderId: "17276012238",
+        appId: "1:17276012238:web:464030eb3b2062bb55729f",
+        measurementId: "G-FVZH4VFV6T",
+      };
 
-      // Initialize Firebase
       firebase.initializeApp(firebaseConfig);
       const db = firebase.firestore();
 
@@ -109,6 +108,18 @@
 
       // Update Attendance Ranking
       async function updateAttendanceRanking() {
+        // Step 1: Delete all existing documents in attendance_ranking collection
+        const rankingSnapshot = await db.collection("attendance_ranking").get();
+        const deleteBatch = db.batch();
+
+        rankingSnapshot.forEach((doc) => {
+          deleteBatch.delete(doc.ref);
+        });
+
+        await deleteBatch.commit();
+        console.log("All documents in attendance_ranking collection deleted");
+
+        // Step 2: Recalculate and update attendance ranking
         const currentYear = new Date().getFullYear();
         const attendanceSnapshot = await db
           .collection("attendance_register")
@@ -141,13 +152,16 @@
           }
         });
 
+        const attendanceRankingBatch = db.batch();
+
         for (const empId in pointsMap) {
           const employee = employeeMap[empId];
           if (!employee) {
             continue;
           }
 
-          await db.collection("attendance_ranking").add({
+          const newDocRef = db.collection("attendance_ranking").doc();
+          attendanceRankingBatch.set(newDocRef, {
             emp_id: empId,
             emp_name: employee.emp_name,
             Batch: employee.Batch,
@@ -156,6 +170,7 @@
           });
         }
 
+        await attendanceRankingBatch.commit();
         alert("Attendance ranking updated successfully for all employees!");
       }
 
@@ -330,11 +345,11 @@
       <button class="button" onclick="updateAllAttendance()">
         Update Attendance
       </button>
-      <button class="button" onclick="updateAttendanceRanking()">
-        Update Attendance Ranking
-      </button>
       <button class="button" onclick="updateLeaveDetails()">
         Update Leave Details
+      </button>
+      <button class="button" onclick="updateAttendanceRanking()">
+        Update Attendance Ranking
       </button>
     </div>
   </body>

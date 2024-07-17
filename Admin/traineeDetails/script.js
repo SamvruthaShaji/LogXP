@@ -179,21 +179,6 @@ async function fetchAndDisplayEmployeeDetails(empIds) {
         .catch((error) => {
           console.error("Error getting document: ", error);
         });
-
-      // Fetch and display performance details
-      const performanceQuery = query(
-        collection(db, "performance_details"),
-        where("emp_id", "==", empId)
-      );
-      getDocs(performanceQuery)
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-          });
-        })
-        .catch((error) => {
-          console.error("Error getting performance details: ", error);
-        });
     });
   }
 }

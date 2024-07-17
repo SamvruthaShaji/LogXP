@@ -6,9 +6,12 @@ import {
   where,
   getDocs,
   doc,
-  getDoc
+  getDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
@@ -17,7 +20,7 @@ const firebaseConfig = {
   storageBucket: "logxp-31c62.appspot.com",
   messagingSenderId: "17276012238",
   appId: "1:17276012238:web:464030eb3b2062bb55729f",
-  measurementId: "G-FVZH4VFV6T"
+  measurementId: "G-FVZH4VFV6T",
 };
 
 // Initialize Firebase
@@ -27,14 +30,19 @@ const auth = getAuth(app);
 
 // Function to fetch and display profile details using emp_id
 async function fetchProfileDetails(empId) {
-  const q = query(collection(db, "employee_details"), where("emp_id", "==", empId));
+  const q = query(
+    collection(db, "employee_details"),
+    where("emp_id", "==", empId)
+  );
   const querySnapshot = await getDocs(q);
 
   if (!querySnapshot.empty) {
     querySnapshot.forEach((doc) => {
       const employee = doc.data();
       document.getElementById("profile-pic").src = employee.profile_pic;
-      document.getElementById("profile-name").innerText = `${employee.emp_name} 's daily attendance`;
+      document.getElementById(
+        "profile-name"
+      ).innerText = `${employee.emp_name} 's daily attendance`;
     });
   } else {
     console.log("No matching documents.");
@@ -47,6 +55,30 @@ async function fetchAttendance(emp_id, date, elementId, showTotal = false) {
   if (date > todayDate) {
     console.error("Selected date cannot be in the future.");
     return;
+  }
+
+  // Reset total working hours and login/logout times
+  if (showTotal) {
+    const attendanceSpecificDateElement = document.getElementById(
+      "attendance-specific-date"
+    );
+    if (attendanceSpecificDateElement) {
+      attendanceSpecificDateElement.style.display = "none";
+    }
+
+    const totalHours = document.getElementById("total-hours");
+    if (totalHours) {
+      totalHours.innerText = "Total working hours: 0 hrs 0 mins";
+    }
+
+    const firstLoginDisplay = document.getElementById("first-login-time");
+    const lastLogoutDisplay = document.getElementById("last-logout-time");
+    if (firstLoginDisplay) {
+      firstLoginDisplay.innerText = "Login Time: N/A";
+    }
+    if (lastLogoutDisplay) {
+      lastLogoutDisplay.innerText = "Logout Time: N/A";
+    }
   }
 
   const startOfWorkDay = new Date(`${date}T09:00:00`);
@@ -136,7 +168,9 @@ async function fetchAttendance(emp_id, date, elementId, showTotal = false) {
   }
 
   if (showTotal) {
-    const attendanceSpecificDateElement = document.getElementById("attendance-specific-date");
+    const attendanceSpecificDateElement = document.getElementById(
+      "attendance-specific-date"
+    );
     if (attendanceSpecificDateElement) {
       attendanceSpecificDateElement.style.display = "block";
     }
@@ -154,10 +188,14 @@ async function fetchAttendance(emp_id, date, elementId, showTotal = false) {
   const firstLoginDisplay = document.getElementById("first-login-time");
   const lastLogoutDisplay = document.getElementById("last-logout-time");
   if (firstLoginDisplay) {
-    firstLoginDisplay.innerText = firstLoginTime ? `Login Time: ${formatTime(firstLoginTime)}` : "Login Time: N/A";
+    firstLoginDisplay.innerText = firstLoginTime
+      ? `Login Time: ${formatTime(firstLoginTime)}`
+      : "Login Time: N/A";
   }
   if (lastLogoutDisplay) {
-    lastLogoutDisplay.innerText = lastLogoutTime ? `Logout Time: ${formatTime(lastLogoutTime)}` : "Logout Time: N/A";
+    lastLogoutDisplay.innerText = lastLogoutTime
+      ? `Logout Time: ${formatTime(lastLogoutTime)}`
+      : "Logout Time: N/A";
   }
 
   return attendanceDetails;
@@ -174,7 +212,10 @@ function appendSlot(parent, start, end, color) {
     slotElement.innerText = `${formatTime(start)} - ${formatTime(end)}`;
   }
 
-  slotElement.setAttribute("data-time", `${formatTime(start)} - ${formatTime(end)}`);
+  slotElement.setAttribute(
+    "data-time",
+    `${formatTime(start)} - ${formatTime(end)}`
+  );
   parent.appendChild(slotElement);
 
   setTimeout(() => {
@@ -190,17 +231,17 @@ function formatTime(date) {
 // Function to format date to "Month Day, Year" format
 function formatDate(dateString) {
   const date = new Date(dateString);
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  return date.toLocaleDateString('en-US', options);
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  return date.toLocaleDateString("en-US", options);
 }
 
 // Event listener for DOMContentLoaded
 document.addEventListener("DOMContentLoaded", () => {
   // Get emp_id from the URL parameter
   const urlParams = new URLSearchParams(window.location.search);
-  const empId = urlParams.get('emp_id');
+  const empId = urlParams.get("emp_id");
   if (!empId) {
-    console.error('Employee ID not provided in URL');
+    console.error("Employee ID not provided in URL");
     window.location.href = "../error-page.html"; // Redirect to error page if emp_id is missing
     return;
   }
@@ -214,22 +255,36 @@ document.addEventListener("DOMContentLoaded", () => {
       // Fetch and display today's attendance for the employee
       fetchAttendance(empId, todayDate, "attendance-today");
 
-      document.getElementById("submit-button").addEventListener("click", async () => {
-        const selectedDate = document.getElementById("date-picker").value;
-        document.getElementById("selected-date").innerText = formatDate(selectedDate);
-        const attendanceDetails = await fetchAttendance(empId, selectedDate, "attendance-details", true);
-        if (Array.isArray(attendanceDetails)) {
-          populateAttendanceModal(attendanceDetails);
-        } else {
-          console.error("Failed to fetch attendance details or attendanceDetails is not an array.");
-        }
-      });
+      document
+        .getElementById("submit-button")
+        .addEventListener("click", async () => {
+          const selectedDate = document.getElementById("date-picker").value;
+          document.getElementById("selected-date").innerText =
+            formatDate(selectedDate);
+          const attendanceDetails = await fetchAttendance(
+            empId,
+            selectedDate,
+            "attendance-details",
+            true
+          );
+          if (Array.isArray(attendanceDetails)) {
+            populateAttendanceModal(attendanceDetails);
+          } else {
+            console.error(
+              "Failed to fetch attendance details or attendanceDetails is not an array."
+            );
+          }
+        });
 
-      document.getElementById("view-details-button").addEventListener("click", () => {
-        const selectedDate = document.getElementById("selected-date").innerText;
-        document.getElementById("modal-selected-date").innerText = selectedDate;
-        $("#attendanceModal").modal("show");
-      });
+      document
+        .getElementById("view-details-button")
+        .addEventListener("click", () => {
+          const selectedDate =
+            document.getElementById("selected-date").innerText;
+          document.getElementById("modal-selected-date").innerText =
+            selectedDate;
+          $("#attendanceModal").modal("show");
+        });
 
       // Set max attribute of date-picker to today's date
       document.getElementById("date-picker").max = todayDate;
@@ -251,7 +306,9 @@ function populateAttendanceModal(attendanceDetails) {
 
       slNoCell.innerText = index + 1;
       inTimeCell.innerText = detail.inTime ? formatTime(detail.inTime) : "N/A";
-      outTimeCell.innerText = detail.outTime ? formatTime(detail.outTime) : "N/A";
+      outTimeCell.innerText = detail.outTime
+        ? formatTime(detail.outTime)
+        : "N/A";
 
       row.appendChild(slNoCell);
       row.appendChild(inTimeCell);
