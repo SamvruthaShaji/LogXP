@@ -37,41 +37,40 @@ async function fetchEmployeeIdByEmail(email) {
   }
 }
  
-// Function to fetch attendance based on date and emp_id
 async function fetchAttendance(emp_id, date, elementId, showTotal = false) {
   const todayDate = new Date().toISOString().slice(0, 10);
   if (date > todayDate) {
     console.error("Selected date cannot be in the future.");
     return;
   }
- 
+
   const startOfWorkDay = new Date(`${date}T09:00:00`);
   const endOfWorkDay = new Date(`${date}T18:00:00`);
- 
+
   console.log("Fetching attendance for date:", date);
- 
+
   const q = query(
     collection(db, "in_out_details"),
     where("emp_id", "==", emp_id),
     where("timestamp", ">=", new Date(date)),
     where("timestamp", "<=", new Date(new Date(date).setHours(23, 59, 59, 999)))
   );
- 
+
   const querySnapshot = await getDocs(q);
- 
+
   console.log("Total records fetched:", querySnapshot.size);
- 
+
   const attendance = document.getElementById(elementId);
   attendance.innerHTML = "";
   let totalMinutes = 0;
   const workIntervals = [];
- 
+
   let currentInTime = null;
   let firstLoginTime = null;
   let lastLogoutTime = null;
- 
+
   const attendanceDetails = [];
- 
+
   querySnapshot.forEach((doc, index) => {
     const data = doc.data();
     const timestamp = data.timestamp.toDate();
@@ -89,20 +88,24 @@ async function fetchAttendance(emp_id, date, elementId, showTotal = false) {
       attendanceDetails[attendanceDetails.length - 1].outTime = timestamp;
     }
   });
- 
+
   console.log("Work intervals:", workIntervals);
- 
+
   if (workIntervals.length === 0) {
     appendSlot(attendance, startOfWorkDay, endOfWorkDay, "red");
     document.getElementById("no-details-message").style.display = "block";
+    if (showTotal) {
+      displayTotalHours(0);
+    }
+    displayLoginLogoutTimes(null, null);
     return attendanceDetails;
   } else {
     document.getElementById("no-details-message").style.display = "none";
   }
- 
+
   const combinedIntervals = [];
   workIntervals.sort((a, b) => a.start - b.start);
- 
+
   let currentInterval = workIntervals[0];
   for (let i = 1; i < workIntervals.length; i++) {
     if (workIntervals[i].start <= currentInterval.end) {
@@ -115,9 +118,9 @@ async function fetchAttendance(emp_id, date, elementId, showTotal = false) {
     }
   }
   combinedIntervals.push(currentInterval);
- 
+
   console.log("Combined intervals:", combinedIntervals);
- 
+
   let lastEnd = startOfWorkDay;
   combinedIntervals.forEach((interval) => {
     if (interval.start > lastEnd) {
@@ -126,27 +129,23 @@ async function fetchAttendance(emp_id, date, elementId, showTotal = false) {
     appendSlot(attendance, interval.start, interval.end, "green");
     lastEnd = interval.end;
   });
- 
+
   if (lastEnd < endOfWorkDay) {
     appendSlot(attendance, lastEnd, endOfWorkDay, "red");
   }
- 
+
   if (showTotal) {
-    const attendanceSpecificDateElement = document.getElementById("attendance-specific-date");
-    if (attendanceSpecificDateElement) {
-      attendanceSpecificDateElement.style.display = "block";
-    }
- 
-    const totalHours = document.getElementById("total-hours");
-    if (totalHours) {
-      const roundedMinutes = Math.round(totalMinutes);
-      totalHours.innerText = `Total working hours: ${Math.floor(
-        roundedMinutes / 60
-      )} hrs ${roundedMinutes % 60} mins`;
-    }
+    displayTotalHours(totalMinutes);
   }
- 
+
   // Display first login and last logout times
+  displayLoginLogoutTimes(firstLoginTime, lastLogoutTime);
+
+  return attendanceDetails;
+}
+
+
+function displayLoginLogoutTimes(firstLoginTime, lastLogoutTime) {
   const firstLoginDisplay = document.getElementById("first-login-time");
   const lastLogoutDisplay = document.getElementById("last-logout-time");
   if (firstLoginDisplay) {
@@ -155,10 +154,21 @@ async function fetchAttendance(emp_id, date, elementId, showTotal = false) {
   if (lastLogoutDisplay) {
     lastLogoutDisplay.innerText = lastLogoutTime ? `Logout Time: ${formatTime(lastLogoutTime)}` : "Logout Time: N/A";
   }
- 
-  return attendanceDetails;
 }
- 
+function displayTotalHours(totalMinutes) {
+  const attendanceSpecificDateElement = document.getElementById("attendance-specific-date");
+  if (attendanceSpecificDateElement) {
+    attendanceSpecificDateElement.style.display = "block";
+  }
+
+  const totalHours = document.getElementById("total-hours");
+  if (totalHours) {
+    const roundedMinutes = Math.round(totalMinutes);
+    totalHours.innerText = `Total working hours: ${Math.floor(
+      roundedMinutes / 60
+    )} hrs ${roundedMinutes % 60} mins`;
+  }
+}
 // Function to append time slots to attendance bar
 function appendSlot(parent, start, end, color) {
   const slotElement = document.createElement("div");
