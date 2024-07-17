@@ -2,7 +2,7 @@
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-import { getFirestore, collection, doc, writeBatch, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+import { getFirestore, collection, doc, writeBatch, Timestamp, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
  
  
 // Your web app's Firebase configuration
@@ -113,4 +113,45 @@ document.getElementById('saveDataBtn').addEventListener('click', async () => {
         }
     }
 });
- 
+document.addEventListener("DOMContentLoaded",()=>{
+    const batch1 = document.getElementById("b1");
+    const batch2 = document.getElementById("b2");
+    const batch3 = document.getElementById("b3");
+    const batch4 = document.getElementById("b4");
+    getAllUsers("ILPBatch 1").then((size)=>{
+        batch1.textContent = `No. of Employees = ${size}`;
+    }).catch((error) => {
+        console.error("Failed to get number of employees:", error);
+        // Handle error as needed
+    });
+    getAllUsers("ILPBatch 2").then((size)=>{
+        batch2.textContent = `No. of Employees = ${size}`;
+    }).catch((error) => {
+        console.error("Failed to get number of employees:", error);
+        // Handle error as needed
+    });
+    getAllUsers("ILPBatch 3").then((size)=>{
+        batch3.textContent = `No. of Employees = ${size}`;
+    }).catch((error) => {
+        console.error("Failed to get number of employees:", error);
+        // Handle error as needed
+    });
+    getAllUsers("ILPBatch 4").then((size)=>{
+        batch4.textContent = `No. of Employees = ${size}`;
+    }).catch((error) => {
+        console.error("Failed to get number of employees:", error);
+        // Handle error as needed
+    });
+})
+async function getAllUsers(batch) {
+    let q = query(collection(db,'employee_details'), where("Batch","==",batch));
+    const querySnapshot = await getDocs(q);
+    // console.log(querySnapshot.docs);
+    // for(const docs of querySnapshot.docs){
+    //     let data = docs.data();
+    //     console.log(data);
+    // }
+    console.log(querySnapshot.size);
+    return querySnapshot.size;
+}
+
