@@ -426,12 +426,7 @@ document.getElementById('dailyAttendanceBtn').addEventListener('click', (event) 
     window.location.href = `../traineepages/dailyattendence/dailyAttendence.html?emp_id=${empId}`;
 });
 
-document
-  .getElementById("monthlyAttendanceBtn")
-  .addEventListener("click", (event) => {
-    const empId = event.target.getAttribute("data-emp-id");
-    window.location.href = `../traineepages/monthlyattendence/monthlyAtt.html?emp_id=${empId}`;
-  });
+
 
 document.getElementById("lossOfPayBtn").addEventListener("click", (event) => {
   const empId = event.target.getAttribute("data-emp-id");
@@ -457,20 +452,22 @@ function sortEmployeeIds(empIds) {
 
 // Add search functionality
 document.getElementById("searchBtn").addEventListener("click", async () => {
-  const searchTerm = document
-    .getElementById("searchInput")
-    .value.trim()
-    .toLowerCase();
+  const searchTerm = document.getElementById("searchInput").value.trim().toLowerCase();
+  const selectedBatchId = batchId; // Assuming you have the batch ID stored in this variable
+
+  // Clear any existing error message
+  document.getElementById("errorMessage").textContent = "";
+
   if (searchTerm) {
     const searchResults = [];
     const q = query(collection(db, "employee_details"));
     const querySnapshot = await getDocs(q);
-
     querySnapshot.forEach((doc) => {
       const data = doc.data();
       if (
-        data.emp_name.toLowerCase().includes(searchTerm) ||
-        data.emp_id.toLowerCase().includes(searchTerm)
+        (data.emp_name.toLowerCase().includes(searchTerm) || 
+         data.emp_id.toLowerCase().includes(searchTerm)) && 
+        data.Batch === selectedBatchId // Check if the batch ID matches
       ) {
         searchResults.push(data.emp_id);
       }
@@ -481,14 +478,20 @@ document.getElementById("searchBtn").addEventListener("click", async () => {
       fetchAndDisplayEmployeeDetails(sortEmployeeIds(searchResults));
       fetchAttendanceDetails(sortEmployeeIds(searchResults));
     } else {
-      profileContainer.innerHTML = "<p>No results found</p>";
+      // Display error message
+      const errorMessage = document.getElementById("errorMessage");
+      errorMessage.textContent = "No results found for the selected batch";
     }
   }
 });
+
+
 async function fetchAllEmployees() {
   if (batchId) {
     const empIds = await fetchEmployeeIds(batchId);
     const sortedEmpIds = sortEmployeeIds(empIds);
+    document.getElementById("errorMessage").textContent = "";
+    document.getElementById("searchInput").value = "";
     profileContainer.innerHTML = ""; // Clear existing profiles
     fetchAndDisplayEmployeeDetails(sortedEmpIds);
     fetchAttendanceDetails(sortedEmpIds);

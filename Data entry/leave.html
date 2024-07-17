@@ -31,15 +31,23 @@
 
         for (const doc of attendanceSnapshot.docs) {
           const data = doc.data();
-          const { emp_id, attendance_status, date } = data;
-          const leaveDateString = date.toDate().toISOString().split('T')[0];
+          const attendance_status = data["attendance_status"];
+          const date = data["date"] || data["date "]; // Handle the field with and without trailing space
+          const emp_id = data["emp_id"];
+          const month = data["month"];
+
+          // Validate emp_id and date
+          if (!emp_id || !date) {
+            console.error("Invalid data: ", data);
+            continue; // Skip this entry if emp_id or date is missing
+          }
 
           // Check if a leave entry already exists for the given date and employee ID
           const leaveDetailsSnapshot = await db.collection("leave_details")
             .where("emp_id", "==", emp_id)
             .where("leave_date", "==", date)
             .get();
-
+            
           if (!leaveDetailsSnapshot.empty) {
             continue; // Skip if there's already an entry for this date and employee ID
           }
@@ -49,6 +57,9 @@
           }
 
           let remark = "";
+          if(attendance_status === "p"){
+            continue;
+          }
           if (attendance_status === "a") {
             if (empLeaveCount[emp_id].a === 0) {
               remark = "Sick Leave";
@@ -65,6 +76,8 @@
               remark = "Half_LOP";
             }
           }
+
+          console.log(`Emp ID: ${emp_id}, Attendance Status: ${attendance_status}, Leave Count: ${JSON.stringify(empLeaveCount[emp_id])}, Remark: ${remark}`);
 
           if (remark) {
             const leaveDocRef = db.collection("leave_details").doc();
