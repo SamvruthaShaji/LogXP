@@ -9,16 +9,15 @@
     <script>
       // Your web app's Firebase configuration
       const firebaseConfig = {
-      apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
-      authDomain: "logxp-31c62.firebaseapp.com",
-      projectId: "logxp-31c62",
-      storageBucket: "logxp-31c62.appspot.com",
-      messagingSenderId: "17276012238",
-      appId: "1:17276012238:web:464030eb3b2062bb55729f",
-      measurementId: "G-FVZH4VFV6T",
-    };
+        apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
+        authDomain: "logxp-31c62.firebaseapp.com",
+        projectId: "logxp-31c62",
+        storageBucket: "logxp-31c62.appspot.com",
+        messagingSenderId: "17276012238",
+        appId: "1:17276012238:web:464030eb3b2062bb55729f",
+        measurementId: "G-FVZH4VFV6T",
+      };
 
-      // Initialize Firebase
       firebase.initializeApp(firebaseConfig);
       const db = firebase.firestore();
 
@@ -141,21 +140,38 @@
           }
         });
 
+        const attendanceRankingBatch = db.batch();
+
         for (const empId in pointsMap) {
           const employee = employeeMap[empId];
           if (!employee) {
             continue;
           }
 
-          await db.collection("attendance_ranking").add({
-            emp_id: empId,
-            emp_name: employee.emp_name,
-            Batch: employee.Batch,
-            total_points: pointsMap[empId],
-            year: currentYear,
-          });
+          const rankingQuerySnapshot = await db
+            .collection("attendance_ranking")
+            .where("emp_id", "==", empId)
+            .get();
+
+          if (rankingQuerySnapshot.empty) {
+            const newDocRef = db.collection("attendance_ranking").doc();
+            attendanceRankingBatch.set(newDocRef, {
+              emp_id: empId,
+              emp_name: employee.emp_name,
+              Batch: employee.Batch,
+              total_points: pointsMap[empId],
+              year: currentYear,
+            });
+          } else {
+            const existingDocRef = rankingQuerySnapshot.docs[0].ref;
+            attendanceRankingBatch.update(existingDocRef, {
+              total_points: pointsMap[empId],
+              year: currentYear,
+            });
+          }
         }
 
+        await attendanceRankingBatch.commit();
         alert("Attendance ranking updated successfully for all employees!");
       }
 
