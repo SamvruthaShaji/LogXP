@@ -33,7 +33,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
               const employee = doc.data();
               currentUserEmpId = employee.emp_id;
               document.getElementById("profile-pic").src = employee.profile_pic;
-              document.getElementById("profile-name").innerText = `Hi ${employee.emp_name}`;
+              document.getElementById(
+                "profile-name"
+              ).innerText = `Hi ${employee.emp_name}`;
               // Fetch attendance data once emp_id is set
               const currentMonth = new Date().getMonth() + 1;
               const currentYear = new Date().getFullYear();
@@ -54,6 +56,19 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
   // Populate dropdowns
   populateDropdowns();
+
+  document
+    .getElementById("log-out-button")
+    .addEventListener("click", async () => {
+      try {
+        await firebase.auth().signOut();
+        console.log("User signed out successfully");
+        window.location.href = "/login/traineelogin.html";
+        // Redirect or handle post-logout actions as needed
+      } catch (error) {
+        console.error("Error signing out:", error);
+      }
+    });
 });
 
 // DOM elements
@@ -70,8 +85,18 @@ const calendarBody = document.querySelector(".calendar tbody");
 // Populate options for month and year dropdowns
 function populateDropdowns() {
   const months = [
-    "January", "February", "March", "April", "May", "June", 
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
   const currentYear = new Date().getFullYear();
 
@@ -116,7 +141,7 @@ function calculateTotalWorkingDays(month, year) {
 function generateCalendar(month, year) {
   const daysInMonth = new Date(year, month, 0).getDate();
   const firstDay = new Date(year, month - 1, 1).getDay(); // 0 (Sunday) to 6 (Saturday)
-  
+
   calendarTitle.textContent = `${monthSelect.options[month].textContent} ${year}`;
   calendarBody.innerHTML = "";
 
@@ -176,25 +201,33 @@ function fetchAttendanceData(month, year) {
         const cells = calendarBody.querySelectorAll("td");
         cells.forEach((cell) => {
           if (parseInt(cell.textContent) === day) {
-            if (status === 'p') {
+            if (status === "p") {
               cell.classList.add("working-day");
-            } else if (status === 'h') {
+            } else if (status === "h") {
               cell.classList.add("partial-leave");
-            } else if (status === 'a') {
+            } else if (status === "a") {
               cell.classList.add("full-leave");
             }
           }
         });
 
         // Update summary counts
-        if (status === 'p') {
-          totalPresentDays.textContent = String(parseInt(totalPresentDays.textContent) + 1);
-        } else if (status === 'h') {
-          totalHalfLeaves.textContent = String(parseInt(totalHalfLeaves.textContent) + 1);
-        } else if (status === 'a') {
-          totalFullLeaves.textContent = String(parseInt(totalFullLeaves.textContent) + 1);
-          if(parseInt(totalAvailableLeaves.textContent) > 0){
-            totalAvailableLeaves.textContent = String(parseInt(totalAvailableLeaves.textContent) - 1); 
+        if (status === "p") {
+          totalPresentDays.textContent = String(
+            parseInt(totalPresentDays.textContent) + 1
+          );
+        } else if (status === "h") {
+          totalHalfLeaves.textContent = String(
+            parseInt(totalHalfLeaves.textContent) + 1
+          );
+        } else if (status === "a") {
+          totalFullLeaves.textContent = String(
+            parseInt(totalFullLeaves.textContent) + 1
+          );
+          if (parseInt(totalAvailableLeaves.textContent) > 0) {
+            totalAvailableLeaves.textContent = String(
+              parseInt(totalAvailableLeaves.textContent) - 1
+            );
           }
         }
       });
