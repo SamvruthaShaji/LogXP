@@ -7,7 +7,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
     <script>
-      // Your web app's Firebase configuration
       const firebaseConfig = {
         apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
         authDomain: "logxp-31c62.firebaseapp.com",
@@ -108,7 +107,6 @@
 
       // Update Attendance Ranking
       async function updateAttendanceRanking() {
-        // Step 1: Delete all existing documents in attendance_ranking collection
         const rankingSnapshot = await db.collection("attendance_ranking").get();
         const deleteBatch = db.batch();
 
@@ -119,7 +117,6 @@
         await deleteBatch.commit();
         console.log("All documents in attendance_ranking collection deleted");
 
-        // Step 2: Recalculate and update attendance ranking
         const currentYear = new Date().getFullYear();
         const attendanceSnapshot = await db
           .collection("attendance_register")
@@ -187,14 +184,14 @@
           for (const doc of attendanceSnapshot.docs) {
             const data = doc.data();
             const attendance_status = data["attendance_status"];
-            const date = data["date"] || data["date "]; // Handle the field with and without trailing space
+            const date = data["date"] || data["date "]; 
             const emp_id = data["emp_id"];
             const month = data["month"];
 
             // Validate emp_id and date
             if (!emp_id || !date) {
               console.error("Invalid data: ", data);
-              continue; // Skip this entry if emp_id or date is missing
+              continue; 
             }
 
             // Check if a leave entry already exists for the given date and employee ID

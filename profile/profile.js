@@ -27,9 +27,12 @@ document.addEventListener("DOMContentLoaded", () => {
           const employee = employeeSnapshot.docs[0].data();
           const empId = employee.emp_id;
 
-          document.getElementById("profile-pic-large").src = employee.profile_pic;
-          document.getElementById("emp_name_header").innerText = employee.emp_name;
-          document.getElementById("emp_name_details").innerText = employee.emp_name;
+          document.getElementById("profile-pic-large").src =
+            employee.profile_pic;
+          document.getElementById("emp_name_header").innerText =
+            employee.emp_name;
+          document.getElementById("emp_name_details").innerText =
+            employee.emp_name;
           document.getElementById("emp-id").innerText = empId;
           document.getElementById("Batch").innerText = employee.Batch;
           document.getElementById("email").innerText = email;
@@ -41,66 +44,97 @@ document.addEventListener("DOMContentLoaded", () => {
 
           const totalAttendance = attendanceSnapshot.size;
 
-          const attendanceData = attendanceSnapshot.docs.map(doc => doc.data().attendance_status);
+          const attendanceData = attendanceSnapshot.docs.map(
+            (doc) => doc.data().attendance_status
+          );
 
-          const presentDays = attendanceData.filter(status => status === 'p').length;
-          const absentDays = attendanceData.filter(status => status === 'a').length;
-          const halfDays = attendanceData.filter(status => status === 'h').length;
+          const presentDays = attendanceData.filter(
+            (status) => status === "p"
+          ).length;
+          const absentDays = attendanceData.filter(
+            (status) => status === "a"
+          ).length;
+          const halfDays = attendanceData.filter(
+            (status) => status === "h"
+          ).length;
 
           // Pie chart for attendance
-          const pieCtx = document.getElementById('attendance-pie-chart').getContext('2d');
+          const pieCtx = document
+            .getElementById("attendance-pie-chart")
+            .getContext("2d");
           new Chart(pieCtx, {
-            type: 'pie',
+            type: "pie",
             data: {
-              labels: ['Present', 'Absent', 'Half Day'],
-              datasets: [{
-                data: [presentDays, absentDays, halfDays],
-                backgroundColor: ['#DEF9DC', '#FFE0E0', '#FFFDD1']
-              }]
+              labels: ["Present", "Absent", "Half Day"],
+              datasets: [
+                {
+                  data: [presentDays, absentDays, halfDays],
+                  backgroundColor: ["#DEF9DC", "#FFE0E0", "#FFFDD1"],
+                },
+              ],
             },
             options: {
               title: {
                 display: true,
-                text: 'Attendance Distribution'
-              }
-            }
+                text: "Attendance Distribution",
+              },
+            },
           });
 
           // Bar chart for monthly absences
           const months = [
-            'January', 'February', 'March', 'April', 'May', 'June',
-            'July', 'August', 'September', 'October', 'November', 'December'
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
           ];
 
-          const monthlyAbsences = months.map(month => {
-            return attendanceSnapshot.docs.filter(doc =>
-              doc.data().attendance_status === 'a' && doc.data().month === month).length;
+          const monthlyAbsences = months.map((month) => {
+            return attendanceSnapshot.docs.filter(
+              (doc) =>
+                doc.data().attendance_status === "a" &&
+                doc.data().month === month
+            ).length;
           });
 
-          const barCtx = document.getElementById('attendance-bar-chart').getContext('2d');
+          const barCtx = document
+            .getElementById("attendance-bar-chart")
+            .getContext("2d");
           new Chart(barCtx, {
-            type: 'bar',
+            type: "bar",
             data: {
               labels: months,
-              datasets: [{
-                label: 'Absences',
-                data: monthlyAbsences,
-                backgroundColor: '#FF6384'
-              }]
+              datasets: [
+                {
+                  label: "Absences",
+                  data: monthlyAbsences,
+                  backgroundColor: "#FF6384",
+                },
+              ],
             },
             options: {
               title: {
                 display: true,
-                text: 'Monthly Absences'
+                text: "Monthly Absences",
               },
               scales: {
-                yAxes: [{
-                  ticks: {
-                    beginAtZero: true
-                  }
-                }]
-              }
-            }
+                yAxes: [
+                  {
+                    ticks: {
+                      beginAtZero: true,
+                    },
+                  },
+                ],
+              },
+            },
           });
         } else {
           console.log("No matching documents.");
@@ -117,11 +151,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Logout button functionality
-  document.getElementById("logout-button").addEventListener("click", () => {
-    firebase.auth().signOut().then(() => {
-      window.location.href = "/public/index.html"; // Redirect to login page after logout
-    }).catch((error) => {
-      console.error("Error logging out: ", error);
+  document
+    .getElementById("log-out-button")
+    .addEventListener("click", async () => {
+      try {
+        await firebase.auth().signOut();
+        console.log("User signed out successfully");
+        window.location.href = "/login/traineelogin.html";
+        // Redirect or handle post-logout actions as needed
+      } catch (error) {
+        console.error("Error signing out:", error);
+      }
     });
-  });
 });

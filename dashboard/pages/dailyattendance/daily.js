@@ -238,6 +238,16 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("User is not authenticated.");
     }
   });
+  document.getElementById("log-out-button").addEventListener("click",async ()=>{
+    try {
+      await firebase.auth().signOut();
+      console.log('User signed out successfully');
+      window.location.href = "/login/traineelogin.html";
+      // Redirect or handle post-logout actions as needed
+  } catch (error) {
+      console.error('Error signing out:', error);
+  }
+  })
 });
 // Function to populate attendance modal with details
 function populateAttendanceModal(attendanceDetails) {
