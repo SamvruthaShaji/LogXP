@@ -4,20 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Trainee Login</title>
+
+    <!-- Bootstrap CSS -->
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     />
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="login.css" />
   </head>
   <body>
     <div class="container">
       <div class="row">
-        <div class="col-sd-12 col-md-6 col-lg-6">
+        <!-- Left side of the form -->
+        <div class="col-12 col-md-6">
           <a href="/public/index.html" class="btn btn-custom">Back</a>
-          <h1>Trainee login</h1>
+          <h1>Trainee Login</h1>
           <p class="text-muted">Welcome back! Please enter your details.</p>
 
+          <!-- Login form -->
           <form id="loginForm">
             <div class="form-group">
               <label for="email">Email</label>
@@ -39,85 +44,85 @@
             </div>
             <div class="form-group form-check">
               <input type="checkbox" class="form-check-input" id="rememberMe" />
-              <label class="form-check-label" for="rememberMe"
-                >Remember me</label
-              >
+              <label class="form-check-label" for="rememberMe">Remember me</label>
               <a href="#" class="float-right text-muted">Forgot password</a>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">
-              Sign in
-            </button>
+            <button type="submit" class="btn btn-primary btn-block">Sign in</button>
           </form>
         </div>
-        <div
-          class="col-sd-12 col-md-6 col-lg-6 d-none d-md-block d-lg-block"
-          id="right-side"
-        >
+
+        <!-- Right side with decorative images (only visible on larger screens) -->
+        <div class="col-12 col-md-6 d-none d-md-block" id="right-side">
           <div class="row no-gutter">
-            <div class="col-md-12 col-lg-12">
-              <img src="/assets/red-design.png" id="red-design" />
-              <img src="/assets/almost-white-design.png" id="red-design" />
-              <img src="/assets/white-design.png" id="red-design" />
-              <img src="/assets/almost-grey-design.png" id="red-design" />
-              <img src="/assets/grey-design.png" id="red-design" />
-              <img src="/assets/white-design.png" id="red-design" />
+            <div class="col-12">
+              <img src="/assets/red-design.png" alt="Red Design" class="design-img" />
+              <img src="/assets/almost-white-design.png" alt="Almost White Design" class="design-img" />
+              <img src="/assets/white-design.png" alt="White Design" class="design-img" />
+              <img src="/assets/almost-grey-design.png" alt="Almost Grey Design" class="design-img" />
+              <img src="/assets/grey-design.png" alt="Grey Design" class="design-img" />
+              <img src="/assets/white-design.png" alt="White Design" class="design-img" />
             </div>
           </div>
           <div class="row no-gutter">
-            <div class="col-md-12 col-lg-12">
-              <img src="/assets/almost-grey-design.png" id="red-design" />
-              <img src="/assets/white-design.png" id="red-design" />
-              <img src="/assets/grey-design.png" id="red-design" />
-              <img src="/assets/almost-white-design.png" id="red-design" />
-              <img src="/assets/grey-design.png" id="red-design" />
-              <img src="/assets/red-design.png" id="red-design" />
+            <div class="col-12">
+              <img src="/assets/almost-grey-design.png" alt="Almost Grey Design" class="design-img" />
+              <img src="/assets/white-design.png" alt="White Design" class="design-img" />
+              <img src="/assets/grey-design.png" alt="Grey Design" class="design-img" />
+              <img src="/assets/almost-white-design.png" alt="Almost White Design" class="design-img" />
+              <img src="/assets/grey-design.png" alt="Grey Design" class="design-img" />
+              <img src="/assets/red-design.png" alt="Red Design" class="design-img" />
             </div>
           </div>
           <div class="row no-gutter">
-            <div class="col-md-12 col-lg-12">
-              <img src="/assets/almost-grey-design.png" id="red-design" />
-              <img src="/assets/almost-white-design.png" id="red-design" />
-              <img src="/assets/red-design.png" id="red-design" />
-              <img src="/assets/almost-grey-design.png" id="red-design" />
-              <img src="/assets/white-design.png" id="red-design" />
-              <img src="/assets/grey-design.png" id="red-design" />
+            <div class="col-12">
+              <img src="/assets/almost-grey-design.png" alt="Almost Grey Design" class="design-img" />
+              <img src="/assets/almost-white-design.png" alt="Almost White Design" class="design-img" />
+              <img src="/assets/red-design.png" alt="Red Design" class="design-img" />
+              <img src="/assets/almost-grey-design.png" alt="Almost Grey Design" class="design-img" />
+              <img src="/assets/white-design.png" alt="White Design" class="design-img" />
+              <img src="/assets/grey-design.png" alt="Grey Design" class="design-img" />
             </div>
           </div>
           <div class="row no-gutter">
-            <div class="col-md-12 col-lg-12">
-              <img src="/assets/grey-design.png" id="red-design" />
-              <img src="/assets/white-design.png" id="red-design" />
-              <img src="/assets/almost-white-design.png" id="red-design" />
-              <img src="/assets/almost-grey-design.png" id="red-design" />
-              <img src="/assets/red-design.png" id="red-design" />
-              <img src="/assets/almost-white-design.png" id="red-design" />
+            <div class="col-12">
+              <img src="/assets/grey-design.png" alt="Grey Design" class="design-img" />
+              <img src="/assets/white-design.png" alt="White Design" class="design-img" />
+              <img src="/assets/almost-white-design.png" alt="Almost White Design" class="design-img" />
+              <img src="/assets/almost-grey-design.png" alt="Almost Grey Design" class="design-img" />
+              <img src="/assets/red-design.png" alt="Red Design" class="design-img" />
+              <img src="/assets/almost-white-design.png" alt="Almost White Design" class="design-img" />
             </div>
           </div>
           <div class="row no-gutter">
-            <div class="col-md-12 col-lg-12">
-              <img src="/assets/almost-grey-design.png" id="red-design" />
-              <img src="/assets/white-design.png" id="red-design" />
-              <img src="/assets/red-design.png" id="red-design" />
-              <img src="/assets/almost-grey-design.png" id="red-design" />
+            <div class="col-12">
+              <img src="/assets/almost-grey-design.png" alt="Almost Grey Design" class="design-img" />
+              <img src="/assets/white-design.png" alt="White Design" class="design-img" />
+              <img src="/assets/red-design.png" alt="Red Design" class="design-img" />
+              <img src="/assets/almost-grey-design.png" alt="Almost Grey Design" class="design-img" />
             </div>
           </div>
           <div class="row no-gutter">
-            <div class="col-md-12 col-lg-12">
-              <img src="/assets/white-design.png" id="red-design" />
-              <img src="/assets/white-design.png" id="red-design" />
-              <img src="/assets/almost-grey-design.png" id="red-design" />
+            <div class="col-12">
+              <img src="/assets/white-design.png" alt="White Design" class="design-img" />
+              <img src="/assets/white-design.png" alt="White Design" class="design-img" />
+              <img src="/assets/almost-grey-design.png" alt="Almost Grey Design" class="design-img" />
             </div>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- External JS libraries -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Firebase JS SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+
+    <!-- Custom JS for login functionality -->
     <script src="login.js"></script>
   </body>
 </html>

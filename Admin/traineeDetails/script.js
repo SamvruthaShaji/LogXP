@@ -304,6 +304,16 @@ async function fetchAttendanceDetails(empIds) {
 const urlParams = new URLSearchParams(window.location.search);
 const batchId = urlParams.get("batchId");
 
+// Fetch employee IDs and then fetch and display employee details
+if (batchId) {
+  fetchEmployeeIds(batchId).then((empIds) => {
+    const assendingEmployees = sortEmployeeIds(empIds);
+    fetchAndDisplayEmployeeDetails(assendingEmployees);
+    fetchAttendanceDetails(assendingEmployees);
+  });
+}
+
+
 // Function to fetch employees based on batchId
 async function fetchEmployeesByBatch(batchId) {
   try {
@@ -411,14 +421,6 @@ document.getElementById('confirmDownload').addEventListener('click', () => {
   }
 });
 
-// Fetch employee IDs and then fetch and display employee details
-if (batchId) {
-  fetchEmployeeIds(batchId).then((empIds) => {
-    const assendingEmployees = sortEmployeeIds(empIds);
-    fetchAndDisplayEmployeeDetails(assendingEmployees);
-    fetchAttendanceDetails(assendingEmployees);
-  });
-}
 
 // Modal button actions
 document.getElementById('dailyAttendanceBtn').addEventListener('click', (event) => {
@@ -426,7 +428,10 @@ document.getElementById('dailyAttendanceBtn').addEventListener('click', (event) 
     window.location.href = `../traineepages/dailyattendence/dailyAttendence.html?emp_id=${empId}`;
 });
 
-
+document.getElementById("monthlyAttendanceBtn").addEventListener("click", (event) => {
+  const empId = event.target.getAttribute("data-emp-id");
+  window.location.href = `../traineepages/monthlyattendence/monthlyAtt.html?emp_id=${empId}`;
+});
 
 document.getElementById("lossOfPayBtn").addEventListener("click", (event) => {
   const empId = event.target.getAttribute("data-emp-id");
