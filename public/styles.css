@@ -1,3 +1,4 @@
+/* Reset margin and padding for body and html */
 body, html {
   margin: 0;
   padding: 0;
@@ -6,10 +7,12 @@ body, html {
   overflow: hidden;
 }
 
+/* Background gradient for the body */
 body {
   background: linear-gradient(163deg, #EA454C 50%, white 50%);
 }
 
+/* Styling for the text container */
 .text-container {
   position: relative;
   top: 50%;
@@ -17,17 +20,20 @@ body {
   left: 10%;
 }
 
+/* Styling for the main heading text */
 .logxp-text {
   color: white;
   font-weight: bold;
   font-size: 90px;
 }
 
+/* Styling for the subheading text */
 .tag-text {
   color: white;
   font-size: 25px;
 }
 
+/* Styling for the button container */
 .button-container {
   position: relative;
   top: 50%;
@@ -35,18 +41,21 @@ body {
   right: 20%;
 }
 
+/* Styling for buttons */
 .button {
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
   border-radius: 5px;
-  box-shadow: black 2px 2px 2px 2px;
+  box-shadow: 2px 2px 2px 2px black;
 }
 
+/* Button hover effect */
 .button:hover {
   background-color: #333;
 }
 
+/* Styling for the logo image */
 .logo {
   bottom: 10px;
   right: 150px;
@@ -54,45 +63,54 @@ body {
   height: auto;
 }
 
+/* Gap for spacing */
 .gap {
   margin-top: 100px;
 }
 
+/* Responsive design for screens with max-width of 768px */
 @media (max-width: 768px) {
+  /* Adjust logo size and position */
   .logo {
     max-width: 150px;
     right: 0;
   }
 
+  /* Adjust text container position */
   .text-container {
     top: -50%;
     transform: translateY(0%);
     left: 0%;
   }
 
+  /* Adjust main heading text size */
   .logxp-text {
     color: white;
     font-weight: bold;
     font-size: 50px;
   }
   
+  /* Adjust subheading text size */
   .tag-text {
     color: white;
     font-size: 14px;
     white-space: nowrap;
   }
 
-  .button{
+  /* Ensure button text does not wrap */
+  .button {
     white-space: nowrap;
   }
 
+  /* Adjust button container position */
   .button-container {
     top: 50%;
     transform: translateY(0%);
     right: 0%;
   }
 
-  .gap{
-    margin-top: 0px ;
+  /* Remove top margin for gap */
+  .gap {
+    margin-top: 0px;
   }
 }
