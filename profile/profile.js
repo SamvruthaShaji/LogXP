@@ -96,11 +96,17 @@ document.addEventListener("DOMContentLoaded", () => {
           ];
 
           const monthlyAbsences = months.map((month) => {
-            return attendanceSnapshot.docs.filter(
-              (doc) =>
-                doc.data().attendance_status === "a" &&
-                doc.data().month === month
-            ).length;
+            return attendanceSnapshot.docs.reduce((count, doc) => {
+              const data = doc.data();
+              if (data.month === month) {
+                if (data.attendance_status === "a") {
+                  return count + 1;
+                } else if (data.attendance_status === "h") {
+                  return count + 0.5;
+                }
+              }
+              return count;
+            }, 0);
           });
 
           const barCtx = document
