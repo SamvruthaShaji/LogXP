@@ -506,3 +506,14 @@ async function fetchAllEmployees() {
 document
   .getElementById("resetBtn")
   .addEventListener("click", fetchAllEmployees);
+
+  document.getElementById("log-out-button").addEventListener("click",async ()=>{
+    try {
+      await firebase.auth().signOut();
+      console.log('User signed out successfully');
+      window.location.href = "../../login/adminlogin.html";
+      // Redirect or handle post-logout actions as needed
+  } catch (error) {
+      console.error('Error signing out:', error);
+  }
+  })

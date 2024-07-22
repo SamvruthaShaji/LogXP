@@ -11,22 +11,42 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 const auth = firebase.auth();
 
-document.getElementById('loginForm').addEventListener('submit', function(event) {
-  event.preventDefault();
-  var email = document.getElementById('email').value;
-  var password = document.getElementById('password').value;
+document
+  .getElementById("loginForm")
+  .addEventListener("submit", function (event) {
+    event.preventDefault();
+    var email = document.getElementById("email").value;
+    var password = document.getElementById("password").value;
 
-  auth.signInWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-          // Signed in 
-          var user = userCredential.user;
-          window.location.href = '../dashboard/pages/dailyattendance/daily.html'; 
+    // Check if email is in admin collection
+    db.collection("employee_details")
+      .where("email", "==", email)
+      .get()
+      .then((querySnapshot) => {
+        if (!querySnapshot.empty) {
+          // Email found in admin collection, proceed with sign-in
+          auth
+            .signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+              // Signed in
+              var user = userCredential.user;
+              window.location.href = "../dashboard/pages/dailyattendance/daily.html";
+            })
+            .catch((error) => {
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              alert(errorMessage);
+            });
+        } else {
+          // Email not found in admin collection
+          alert("No trainee found with this email.");
+        }
       })
       .catch((error) => {
-          var errorCode = error.code;
-          var errorMessage = error.message;
-          alert(errorMessage);
+        console.error("Error checking admin collection: ", error);
+        alert("Error checking admin collection.");
       });
-});
+  });
