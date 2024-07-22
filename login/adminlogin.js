@@ -1,44 +1,52 @@
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
-    authDomain: "logxp-31c62.firebaseapp.com",
-    projectId: "logxp-31c62",
-    storageBucket: "logxp-31c62.appspot.com",
-    messagingSenderId: "17276012238",
-    appId: "1:17276012238:web:464030eb3b2062bb55729f",
-    measurementId: "G-FVZH4VFV6T"
-  };
-  
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  
-  document.getElementById("loginForm").addEventListener("submit", function (event) {
+  apiKey: "AIzaSyA5tbpKUlx1BoJnxyHOibP7T_uymsYBXA0",
+  authDomain: "logxp-31c62.firebaseapp.com",
+  projectId: "logxp-31c62",
+  storageBucket: "logxp-31c62.appspot.com",
+  messagingSenderId: "17276012238",
+  appId: "1:17276012238:web:464030eb3b2062bb55729f",
+  measurementId: "G-FVZH4VFV6T",
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+document
+  .getElementById("loginForm")
+  .addEventListener("submit", function (event) {
     event.preventDefault();
-    
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    
-    // Query the admin collection
+    var email = document.getElementById("email").value;
+    var password = document.getElementById("password").value;
+
+    // Check if email is in admin collection
     db.collection("admin")
       .where("admin_email", "==", email)
       .get()
       .then((querySnapshot) => {
-        if (querySnapshot.empty) {
+        if (!querySnapshot.empty) {
+          // Email found in admin collection, proceed with sign-in
+          auth
+            .signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+              // Signed in
+              var user = userCredential.user;
+              window.location.href = "../Admin/batchselect/batch.html";
+            })
+            .catch((error) => {
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              alert(errorMessage);
+            });
+        } else {
+          // Email not found in admin collection
           alert("No admin found with this email.");
-          return;
         }
-        querySnapshot.forEach((doc) => {
-          const adminData = doc.data();
-          if (adminData.admin_password === password) {
-            window.location.href = "../Admin/batchselect/batch.html"; 
-          } else {
-            alert("Incorrect password.");
-          }
-        });
       })
       .catch((error) => {
-        console.error("Error during admin login: ", error);
+        console.error("Error checking admin collection: ", error);
+        alert("Error checking admin collection.");
       });
   });
-  
