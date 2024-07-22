@@ -180,20 +180,6 @@ async function fetchAndDisplayEmployeeDetails(empIds) {
           console.error("Error getting document: ", error);
         });
 
-      // Fetch and display performance details
-      const performanceQuery = query(
-        collection(db, "performance_details"),
-        where("emp_id", "==", empId)
-      );
-      getDocs(performanceQuery)
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-          });
-        })
-        .catch((error) => {
-          console.error("Error getting performance details: ", error);
-        });
     });
   }
 }
@@ -205,11 +191,11 @@ document.getElementById("month-select").addEventListener("change", selectMonth);
 async function selectMonth() {
     const month = document.getElementById("month-select").value;
     if (month === "") {
-        return; // No month selected
+        return;
     }
 
     // Fetch the employee IDs from the current batch
-    const emIds = await  fetchEmployeeIds(batchId); // Implement this function as needed
+    const emIds = await  fetchEmployeeIds(batchId);
 
     await fetchAttendanceDetails(emIds, month);
 }
@@ -319,6 +305,15 @@ async function fetchAttendanceDetails(empIds, month) {
 const urlParams = new URLSearchParams(window.location.search);
 const batchId = urlParams.get("batchId");
 
+
+// Fetch employee IDs and then fetch and display employee details
+if (batchId) {
+  fetchEmployeeIds(batchId).then((empIds) => {
+    const assendingEmployees = sortEmployeeIds(empIds);
+    fetchAndDisplayEmployeeDetails(assendingEmployees);
+  });
+}
+
 // Function to fetch employees based on batchId
 async function fetchEmployeesByBatch(batchId) {
   try {
@@ -376,7 +371,7 @@ async function fetchAndDownloadAttendanceDetails(batchId, month) {
     const employees = await fetchEmployeesByBatch(batchId);
     const attendanceData = [];
     for (const employee of employees) {
-      const empId = employee.emp_id; // Use document ID
+      const empId = employee.emp_id; 
       const attendanceDetails = await fetchAttendance(empId, month);
       attendanceData.push({
         empId: empId,
@@ -425,13 +420,7 @@ document.getElementById('confirmDownload').addEventListener('click', () => {
   }
 });
 
-// Fetch employee IDs and then fetch and display employee details
-if (batchId) {
-  fetchEmployeeIds(batchId).then((empIds) => {
-    const assendingEmployees = sortEmployeeIds(empIds);
-    fetchAndDisplayEmployeeDetails(assendingEmployees);
-  });
-}
+
 
 // Modal button actions
 document.getElementById('dailyAttendanceBtn').addEventListener('click', (event) => {
@@ -439,7 +428,10 @@ document.getElementById('dailyAttendanceBtn').addEventListener('click', (event) 
     window.location.href = `../traineepages/dailyattendence/dailyAttendence.html?emp_id=${empId}`;
 });
 
-
+document.getElementById('monthlyAttendanceBtn').addEventListener('click', (event) => {
+  const empId = event.target.getAttribute('data-emp-id');
+  window.location.href = `../traineepages/monthlyAttendence/monthlyAtt.html?emp_id=${empId}`;
+});
 
 document.getElementById("lossOfPayBtn").addEventListener("click", (event) => {
   const empId = event.target.getAttribute("data-emp-id");
@@ -466,7 +458,7 @@ function sortEmployeeIds(empIds) {
 // Add search functionality
 document.getElementById("searchBtn").addEventListener("click", async () => {
   const searchTerm = document.getElementById("searchInput").value.trim().toLowerCase();
-  const selectedBatchId = batchId; // Assuming you have the batch ID stored in this variable
+  const selectedBatchId = batchId;
 
   // Clear any existing error message
   document.getElementById("errorMessage").textContent = "";
