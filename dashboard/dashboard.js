@@ -39,32 +39,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
       window.location.href = "../login/traineelogin.html";
     }
   });
-
-  // Load default content
-  loadPage("daily");
-});
-
-const loadPage = (page) => {
-  $("#content").load(`./pages/${page}.html`);
-};
-
-const toggleBtn = document.getElementById("toggle-btn");
-const sidebar = document.querySelector(".sidebar");
-const links = document.querySelectorAll(".nav-link");
-
-toggleBtn.addEventListener("click", () => {
-  sidebar.classList.toggle("show");
-});
-
-links.forEach((link) => {
-  link.addEventListener("click", (event) => {
-    event.preventDefault();
-    const target = link.getAttribute("data-target");
-    loadPage(target);
-
-    links.forEach((l) => l.classList.remove("active"));
-    link.classList.add("active");
-  });
 });
 
 // Add event listener to profile picture
