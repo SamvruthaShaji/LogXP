@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 import {
   getFirestore,
   collection,
@@ -24,6 +25,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
+const auth = getAuth();
+
 
 const profileContainer = document.getElementById("profileContainer");
 const profileCardWidth = 160; // Width of profile card plus margin
@@ -506,14 +509,15 @@ async function fetchAllEmployees() {
 document
   .getElementById("resetBtn")
   .addEventListener("click", fetchAllEmployees);
-
-  document.getElementById("log-out-button").addEventListener("click",async ()=>{
+  document.getElementById("log-out-button").addEventListener("click", async () => {
     try {
-      await firebase.auth().signOut();
+      const auth = getAuth(); // Get the Auth instance
+      await signOut(auth); // Use the signOut function
       console.log('User signed out successfully');
       window.location.href = "../../login/adminlogin.html";
       // Redirect or handle post-logout actions as needed
-  } catch (error) {
+    } catch (error) {
       console.error('Error signing out:', error);
-  }
-  })
+    }
+  });
+  
