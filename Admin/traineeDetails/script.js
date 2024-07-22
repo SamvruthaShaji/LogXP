@@ -520,4 +520,3 @@ document
       console.error('Error signing out:', error);
     }
   });
-  
